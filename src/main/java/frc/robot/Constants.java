@@ -1,3 +1,4 @@
+
 package frc.robot;
 
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
@@ -9,7 +10,7 @@ public final class Constants {
     return Units.inchesToMeters (
         1 / GEAR_RATIO
         * 2 * Math.PI 
-        * Units.inchesToMeters(WHEEL_RADIUS) // Circumference
+        * Units.inchesToMeters(WHEEL_RADIUS)
         * 10
         );
   }
@@ -20,22 +21,15 @@ public final class Constants {
     public static final int RF_MOTOR_CANID = 13;
     public static final int RB_MOTOR_CANID = 14;
 
+    public static final int PDH_PORT_CANID = 1;
+
     public static final int CONTROLLER_PORT = 0;
 
     public static final int MOTOR_AMP_LIMIT = 80;
-    public static final int PDH_PORT_CANID = 1;
-
-    public static final double DEADZONE = 0.1;
     public static final double SNIPER_SPEED = 0.4;
+    public static final double DEADZONE = 0.1;
     public static final double SPEED_REDUCTION = 0.95;
     public static final double ROTATION_REDUCTION = 0.6;
-
-    public static final double RAMP_RATE = 50;
-
-    // TO-DO: GET CORRECT DISTANCE VALUES
-    public static final double LOW_SCORE_DISTANCE = 1;
-    public static final double MID_SCORE_DISTANCE = 1;
-    public static final double HIGH_SCORE_DISTANCE = 1;
   }
   
   public static class LEDsConstants {
@@ -72,7 +66,6 @@ public final class Constants {
 
     public static final int ARM_MOTOR_CURRENT_LIMIT = 60;
     public static final int GRABBER_MOTOR_CURRENT_LIMIT = 50;
-    public static final int ARM_MOTOR_SPEED = 1;
 
     public static final double LOW_CUBE_ANG = 280; 
     public static final double MID_CUBE_ANG = 220; 
