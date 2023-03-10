@@ -26,7 +26,7 @@ public final class Constants {
     public static final int CONTROLLER_PORT = 0;
 
     public static final int MOTOR_AMP_LIMIT = 80;
-    public static final double SNIPER_SPEED = 0.4;
+    public static final double DRIVE_SNIPER_SPEED = 0.4;
     public static final double DEADZONE = 0.1;
     public static final double SPEED_REDUCTION = 0.95;
     public static final double ROTATION_REDUCTION = 0.6;
@@ -61,6 +61,8 @@ public final class Constants {
   }
 
   public static class ArmConstants { 
+    public static final double ARM_SNIPER_SPEED = 0.3;
+
     public static final int ARM_MOTOR_CANID = 21;
     public static final int GRABBER_MOTOR_CANID = 22;
 
@@ -75,11 +77,8 @@ public final class Constants {
     public static final double MID_CONE_ANG = 200; 
     public static final double HIGH_CONE_ANG = 175; 
 
-    public static final double FETCH_CUBE_ANG = 125.4;
-    public static final double FETCH_CONE_ANG = 116.3;
-
-    public static double FETCH_CONE_SUBSTATION = 0;
-    public static double FETCH_CUBE_SUBSTATION = 0;
+    public static double FETCH_CONE_SUBSTATION = 116.3;
+    public static double FETCH_CUBE_SUBSTATION = 125.4;
 
     public static final double FETCH_CONE_GROUND = 264; 
     public static final double FETCH_CUBE_GROUND = 265; 

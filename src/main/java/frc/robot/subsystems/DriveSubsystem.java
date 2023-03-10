@@ -46,10 +46,21 @@ public class DriveSubsystem extends SubsystemBase {
   private DifferentialDrivePoseEstimator odometry;
 
   public DriveSubsystem() {
-    leftFrontMotor = new CANSparkMax(DrivebaseConstants.LF_MOTOR_CANID, MotorType.kBrushless);
-    leftBackMotor = new CANSparkMax(DrivebaseConstants.LB_MOTOR_CANID, MotorType.kBrushless);
-    rightFrontMotor = new CANSparkMax(DrivebaseConstants.RF_MOTOR_CANID, MotorType.kBrushless);
-    rightBackMotor = new CANSparkMax(DrivebaseConstants.RB_MOTOR_CANID, MotorType.kBrushless);
+    leftFrontMotor = new CANSparkMax(
+      DrivebaseConstants.LF_MOTOR_CANID, 
+      MotorType.kBrushless);
+
+    leftBackMotor = new CANSparkMax(
+      DrivebaseConstants.LB_MOTOR_CANID, 
+      MotorType.kBrushless);
+
+    rightFrontMotor = new CANSparkMax(
+      DrivebaseConstants.RF_MOTOR_CANID, 
+      MotorType.kBrushless);
+
+    rightBackMotor = new CANSparkMax(
+      DrivebaseConstants.RB_MOTOR_CANID, 
+      MotorType.kBrushless);
 
     leftFrontMotor.setInverted(true);
     leftBackMotor.setInverted(true);
@@ -59,10 +70,17 @@ public class DriveSubsystem extends SubsystemBase {
     rightFrontEncoder = rightFrontMotor.getEncoder();
     rightBackEncoder = rightBackMotor.getEncoder();
 
-    leftFrontEncoder.setVelocityConversionFactor(AutonoumousConstants.LINEAR_DIST_CONVERSION_FACTOR);
-    leftBackEncoder.setVelocityConversionFactor(AutonoumousConstants.LINEAR_DIST_CONVERSION_FACTOR);
-    rightFrontEncoder.setVelocityConversionFactor(AutonoumousConstants.LINEAR_DIST_CONVERSION_FACTOR);
-    rightBackEncoder.setVelocityConversionFactor(AutonoumousConstants.LINEAR_DIST_CONVERSION_FACTOR);
+    leftFrontEncoder.setVelocityConversionFactor(
+      AutonoumousConstants.LINEAR_DIST_CONVERSION_FACTOR);
+
+    leftBackEncoder.setVelocityConversionFactor(
+      AutonoumousConstants.LINEAR_DIST_CONVERSION_FACTOR);
+
+    rightFrontEncoder.setVelocityConversionFactor(
+      AutonoumousConstants.LINEAR_DIST_CONVERSION_FACTOR);
+
+    rightBackEncoder.setVelocityConversionFactor(
+      AutonoumousConstants.LINEAR_DIST_CONVERSION_FACTOR);
 
     robotDrive = new DifferentialDrive(rightFrontMotor, leftFrontMotor);
 
@@ -112,14 +130,14 @@ public class DriveSubsystem extends SubsystemBase {
      * Otherwise reduce speed to 95% and rotation to 60%
      */
     if (SniperMode.driveSniperMode) {
-      speed *= DrivebaseConstants.SNIPER_SPEED;
+      speed *= DrivebaseConstants.DRIVE_SNIPER_SPEED;
     }
     else {
       speed *= DrivebaseConstants.SPEED_REDUCTION;
     }
 
     if (SniperMode.driveSniperMode) {
-      rotation *= DrivebaseConstants.SNIPER_SPEED;
+      rotation *= DrivebaseConstants.DRIVE_SNIPER_SPEED;
     }
     else {
       rotation *= DrivebaseConstants.ROTATION_REDUCTION;
@@ -145,15 +163,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public double getGyroHeading() {
-    return navX.getRotation2d().getDegrees(); //Make sure it's in degrees
-  }
-
-  public Pose2d getPose() {
-    return odometry.getEstimatedPosition();
-  }
-
-  public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-    return new DifferentialDriveWheelSpeeds(getLeftFrontEncoderVelocity(), getRightFrontEncoderVelocity());
+    return navX.getRotation2d().getDegrees();
   }
 
   public double getLeftFrontMotorTemp() {
@@ -170,6 +180,14 @@ public class DriveSubsystem extends SubsystemBase {
 
   public double getRightBackMotorTemp() {
     return rightBackMotor.getMotorTemperature();
+  }
+
+  public Pose2d getPose() {
+    return odometry.getEstimatedPosition();
+  }
+
+  public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+    return new DifferentialDriveWheelSpeeds(getLeftFrontEncoderVelocity(), getRightFrontEncoderVelocity());
   }
 
   public void setTankDriveVolts(double leftVolts, double rightVolts) {
