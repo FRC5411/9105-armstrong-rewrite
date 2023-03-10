@@ -68,8 +68,7 @@ public class ArmSubsystem extends SubsystemBase {
     public void periodic() {
       limitArmSpeedOut();
       limitArmSpeedDown();
-      DynamicArmAngles.checkGamePieceMode();
-
+      
       SmartDashboard.putBoolean("GAME MODE", GameStates.isCube);
       SmartDashboard.putNumber("DEBUG INFO", DynamicArmAngles.scoreHighAngle);
     }

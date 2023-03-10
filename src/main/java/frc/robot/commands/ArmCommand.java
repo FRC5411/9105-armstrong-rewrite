@@ -4,7 +4,9 @@ package frc.robot.commands;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.GlobalVars.DebugInfo;
+import frc.robot.GlobalVars.GameStates;
 import frc.robot.subsystems.ArmSubsystem;
 
 public class ArmCommand extends CommandBase {
@@ -13,6 +15,7 @@ public class ArmCommand extends CommandBase {
     
     private ArmSubsystem robotArm;
     private double setpoint;
+    private double passedSetpoint;
     private PIDController pid;
 
     private double kP;
@@ -21,12 +24,56 @@ public class ArmCommand extends CommandBase {
 
     public ArmCommand(ArmSubsystem robotArm, double passedSetpoint) {
         this.robotArm = robotArm;
-        this.setpoint = passedSetpoint;
+        this.passedSetpoint = passedSetpoint;
         SendableRegistry.setName(pid, "ArmSubsystem", "PID");
     }
 
     @Override
     public void initialize() {
+
+          //region
+          if (GameStates.isCube == true) {
+            if (passedSetpoint == 1) {
+                this.setpoint = 100;
+            }
+            else if (passedSetpoint == 2) {
+                this.setpoint = ArmConstants.MID_CUBE_ANG;
+            }
+            else if (passedSetpoint == 3) {
+                this.setpoint = ArmConstants.LOW_CUBE_ANG;
+            }
+            else if (passedSetpoint == 4) {
+                this.setpoint = ArmConstants.FETCH_CUBE_SUBSTATION;
+            }
+            else if (passedSetpoint == 5) {
+                this.setpoint = ArmConstants.FETCH_CUBE_GROUND;
+            }
+            else {
+                this.setpoint = 0;
+            }
+        }
+        else {
+            if (passedSetpoint == 1) {
+                this.setpoint = 200;
+            }
+            else if (passedSetpoint == 2) {
+                this.setpoint = ArmConstants.MID_CONE_ANG;
+            }
+            else if (passedSetpoint == 3) {
+                this.setpoint = ArmConstants.LOW_CONE_ANG;
+            }
+            else if (passedSetpoint == 4) {
+                this.setpoint = ArmConstants.FETCH_CONE_SUBSTATION;
+            }
+            else if (passedSetpoint == 5) {
+                this.setpoint = ArmConstants.FETCH_CONE_GROUND;
+            }
+            else {
+                this.setpoint = 0;
+            }
+        }
+        //endregion
+
       kP = 0.034;
       kI = 0;
       kD = 0;

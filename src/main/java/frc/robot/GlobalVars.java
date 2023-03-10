@@ -17,21 +17,11 @@ public class GlobalVars {
     }
 
     public static class DynamicArmAngles {
-        public static double scoreHighAngle = 0.0;
-        public static double scoreMidAngle = 0.0;
-        public static double scoreLowAngle = 0.0;
+        public static double scoreHighAngle = 1;
+        public static double scoreMidAngle = 2;
+        public static double scoreLowAngle = 3;
 
-        public static double fetchSubstationAngle = 0.0;
-        public static double fetchGroundAngle = 0.0;
-        public static double idle = 0.0;
-
-        public static void checkGamePieceMode() {
-            if (GameStates.isCube) {
-                scoreHighAngle = 100;
-            }
-            else {
-                scoreHighAngle = 170;
-            }
-        }
+        public static double fetchSubstationAngle = 4;
+        public static double fetchGroundAngle = 5;
     }
 }

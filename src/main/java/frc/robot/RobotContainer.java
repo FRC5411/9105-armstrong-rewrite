@@ -12,11 +12,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.AutonoumousConstants;
 import frc.robot.Constants.ButtonBoardConstants;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.GlobalVars.DebugInfo;
-import frc.robot.GlobalVars.DynamicArmAngles;
 import frc.robot.GlobalVars.GameStates;
 import frc.robot.GlobalVars.SniperMode;
 import frc.robot.commands.ArcadeCommand;
@@ -90,30 +90,28 @@ public class RobotContainer {
       .whileFalse(new InstantCommand( () -> robotIntake.spinoff() ));
 
     buttonBoard.button(ButtonBoardConstants.SCORE_HIGH_BUTTON)
-      .whileTrue(new ArmCommand(robotArm, DynamicArmAngles.scoreHighAngle))
+      .whileTrue(new ArmCommand(robotArm, 1))
       .whileFalse(new InstantCommand( () -> robotArm.setArm(0) ));
 
-      /* 
     buttonBoard.button(ButtonBoardConstants.SCORE_MID_BUTTON)
-      .whileTrue(new ArmCommand(robotArm, DynamicArmAngles.scoreMidAngle))
+      .whileTrue(new ArmCommand(robotArm, 2))
       .whileFalse(new InstantCommand( () -> robotArm.setArm(0) ));
 
     buttonBoard.button(ButtonBoardConstants.SCORE_LOW_BUTTON)
-      .whileTrue(new ArmCommand(robotArm, DynamicArmAngles.scoreLowAngle))
+      .whileTrue(new ArmCommand(robotArm, 3))
       .whileFalse(new InstantCommand( () -> robotArm.setArm(0) ));
-
+      
     buttonBoard.button(ButtonBoardConstants.PICKUP_SUBSTATION_BUTTON)
-      .whileTrue(new ArmCommand(robotArm, DynamicArmAngles.fetchSubstationAngle))
+      .whileTrue(new ArmCommand(robotArm, 4))
       .whileFalse(new InstantCommand( () -> robotArm.setArm(0) ));
     
     buttonBoard.button(ButtonBoardConstants.PICKUP_GROUND_BUTTON)
-      .whileTrue(new ArmCommand(robotArm, DynamicArmAngles.fetchGroundAngle))
+      .whileTrue(new ArmCommand(robotArm, 5))
       .whileFalse(new InstantCommand( () -> robotArm.setArm(0) ));
 
     buttonBoard.button(ButtonBoardConstants.RETURN_TO_IDLE_BUTTON)
       .whileTrue(new ArmCommand(robotArm, ArmConstants.IDLE))
       .whileFalse(new InstantCommand( () -> robotArm.setArm(0) ));
-      */
 
     buttonBoard.button(ButtonBoardConstants.ARM_UP_BUTTON)
       .whileTrue(new InstantCommand( () -> { 
@@ -136,11 +134,9 @@ public class RobotContainer {
     buttonBoard.button(ButtonBoardConstants.TOGGLE_CUBE_MODE_BUTTON)
       .toggleOnTrue(new InstantCommand( () -> {
         GameStates.isCube = true;
-        DynamicArmAngles.checkGamePieceMode();
       }))
       .toggleOnFalse(new InstantCommand( () -> {
         GameStates.isCube = false;
-        DynamicArmAngles.checkGamePieceMode();
       }));
 
     buttonBoard.button(ButtonBoardConstants.TOGGLE_SNIPER_MODE_BUTTON)
