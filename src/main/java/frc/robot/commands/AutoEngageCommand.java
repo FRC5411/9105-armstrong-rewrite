@@ -5,6 +5,7 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
+import edu.wpi.first.wpilibj.SPI;
 
 public class AutoEngageCommand extends CommandBase {
   
@@ -22,14 +23,18 @@ public class AutoEngageCommand extends CommandBase {
 
   private DriveSubsystem m_robotDrive;
 
-  public AutoEngageCommand(AHRS gyro, DriveSubsystem robotDrive) {
-    this.m_gyro = gyro;
+  public AutoEngageCommand(DriveSubsystem robotDrive) {
     this.m_robotDrive = robotDrive;
     addRequirements(robotDrive);
   }
 
-  @Override
-  public void initialize() {
+// ...
+
+
+@Override
+public void initialize() {
+    m_gyro = new AHRS(SPI.Port.kMXP);
+    
     m_setpoint = 0;
 
     // WARNING, must tune these

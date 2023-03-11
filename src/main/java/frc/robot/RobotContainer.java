@@ -9,6 +9,7 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -21,6 +22,7 @@ import frc.robot.GlobalVars.GameStates;
 import frc.robot.GlobalVars.SniperMode;
 import frc.robot.commands.ArcadeCommand;
 import frc.robot.commands.ArmCommand;
+import frc.robot.commands.AutoEngageCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -82,6 +84,10 @@ public class RobotContainer {
         else robotIntake.spinout();
       }))
       .whileFalse(new InstantCommand( () -> robotIntake.spinoff() ));
+
+    controller.a()
+      .whileTrue(new InstantCommand( () -> new AutoEngageCommand(robotDrive)))
+      .whileFalse(new InstantCommand( () -> CommandScheduler.getInstance().cancel(new AutoEngageCommand(robotDrive))));
 
     //////////////////// BUTTON BOARD ////////////////////
     pidArmInit(ButtonBoardConstants.SCORE_HIGH_BUTTON, 1.0);
