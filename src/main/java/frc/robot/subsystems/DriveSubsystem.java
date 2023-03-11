@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.AutonoumousConstants;
+import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.GlobalVars.SniperMode;
 import edu.wpi.first.wpilibj.SPI;
@@ -71,16 +71,16 @@ public class DriveSubsystem extends SubsystemBase {
     rightBackEncoder = rightBackMotor.getEncoder();
 
     leftFrontEncoder.setVelocityConversionFactor(
-      AutonoumousConstants.LINEAR_DIST_CONVERSION_FACTOR);
+      AutonomousConstants.LINEAR_DIST_CONVERSION_FACTOR);
 
     leftBackEncoder.setVelocityConversionFactor(
-      AutonoumousConstants.LINEAR_DIST_CONVERSION_FACTOR);
+      AutonomousConstants.LINEAR_DIST_CONVERSION_FACTOR);
 
     rightFrontEncoder.setVelocityConversionFactor(
-      AutonoumousConstants.LINEAR_DIST_CONVERSION_FACTOR);
+      AutonomousConstants.LINEAR_DIST_CONVERSION_FACTOR);
 
     rightBackEncoder.setVelocityConversionFactor(
-      AutonoumousConstants.LINEAR_DIST_CONVERSION_FACTOR);
+      AutonomousConstants.LINEAR_DIST_CONVERSION_FACTOR);
 
     robotDrive = new DifferentialDrive(rightFrontMotor, leftFrontMotor);
 
@@ -89,7 +89,7 @@ public class DriveSubsystem extends SubsystemBase {
     navX = new AHRS(SPI.Port.kMXP);
 
     odometry = new DifferentialDrivePoseEstimator(
-      AutonoumousConstants.DRIVE_KINEMATICS, 
+      AutonomousConstants.DRIVE_KINEMATICS, 
       navX.getRotation2d(), 
       leftFrontEncoder.getPosition(), 
       rightFrontEncoder.getPosition(), 
@@ -105,43 +105,21 @@ public class DriveSubsystem extends SubsystemBase {
      * If LY is between 0.1 & -0.1, if so set to 0 to decrease sensitivity
      * Otherwise, square inputs accordingly
      */
-    if (speed < DrivebaseConstants.DEADZONE || -DrivebaseConstants.DEADZONE < speed) {
-      speed = 0;
-    }
-    else if (speed > 0) {
-      speed *= speed;
-    }
-    else {
-      speed *= -speed;
-    }
+    if (speed < DrivebaseConstants.DEADZONE || -DrivebaseConstants.DEADZONE < speed) speed = 0;
+    else if (speed > 0) speed *= speed;
+    else speed *= -speed;
 
-    if (rotation < DrivebaseConstants.DEADZONE || -DrivebaseConstants.DEADZONE < rotation) {
-      rotation = 0;
-    }
-    else if (rotation > 0) {
-      rotation *= rotation;
-    }
-    else {
-      rotation *= -rotation;
-    }
+    if (rotation < DrivebaseConstants.DEADZONE || -DrivebaseConstants.DEADZONE < rotation) rotation = 0;
+    else if (rotation > 0) rotation *= rotation;
+    else rotation *= -rotation;
+    
 
     /*
      * If sniper mode is enabled, reduce to 40%
      * Otherwise reduce speed to 95% and rotation to 60%
      */
-    if (SniperMode.driveSniperMode) {
-      speed *= DrivebaseConstants.DRIVE_SNIPER_SPEED;
-    }
-    else {
-      speed *= DrivebaseConstants.SPEED_REDUCTION;
-    }
-
-    if (SniperMode.driveSniperMode) {
-      rotation *= DrivebaseConstants.DRIVE_SNIPER_SPEED;
-    }
-    else {
-      rotation *= DrivebaseConstants.ROTATION_REDUCTION;
-    }
+    speed *= SniperMode.driveSniperMode ? DrivebaseConstants.DRIVE_SNIPER_SPEED : DrivebaseConstants.SPEED_REDUCTION;
+    rotation *= SniperMode.driveSniperMode ? DrivebaseConstants.DRIVE_SNIPER_SPEED : DrivebaseConstants.ROTATION_REDUCTION;
 
     robotDrive.arcadeDrive(speed, rotation);
   }
@@ -220,20 +198,18 @@ public class DriveSubsystem extends SubsystemBase {
   public Command followPath(PathPlannerTrajectory trajectory, boolean resetOdometry) {
     return new SequentialCommandGroup(
       new InstantCommand( () -> {
-        if (resetOdometry) {
-          this.resetOdometry(trajectory.getInitialPose());
-        }
+        if (resetOdometry) this.resetOdometry(trajectory.getInitialPose());
       }
     ),
     new PPRamseteCommand  (
       trajectory,
       this::getPose,
-      new RamseteController(AutonoumousConstants.RAMSETE_B, AutonoumousConstants.RAMSETE_ZETA),
-      new SimpleMotorFeedforward(AutonoumousConstants.VOLTS, AutonoumousConstants.VOLT_SECONDS_PER_METER, AutonoumousConstants.VOLT_SECONDS_SQUARED_PER_METER),
-      AutonoumousConstants.DRIVE_KINEMATICS,
+      new RamseteController(AutonomousConstants.RAMSETE_B, AutonomousConstants.RAMSETE_ZETA),
+      new SimpleMotorFeedforward(AutonomousConstants.VOLTS, AutonomousConstants.VOLT_SECONDS_PER_METER, AutonomousConstants.VOLT_SECONDS_SQUARED_PER_METER),
+      AutonomousConstants.DRIVE_KINEMATICS,
       this::getWheelSpeeds,
-      new PIDController(AutonoumousConstants.DRIVE_VELOCITY, 0, 0),
-      new PIDController(AutonoumousConstants.DRIVE_VELOCITY, 0, 0),    
+      new PIDController(AutonomousConstants.DRIVE_VELOCITY, 0, 0),
+      new PIDController(AutonomousConstants.DRIVE_VELOCITY, 0, 0),    
       this::setTankDriveVolts,
       this  
       )

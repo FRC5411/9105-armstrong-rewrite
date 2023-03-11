@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.ArmConstants;
-import frc.robot.Constants.AutonoumousConstants;
+import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.ButtonBoardConstants;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.GlobalVars.DebugInfo;
@@ -51,7 +51,7 @@ public class RobotContainer {
       ));
 
     autonChooser = new SendableChooser<>();
-    PathConstraints trajectoryConstraints = new PathConstraints(AutonoumousConstants.DRIVE_VELOCITY, AutonoumousConstants.MAX_ACCELERATION);
+    PathConstraints trajectoryConstraints = new PathConstraints(AutonomousConstants.DRIVE_VELOCITY, AutonomousConstants.MAX_ACCELERATION);
     PathPlannerTrajectory mainTrajectory = PathPlanner.loadPath("/Users/k2so/Desktop/9105-armstrong-rewrite/src/main/deploy/pathplanner/generatedJSON/Test Path.wpilib.json" , trajectoryConstraints);
 
     autonChooser.addOption("Test Path", robotDrive.followPath(
@@ -63,86 +63,66 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
+
+    //////////////////// XBOX CONTROLLER ////////////////////
     controller.leftTrigger()
       .whileTrue(new InstantCommand( () ->  SniperMode.driveSniperMode = true ))
       .whileFalse(new InstantCommand( () -> SniperMode.driveSniperMode = false ));
-
+    
     controller.leftBumper()
       .whileTrue(new InstantCommand( () -> {
-        if (GameStates.isCube) {
-          robotIntake.spinout();
-        }
-        else {
-          robotIntake.spinin();
-        }
+        if (GameStates.isCube) robotIntake.spinout();
+        else robotIntake.spinin();
       }))
       .whileFalse(new InstantCommand( () -> robotIntake.spinoff() ));
 
     controller.rightBumper()
       .whileTrue(new InstantCommand( () -> {
-        if (GameStates.isCube) {
-          robotIntake.spinin();
-        }
-        else {
-          robotIntake.spinout();
-        }
+        if (GameStates.isCube) robotIntake.spinin();
+        else robotIntake.spinout();
       }))
       .whileFalse(new InstantCommand( () -> robotIntake.spinoff() ));
 
-    buttonBoard.button(ButtonBoardConstants.SCORE_HIGH_BUTTON)
-      .whileTrue(new ArmCommand(robotArm, 1))
-      .whileFalse(new InstantCommand( () -> robotArm.setArm(0) ));
+    //////////////////// BUTTON BOARD ////////////////////
+    pidArmInit(ButtonBoardConstants.SCORE_HIGH_BUTTON, 1.0);
+    pidArmInit(ButtonBoardConstants.SCORE_MID_BUTTON, 2.0);
+    pidArmInit(ButtonBoardConstants.SCORE_LOW_BUTTON, 3.0);
+    pidArmInit(ButtonBoardConstants.PICKUP_SUBSTATION_BUTTON, 4.0);
+    pidArmInit(ButtonBoardConstants.PICKUP_GROUND_BUTTON, 5.0);
+    pidArmInit(ButtonBoardConstants.RETURN_TO_IDLE_BUTTON, ArmConstants.IDLE);
 
-    buttonBoard.button(ButtonBoardConstants.SCORE_MID_BUTTON)
-      .whileTrue(new ArmCommand(robotArm, 2))
-      .whileFalse(new InstantCommand( () -> robotArm.setArm(0) ));
-
-    buttonBoard.button(ButtonBoardConstants.SCORE_LOW_BUTTON)
-      .whileTrue(new ArmCommand(robotArm, 3))
-      .whileFalse(new InstantCommand( () -> robotArm.setArm(0) ));
-      
-    buttonBoard.button(ButtonBoardConstants.PICKUP_SUBSTATION_BUTTON)
-      .whileTrue(new ArmCommand(robotArm, 4))
-      .whileFalse(new InstantCommand( () -> robotArm.setArm(0) ));
-    
-    buttonBoard.button(ButtonBoardConstants.PICKUP_GROUND_BUTTON)
-      .whileTrue(new ArmCommand(robotArm, 5))
-      .whileFalse(new InstantCommand( () -> robotArm.setArm(0) ));
-
-    buttonBoard.button(ButtonBoardConstants.RETURN_TO_IDLE_BUTTON)
-      .whileTrue(new ArmCommand(robotArm, ArmConstants.IDLE))
-      .whileFalse(new InstantCommand( () -> robotArm.setArm(0) ));
-
-    buttonBoard.button(ButtonBoardConstants.ARM_UP_BUTTON)
-      .whileTrue(new InstantCommand( () -> { 
-        robotArm.setArm(1); 
-        DebugInfo.currentArmSpeed = 1; 
-      }))
-      .whileFalse(new InstantCommand( () -> {
-        robotArm.setArm(0);
-      }));
-
-    buttonBoard.button(ButtonBoardConstants.ARM_DOWN_BUTTON)
-      .whileTrue(new InstantCommand( () -> { 
-        robotArm.setArm(-1); 
-        DebugInfo.currentArmSpeed = -1; 
-      }))
-      .whileFalse(new InstantCommand( () -> {
-        robotArm.setArm(0);
-      }));
+    armMoveInit(ButtonBoardConstants.ARM_UP_BUTTON, 1);
+    armMoveInit(ButtonBoardConstants.ARM_DOWN_BUTTON, -1);
 
     buttonBoard.button(ButtonBoardConstants.TOGGLE_CUBE_MODE_BUTTON)
-      .toggleOnTrue(new InstantCommand( () -> {
-        GameStates.isCube = true;
-      }))
-      .toggleOnFalse(new InstantCommand( () -> {
-        GameStates.isCube = false;
-      }));
+      .toggleOnTrue(new InstantCommand( () -> GameStates.isCube = true))
+      .toggleOnFalse(new InstantCommand( () -> GameStates.isCube = false));
 
     buttonBoard.button(ButtonBoardConstants.TOGGLE_SNIPER_MODE_BUTTON)
       .toggleOnTrue(new InstantCommand( () -> SniperMode.armSniperMode = true ))
       .toggleOnFalse(new InstantCommand( () -> SniperMode.armSniperMode = false) );
   }
+
+  // Custom Functions for Abstraction
+  // #region CUSTOM ABSTRACTION FUNCTIONS
+  // Simply abstracts PID positions arm must go to when button pressed
+  private void pidArmInit(int btnPort, Double passedSetpointPar){
+    buttonBoard.button(btnPort)
+    .whileTrue(new ArmCommand(robotArm, passedSetpointPar))
+    .whileFalse(new InstantCommand( () -> robotArm.setArm(0) ));
+  }
+
+  // Moves arm motor based on speed on button press
+  private void armMoveInit(int btnPort, int speedPar){
+    buttonBoard.button(btnPort)
+    .whileTrue(new InstantCommand( () -> { 
+      DebugInfo.currentArmSpeed = speedPar; 
+      robotArm.setArm(DebugInfo.currentArmSpeed); 
+    }))
+    .whileFalse(new InstantCommand( () -> robotArm.setArm(0)));
+  }
+
+  // endregion
 
   public Command getAutonomousCommand() {
     return null;

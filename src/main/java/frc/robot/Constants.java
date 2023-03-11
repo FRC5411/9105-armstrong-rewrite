@@ -37,7 +37,7 @@ public final class Constants {
     public static final int LED_NUMBER = 60;
   }
 
-  public static class AutonoumousConstants {
+  public static class AutonomousConstants {
     public static final double VOLTS = 0.15558;
     public static final double VOLT_SECONDS_PER_METER = 2.0605;
     public static final double VOLT_SECONDS_SQUARED_PER_METER = 0.38129;
