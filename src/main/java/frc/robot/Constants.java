@@ -38,10 +38,10 @@ public final class Constants {
   }
 
   public static class AutonomousConstants {
-    public static final double VOLTS = 0.15558;
-    public static final double VOLT_SECONDS_PER_METER = 2.0605;
-    public static final double VOLT_SECONDS_SQUARED_PER_METER = 0.38129;
-    public static final double DRIVE_VELOCITY = 0.0840614;
+    public static final double VOLTS = 0.12547;
+    public static final double VOLT_SECONDS_PER_METER = 2.0508;
+    public static final double VOLT_SECONDS_SQUARED_PER_METER = 0.57404;
+    public static final double DRIVE_VELOCITY = 1.1216;
     
     public static final double TRACK_WIDTH_METERS = Units.inchesToMeters(6);
     public static final DifferentialDriveKinematics DRIVE_KINEMATICS = new 

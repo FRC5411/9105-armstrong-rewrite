@@ -25,16 +25,14 @@ public class ArmSubsystem extends SubsystemBase {
         MotorType.kBrushless); 
       
       bicep.setIdleMode(IdleMode.kBrake);
-
       bicep.setInverted(false);
-
       bicep.setSmartCurrentLimit(ArmConstants.ARM_MOTOR_CURRENT_LIMIT);
 
       armBoreEncoder = new Encoder(0, 1);
     }
 
     public void setArm(double speed) {
-      if (SniperMode.armSniperMode) speed *= ArmConstants.ARM_SNIPER_SPEED;
+      if (SniperMode.armSniperMode) { speed *= ArmConstants.ARM_SNIPER_SPEED; }
       bicep.set(speed);
     }
 
@@ -47,11 +45,11 @@ public class ArmSubsystem extends SubsystemBase {
     }
     
     public void limitArmSpeed() {
-      double bicepEncoderPos = getBicepEncoderPosition(); // I put it in var so it doesn't have to fetch twice (helps with runtime)
+      double bicepEncoderPos = getBicepEncoderPosition();
       if (
         (bicepEncoderPos > 277 && DebugInfo.currentArmSpeed > 0) || 
         (bicepEncoderPos < 3 && DebugInfo.currentArmSpeed < 0)
-      ) setArm(0);
+      ) { setArm(0); }
     }
 
     @Override  

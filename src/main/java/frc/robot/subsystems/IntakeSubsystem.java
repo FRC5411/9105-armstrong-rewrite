@@ -19,6 +19,10 @@ public class IntakeSubsystem extends SubsystemBase{
     );
   }
 
+  public void setspin(double speed) {
+    grabber.set(speed);
+  }
+
   public void spinin() {
     grabber.set(1);
   }

@@ -2,23 +2,17 @@
 package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.commands.PPRamseteCommand;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.RamseteController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.DrivebaseConstants;
@@ -105,21 +99,44 @@ public class DriveSubsystem extends SubsystemBase {
      * If LY is between 0.1 & -0.1, if so set to 0 to decrease sensitivity
      * Otherwise, square inputs accordingly
      */
-    if (speed < DrivebaseConstants.DEADZONE || -DrivebaseConstants.DEADZONE < speed) speed = 0;
-    else if (speed > 0) speed *= speed;
-    else speed *= -speed;
 
-    if (rotation < DrivebaseConstants.DEADZONE || -DrivebaseConstants.DEADZONE < rotation) rotation = 0;
-    else if (rotation > 0) rotation *= rotation;
-    else rotation *= -rotation;
+    if (speed < DrivebaseConstants.DEADZONE || -DrivebaseConstants.DEADZONE < speed) {
+      speed = 0;
+    }
+    else if (speed > 0) {
+      speed *= speed;
+    }
+    else {
+      speed *= -speed;
+    }
+
+    if (rotation < DrivebaseConstants.DEADZONE || -DrivebaseConstants.DEADZONE < rotation) {
+      rotation = 0;
+    }
+    else if (rotation > 0) {
+      rotation *= rotation;
+    }
+    else {
+      rotation *= -rotation;
+    }
     
-
     /*
      * If sniper mode is enabled, reduce to 40%
      * Otherwise reduce speed to 95% and rotation to 60%
      */
-    speed *= SniperMode.driveSniperMode ? DrivebaseConstants.DRIVE_SNIPER_SPEED : DrivebaseConstants.SPEED_REDUCTION;
-    rotation *= SniperMode.driveSniperMode ? DrivebaseConstants.DRIVE_SNIPER_SPEED : DrivebaseConstants.ROTATION_REDUCTION;
+    if (SniperMode.driveSniperMode) {
+      speed *= DrivebaseConstants.DRIVE_SNIPER_SPEED;
+    }
+    else {
+      speed *= DrivebaseConstants.SPEED_REDUCTION;
+    }
+
+    if (SniperMode.driveSniperMode) {
+      rotation *= DrivebaseConstants.DRIVE_SNIPER_SPEED;
+    }
+    else {
+      rotation *= DrivebaseConstants.ROTATION_REDUCTION;
+    }
 
     robotDrive.arcadeDrive(speed, rotation);
   }
@@ -188,6 +205,21 @@ public class DriveSubsystem extends SubsystemBase {
     odometry.resetPosition(navX.getRotation2d(), getLeftFrontEncoderPosition(), getGyroHeading(), pose);
   }
 
+  public void enableDriveMotorBrakes(boolean enabled) {
+    if (enabled) {
+      leftFrontMotor.setIdleMode(IdleMode.kBrake);
+      leftBackMotor.setIdleMode(IdleMode.kBrake);
+      rightFrontMotor.setIdleMode(IdleMode.kBrake);
+      rightBackMotor.setIdleMode(IdleMode.kBrake);
+    }
+    else {
+      leftFrontMotor.setIdleMode(IdleMode.kCoast);
+      leftBackMotor.setIdleMode(IdleMode.kCoast);
+      rightFrontMotor.setIdleMode(IdleMode.kCoast);
+      rightBackMotor.setIdleMode(IdleMode.kCoast);     
+    }
+  }
+
   public void resetEncoders() {
     leftFrontEncoder.setPosition(0);
     leftBackEncoder.setPosition(0);
@@ -195,25 +227,11 @@ public class DriveSubsystem extends SubsystemBase {
     rightBackEncoder.setPosition(0);
   }
 
-  public Command followPath(PathPlannerTrajectory trajectory, boolean resetOdometry) {
-    return new SequentialCommandGroup(
-      new InstantCommand( () -> {
-        if (resetOdometry) this.resetOdometry(trajectory.getInitialPose());
-      }
-    ),
-    new PPRamseteCommand  (
-      trajectory,
-      this::getPose,
-      new RamseteController(AutonomousConstants.RAMSETE_B, AutonomousConstants.RAMSETE_ZETA),
-      new SimpleMotorFeedforward(AutonomousConstants.VOLTS, AutonomousConstants.VOLT_SECONDS_PER_METER, AutonomousConstants.VOLT_SECONDS_SQUARED_PER_METER),
-      AutonomousConstants.DRIVE_KINEMATICS,
-      this::getWheelSpeeds,
-      new PIDController(AutonomousConstants.DRIVE_VELOCITY, 0, 0),
-      new PIDController(AutonomousConstants.DRIVE_VELOCITY, 0, 0),    
-      this::setTankDriveVolts,
-      this  
-      )
-    );
+  public void setLeftRightMotors(double leftSideSpeed, double rightSideSpeed) {
+    leftFrontMotor.set(leftSideSpeed);
+    leftBackMotor.set(leftSideSpeed);
+    rightFrontMotor.set(rightSideSpeed);
+    rightBackMotor.set(rightSideSpeed);
   }
 
   @Override

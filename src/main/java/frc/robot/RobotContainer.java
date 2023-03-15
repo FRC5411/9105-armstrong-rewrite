@@ -2,19 +2,14 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.ArmConstants;
-import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.ButtonBoardConstants;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.GlobalVars.DebugInfo;
@@ -36,7 +31,7 @@ public class RobotContainer {
   private ArmSubsystem robotArm;
   private IntakeSubsystem robotIntake;
 
-  SendableChooser <Command> autonChooser;
+  private PowerDistribution PDH;
 
   public RobotContainer() {
     controller = new CommandXboxController(DrivebaseConstants.CONTROLLER_PORT);
@@ -46,48 +41,41 @@ public class RobotContainer {
     robotArm = new ArmSubsystem();
     robotIntake = new IntakeSubsystem();
 
+    PDH = new PowerDistribution(DrivebaseConstants.PDH_PORT_CANID, ModuleType.kRev);
+
     robotDrive.setDefaultCommand(new ArcadeCommand(
       () -> controller.getLeftY(),
       () -> controller.getRightX(),
       robotDrive
       ));
 
-    autonChooser = new SendableChooser<>();
-    PathConstraints trajectoryConstraints = new PathConstraints(AutonomousConstants.DRIVE_VELOCITY, AutonomousConstants.MAX_ACCELERATION);
-    PathPlannerTrajectory mainTrajectory = PathPlanner.loadPath("/Users/k2so/Desktop/9105-armstrong-rewrite/src/main/deploy/pathplanner/generatedJSON/Test Path.wpilib.json" , trajectoryConstraints);
-
-    autonChooser.addOption("Test Path", robotDrive.followPath(
-      mainTrajectory,
-     true));
-
-    Shuffleboard.getTab("Autonomous: ").add(autonChooser);
     configureBindings();
   }
 
   private void configureBindings() {
 
-    //////////////////// XBOX CONTROLLER ////////////////////
+    //////////////////// XBOX CONTROLLER //////////////////// 
     controller.leftTrigger()
-      .whileTrue(new InstantCommand( () ->  SniperMode.driveSniperMode = true ))
-      .whileFalse(new InstantCommand( () -> SniperMode.driveSniperMode = false ));
+      .whileTrue(new InstantCommand( () -> { SniperMode.driveSniperMode = true; }))
+      .whileFalse(new InstantCommand( () -> { SniperMode.driveSniperMode = false; }));
     
     controller.leftBumper()
       .whileTrue(new InstantCommand( () -> {
-        if (GameStates.isCube) robotIntake.spinout();
-        else robotIntake.spinin();
+        if (GameStates.isCube) { robotIntake.spinout(); }
+        else { robotIntake.spinin(); }
       }))
-      .whileFalse(new InstantCommand( () -> robotIntake.spinoff() ));
+      .whileFalse(new InstantCommand( () -> { robotIntake.spinoff(); }));
 
     controller.rightBumper()
       .whileTrue(new InstantCommand( () -> {
-        if (GameStates.isCube) robotIntake.spinin();
-        else robotIntake.spinout();
+        if (GameStates.isCube) { robotIntake.spinin(); }
+        else { robotIntake.spinout(); }
       }))
-      .whileFalse(new InstantCommand( () -> robotIntake.spinoff() ));
+      .whileFalse(new InstantCommand( () -> { robotIntake.spinoff(); }));
 
     controller.a()
-      .whileTrue(new InstantCommand( () -> new AutoEngageCommand(robotDrive)))
-      .whileFalse(new InstantCommand( () -> CommandScheduler.getInstance().cancel(new AutoEngageCommand(robotDrive))));
+      .whileTrue(new InstantCommand( () -> { new AutoEngageCommand(robotDrive); }))
+      .whileFalse(new InstantCommand( () -> { CommandScheduler.getInstance().cancel(new AutoEngageCommand(robotDrive)); }));
 
     //////////////////// BUTTON BOARD ////////////////////
     pidArmInit(ButtonBoardConstants.SCORE_HIGH_BUTTON, 1.0);
@@ -101,34 +89,43 @@ public class RobotContainer {
     armMoveInit(ButtonBoardConstants.ARM_DOWN_BUTTON, -1);
 
     buttonBoard.button(ButtonBoardConstants.TOGGLE_CUBE_MODE_BUTTON)
-      .toggleOnTrue(new InstantCommand( () -> GameStates.isCube = true))
-      .toggleOnFalse(new InstantCommand( () -> GameStates.isCube = false));
+      .toggleOnTrue(new InstantCommand( () -> { 
+        GameStates.isCube = true;
+        PDH.setSwitchableChannel(false);
+      }))
+      .toggleOnFalse(new InstantCommand( () -> { 
+        GameStates.isCube = false; 
+        PDH.setSwitchableChannel(true);
+      }));
 
     buttonBoard.button(ButtonBoardConstants.TOGGLE_SNIPER_MODE_BUTTON)
-      .toggleOnTrue(new InstantCommand( () -> SniperMode.armSniperMode = true ))
-      .toggleOnFalse(new InstantCommand( () -> SniperMode.armSniperMode = false) );
+      .toggleOnTrue(new InstantCommand( () -> { SniperMode.armSniperMode = true; }))
+      .toggleOnFalse(new InstantCommand( () -> { SniperMode.armSniperMode = false; }));
   }
 
   // Custom Functions for Abstraction
   // #region CUSTOM ABSTRACTION FUNCTIONS
   // Simply abstracts PID positions arm must go to when button pressed
-  private void pidArmInit(int btnPort, Double passedSetpointPar){
+  private void pidArmInit(int btnPort, Double passedSetpointPar) {
     buttonBoard.button(btnPort)
     .whileTrue(new ArmCommand(robotArm, passedSetpointPar))
-    .whileFalse(new InstantCommand( () -> robotArm.setArm(0) ));
+    .whileFalse(new InstantCommand( () -> { robotArm.setArm(0); }));
   }
 
   // Moves arm motor based on speed on button press
-  private void armMoveInit(int btnPort, int speedPar){
+  private void armMoveInit(int btnPort, int speedPar) {
     buttonBoard.button(btnPort)
     .whileTrue(new InstantCommand( () -> { 
       DebugInfo.currentArmSpeed = speedPar; 
       robotArm.setArm(DebugInfo.currentArmSpeed); 
     }))
-    .whileFalse(new InstantCommand( () -> robotArm.setArm(0)));
+    .whileFalse(new InstantCommand( () -> { robotArm.setArm(0); }));
   }
-
   // endregion
+
+  public DriveSubsystem getRobotDrive() {
+    return robotDrive;
+  }
 
   public Command getAutonomousCommand() {
     return null;
