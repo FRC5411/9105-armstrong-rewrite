@@ -21,6 +21,7 @@ public class AutonCommand extends CommandBase {
 
     private double autonomousStartTime;
     private double timeElapsed;
+    private int path;
 
     private double scoringTime;
     private double outtakeTime;
@@ -29,10 +30,11 @@ public class AutonCommand extends CommandBase {
     private double driveForwardsTime;
     private double dockingTime;
 
-    public AutonCommand(DriveSubsystem robotDrive, ArmSubsystem robotArm, IntakeSubsystem robotIntake) {
+    public AutonCommand(DriveSubsystem robotDrive, ArmSubsystem robotArm, IntakeSubsystem robotIntake, int path) {
       this.robotArm = robotArm;
       this.robotDrive = robotDrive;
       this.robotIntake = robotIntake;
+      this.path = path;
     }
 
     @Override
@@ -47,6 +49,7 @@ public class AutonCommand extends CommandBase {
       fullDriveBackTime = 11.0;
       driveForwardsTime = 13.0;
       dockingTime = 15.0;
+      GameStates.chosenAuton = path;
       
       System.out.println("Command AUTONOMOUS has started");
     }

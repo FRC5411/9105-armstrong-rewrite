@@ -4,6 +4,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -18,6 +19,7 @@ import frc.robot.GlobalVars.SniperMode;
 import frc.robot.commands.ArcadeCommand;
 import frc.robot.commands.ArmCommand;
 import frc.robot.commands.AutoEngageCommand;
+import frc.robot.commands.AutonCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -33,6 +35,8 @@ public class RobotContainer {
 
   private PowerDistribution PDH;
 
+  private SendableChooser<Command> autonChooser;
+
   public RobotContainer() {
     controller = new CommandXboxController(DrivebaseConstants.CONTROLLER_PORT);
     buttonBoard = new CommandGenericHID(ButtonBoardConstants.BUTTON_BOARD_PORT);
@@ -43,11 +47,22 @@ public class RobotContainer {
 
     PDH = new PowerDistribution(DrivebaseConstants.PDH_PORT_CANID, ModuleType.kRev);
 
+    autonChooser = new SendableChooser<>();
+
     robotDrive.setDefaultCommand(new ArcadeCommand(
       () -> controller.getLeftY(),
       () -> controller.getRightX(),
       robotDrive
       ));
+
+    autonChooser.addOption("PATH TOP", 
+      new AutonCommand(robotDrive, robotArm, robotIntake, 1));
+
+    autonChooser.addOption("PATH MID", 
+      new AutonCommand(robotDrive, robotArm, robotIntake, 2));
+
+    autonChooser.addOption("PATH BOTTOM", 
+      new AutonCommand(robotDrive, robotArm, robotIntake, 3));
 
     configureBindings();
   }
@@ -128,6 +143,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return null;
+    return autonChooser.getSelected();
   }
 }
