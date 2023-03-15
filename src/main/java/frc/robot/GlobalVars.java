@@ -1,4 +1,4 @@
-
+// Constants but not constant
 package frc.robot;
 
 public class GlobalVars {
