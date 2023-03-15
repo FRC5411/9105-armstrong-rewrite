@@ -1,8 +1,14 @@
+/*
+ * NOTE: fullDriveBackwards = 3.60 metres
+ *       driveForward = 1.40 metres
+ */
 
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants.AutonomousConstants;
+import frc.robot.GlobalVars.GameStates;
 import frc.robot.subsystems.*;
 
 public class AutonCommand extends CommandBase {
@@ -20,7 +26,6 @@ public class AutonCommand extends CommandBase {
     private double outtakeTime;
     private double retractingTime;
     private double fullDriveBackTime;
-    private double halfDriveBackTime;
     private double driveForwardsTime;
     private double dockingTime;
 
@@ -40,7 +45,6 @@ public class AutonCommand extends CommandBase {
       outtakeTime = 3.0;
       retractingTime = 6.0;
       fullDriveBackTime = 11.0;
-      halfDriveBackTime = 9.0;
       driveForwardsTime = 13.0;
       dockingTime = 15.0;
       
@@ -54,6 +58,10 @@ public class AutonCommand extends CommandBase {
       robotDrive.setLeftRightMotors(0, 0);
     }
 
+    /*
+     * This auton is for the grid closest to the substations,
+     * it will aim, outtake, retract, and move to community
+     */
     public void topAuton() {
       if (timeElapsed < scoringTime) {
         stopAll();
@@ -67,12 +75,19 @@ public class AutonCommand extends CommandBase {
         stopAll();
         new ArmCommand(robotArm, 0);
       }
-      else if (timeElapsed < halfDriveBackTime) {
+      else if (timeElapsed < fullDriveBackTime) {
         stopAll();
-        robotDrive.setLeftRightMotors(-1, -1);
+        robotDrive.setLeftRightMotors(-AutonomousConstants.DRIVE_SPEED, -AutonomousConstants.DRIVE_SPEED);
       }
     }
 
+    /*
+     * This auton is for the middle grid
+     * it will aim, outtake, retract, and move to community
+     * by crossing the charge station; then it will move
+     * forward on to the charge station and attempt to dock
+     * and engage
+     */
     public void centerAuton() {
       if (timeElapsed < scoringTime) {
         stopAll();
@@ -88,11 +103,11 @@ public class AutonCommand extends CommandBase {
       }
       else if (timeElapsed < fullDriveBackTime) {
         stopAll();
-        robotDrive.setLeftRightMotors(-1, -1);
+        robotDrive.setLeftRightMotors(-AutonomousConstants.DRIVE_SPEED, -AutonomousConstants.DRIVE_SPEED);
       }
       else if (timeElapsed < driveForwardsTime) {
         stopAll();
-        robotDrive.setLeftRightMotors(1, 1);
+        robotDrive.setLeftRightMotors(AutonomousConstants.DRIVE_SPEED, AutonomousConstants.DRIVE_SPEED);
       }
       else if (timeElapsed < dockingTime) {
         stopAll();
@@ -100,6 +115,10 @@ public class AutonCommand extends CommandBase {
       }
     }
 
+    /*
+     * This auton is for the grid closest to the wall,
+     * it will aim, outtake, retract, and move to community
+     */
     public void bottomAuton() {
       if (timeElapsed < scoringTime) {
         stopAll();
@@ -115,7 +134,7 @@ public class AutonCommand extends CommandBase {
       }
       else if (timeElapsed < fullDriveBackTime) {
         stopAll();
-        robotDrive.setLeftRightMotors(-1, -1);
+        robotDrive.setLeftRightMotors(-AutonomousConstants.DRIVE_SPEED, -AutonomousConstants.DRIVE_SPEED);
       }
     }
 
@@ -123,7 +142,18 @@ public class AutonCommand extends CommandBase {
     public void execute() {
       timeElapsed = Timer.getFPGATimestamp() - autonomousStartTime;
 
-
+      if (GameStates.chosenAuton == 1) {
+        topAuton();
+      } 
+      else if (GameStates.chosenAuton == 2) {
+        centerAuton();
+      }
+      else if (GameStates.chosenAuton == 3) {
+        bottomAuton();
+      } 
+      else {
+        System.out.println("CRITICAL ERROR: NO AUTON CHOSEN! \nCURRENT AUTON: " + GameStates.chosenAuton);
+      }
     }
     
     @Override
