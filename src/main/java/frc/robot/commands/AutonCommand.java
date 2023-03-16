@@ -108,6 +108,8 @@ public class AutonCommand extends CommandBase {
      * forward on to the charge station and attempt to dock
      * and engage
      */
+
+     /* 
     public void centerAuton() {
       if (timeElapsed < scoringTime) {
         stopAll();
@@ -145,7 +147,7 @@ public class AutonCommand extends CommandBase {
         robotDrive.enableDriveMotorBrakes(true);
         stopAll();
       }
-    }
+    }*/
 
     /*
      * This auton is for the grid closest to the wall,
@@ -186,7 +188,7 @@ public class AutonCommand extends CommandBase {
         topAuton();
       } 
       else if (GameStates.chosenAuton == 2) {
-        centerAuton();
+        //centerAuton();
       }
       else if (GameStates.chosenAuton == 3) {
         bottomAuton();
