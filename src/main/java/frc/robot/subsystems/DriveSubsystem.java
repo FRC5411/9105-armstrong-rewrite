@@ -100,7 +100,7 @@ public class DriveSubsystem extends SubsystemBase {
      * Otherwise, square inputs accordingly
      */
 
-    if (speed < DrivebaseConstants.DEADZONE || -DrivebaseConstants.DEADZONE < speed) {
+    if (speed < DrivebaseConstants.DEADZONE && -DrivebaseConstants.DEADZONE < speed) {
       speed = 0;
     }
     else if (speed > 0) {
@@ -110,14 +110,14 @@ public class DriveSubsystem extends SubsystemBase {
       speed *= -speed;
     }
 
-    if (rotation < DrivebaseConstants.DEADZONE || -DrivebaseConstants.DEADZONE < rotation) {
+    if (rotation < DrivebaseConstants.DEADZONE && -DrivebaseConstants.DEADZONE < rotation) {
       rotation = 0;
     }
     else if (rotation > 0) {
-      rotation *= rotation;
+      rotation *= -rotation;
     }
     else {
-      rotation *= -rotation;
+      rotation *= rotation;
     }
     
     /*
@@ -137,7 +137,6 @@ public class DriveSubsystem extends SubsystemBase {
     else {
       rotation *= DrivebaseConstants.ROTATION_REDUCTION;
     }
-
     robotDrive.arcadeDrive(speed, rotation);
   }
 
@@ -227,11 +226,8 @@ public class DriveSubsystem extends SubsystemBase {
     rightBackEncoder.setPosition(0);
   }
 
-  public void setLeftRightMotors(double leftSideSpeed, double rightSideSpeed) {
-    leftFrontMotor.set(leftSideSpeed);
-    leftBackMotor.set(leftSideSpeed);
-    rightFrontMotor.set(rightSideSpeed);
-    rightBackMotor.set(rightSideSpeed);
+  public void setLeftRightMotors(double speed, double rotation) {
+
   }
 
   @Override

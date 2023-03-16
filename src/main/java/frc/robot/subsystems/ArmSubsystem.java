@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.GlobalVars.DebugInfo;
-import frc.robot.GlobalVars.DynamicArmAngles;
 import frc.robot.GlobalVars.GameStates;
 import frc.robot.GlobalVars.SniperMode;
 
@@ -57,7 +56,7 @@ public class ArmSubsystem extends SubsystemBase {
       limitArmSpeed();
       
       SmartDashboard.putBoolean("GAME MODE", GameStates.isCube);
-      SmartDashboard.putNumber("DEBUG INFO", DynamicArmAngles.scoreHighAngle);
+      SmartDashboard.putNumber("ARM ENCODER", getBicepEncoderPosition());
     }
    
     @Override  public void simulationPeriodic() {}

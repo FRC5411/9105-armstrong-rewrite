@@ -44,11 +44,11 @@ public class ArmCommand extends CommandBase {
         robotArm.setArm(calc);
 
         DebugInfo.currentArmSpeed = calc;
-        System.out.println("Setpoint:" + setpoint);
     }
   
     @Override
     public void end(boolean interrupted) {
+      robotArm.setArm(0);
       System.out.println("Command ARM ALIGN has ended");
     }
   

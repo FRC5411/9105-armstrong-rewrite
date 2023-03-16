@@ -59,7 +59,7 @@ public final class Constants {
     public static final double LINEAR_DIST_CONVERSION_FACTOR = 
       (convertToLinDist(GEAR_RATIO, WHEEL_RADIUS));
 
-    public static final double DRIVE_SPEED = 0.5;
+    public static final double DRIVE_SPEED = 0.25;
   }
 
   public static class ArmConstants { 
@@ -88,7 +88,7 @@ public final class Constants {
     public static final double FRONT = 178; 
     public static final double STRAIGHT = 180;
     public static final double HOLD = 75; 
-    public static final double IDLE = 3; 
+    public static final double IDLE = 60; 
    }
 
   public static class ButtonBoardConstants {

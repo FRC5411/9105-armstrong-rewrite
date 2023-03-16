@@ -1,12 +1,13 @@
 /*
- * NOTE: fullDriveBackwards = 3.60 metres
- *       driveForward = 1.40 metres
+ * NOTE: fullDriveBackwards = 3.60 metres - 3.2s
+ *       driveForward = 1.40 metres - 1.48
  */
 
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.AutonomousConstants;
 import frc.robot.GlobalVars.GameStates;
 import frc.robot.subsystems.*;
@@ -18,6 +19,10 @@ public class AutonCommand extends CommandBase {
     private ArmSubsystem robotArm;
     private DriveSubsystem robotDrive;
     private IntakeSubsystem robotIntake;
+
+    private ArmCommand armCmd;
+    private ArmCommand retractCmd;
+    private ArcadeCommand arcadeCmd;
 
     private double autonomousStartTime;
     private double timeElapsed;
@@ -43,13 +48,16 @@ public class AutonCommand extends CommandBase {
       autonomousStartTime = Timer.getFPGATimestamp();
       
       System.out.println("INITIALIZING VARIABLES...");
-      scoringTime = 2.0;
-      outtakeTime = 3.0;
-      retractingTime = 6.0;
-      fullDriveBackTime = 11.0;
-      driveForwardsTime = 13.0;
-      dockingTime = 15.0;
+      scoringTime = 2.9;
+      outtakeTime = 3.2;
+      retractingTime = 6.2;
+      fullDriveBackTime = 9.5;
+      driveForwardsTime = 11.2;
+      dockingTime = 14.0;
       GameStates.chosenAuton = path;
+
+      armCmd = new ArmCommand(robotArm, 175);
+      retractCmd = new ArmCommand(robotArm, 0);
       
       System.out.println("Command AUTONOMOUS has started");
     }
@@ -68,19 +76,27 @@ public class AutonCommand extends CommandBase {
     public void topAuton() {
       if (timeElapsed < scoringTime) {
         stopAll();
-        new ArmCommand(robotArm, 175);
+        CommandScheduler.getInstance().schedule(armCmd);
       }
       else if (timeElapsed < outtakeTime) {
         stopAll();
-        robotIntake.spinout();
+        robotIntake.setspin(0.5);
       }
       else if (timeElapsed < retractingTime) {
         stopAll();
-        new ArmCommand(robotArm, 0);
+        CommandScheduler.getInstance().cancel(armCmd);
+        CommandScheduler.getInstance().schedule(retractCmd);
       }
       else if (timeElapsed < fullDriveBackTime) {
+        CommandScheduler.getInstance().cancel(retractCmd);
+        robotArm.setArm(0);
+        arcadeCmd = new ArcadeCommand(() -> 1, () -> 0, robotDrive);
+        CommandScheduler.getInstance().schedule(arcadeCmd);
+      }
+      else {
+        CommandScheduler.getInstance().cancel(arcadeCmd);
+        robotDrive.enableDriveMotorBrakes(true);
         stopAll();
-        robotDrive.setLeftRightMotors(-AutonomousConstants.DRIVE_SPEED, -AutonomousConstants.DRIVE_SPEED);
       }
     }
 
@@ -91,6 +107,8 @@ public class AutonCommand extends CommandBase {
      * forward on to the charge station and attempt to dock
      * and engage
      */
+
+     /* 
     public void centerAuton() {
       if (timeElapsed < scoringTime) {
         stopAll();
@@ -98,7 +116,7 @@ public class AutonCommand extends CommandBase {
       }
       else if (timeElapsed < outtakeTime) {
         stopAll();
-        robotIntake.spinout();
+        robotIntake.setspin(0.5);
       }
       else if (timeElapsed < retractingTime) {
         stopAll();
@@ -116,6 +134,33 @@ public class AutonCommand extends CommandBase {
         stopAll();
         new AutoEngageCommand(robotDrive);
       }
+    }*/
+
+    public void centerAuton() {
+      if (timeElapsed < scoringTime) {
+        stopAll();
+        CommandScheduler.getInstance().schedule(armCmd);
+      }
+      else if (timeElapsed < outtakeTime) {
+        stopAll();
+        robotIntake.setspin(0.5);
+      }
+      else if (timeElapsed < retractingTime) {
+        stopAll();
+        CommandScheduler.getInstance().cancel(armCmd);
+        CommandScheduler.getInstance().schedule(retractCmd);
+      }
+      else if (timeElapsed < fullDriveBackTime) {
+        CommandScheduler.getInstance().cancel(retractCmd);
+        robotArm.setArm(0);
+        arcadeCmd = new ArcadeCommand(() -> 1, () -> 0, robotDrive);
+        CommandScheduler.getInstance().schedule(arcadeCmd);
+      }
+      else {
+        CommandScheduler.getInstance().cancel(arcadeCmd);
+        robotDrive.enableDriveMotorBrakes(true);
+        stopAll();
+      }
     }
 
     /*
@@ -125,19 +170,27 @@ public class AutonCommand extends CommandBase {
     public void bottomAuton() {
       if (timeElapsed < scoringTime) {
         stopAll();
-        new ArmCommand(robotArm, 175);
+        CommandScheduler.getInstance().schedule(armCmd);
       }
       else if (timeElapsed < outtakeTime) {
         stopAll();
-        robotIntake.spinout();
+        robotIntake.setspin(0.5);
       }
       else if (timeElapsed < retractingTime) {
         stopAll();
-        new ArmCommand(robotArm, 0);
+        CommandScheduler.getInstance().cancel(armCmd);
+        CommandScheduler.getInstance().schedule(retractCmd);
       }
       else if (timeElapsed < fullDriveBackTime) {
+        CommandScheduler.getInstance().cancel(retractCmd);
+        robotArm.setArm(0);
+        arcadeCmd = new ArcadeCommand(() -> 1, () -> 0, robotDrive);
+        CommandScheduler.getInstance().schedule(arcadeCmd);
+      }
+      else {
+        CommandScheduler.getInstance().cancel(arcadeCmd);
+        robotDrive.enableDriveMotorBrakes(true);
         stopAll();
-        robotDrive.setLeftRightMotors(-AutonomousConstants.DRIVE_SPEED, -AutonomousConstants.DRIVE_SPEED);
       }
     }
 
@@ -161,6 +214,8 @@ public class AutonCommand extends CommandBase {
     
     @Override
     public void end(boolean interrupted) {
+      CommandScheduler.getInstance().cancel(arcadeCmd);
+      CommandScheduler.getInstance().cancelAll();
       System.out.println("Command AUTONOMOUS has ended");
     }
   

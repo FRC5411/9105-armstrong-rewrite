@@ -4,6 +4,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -14,6 +15,7 @@ import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ButtonBoardConstants;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.GlobalVars.DebugInfo;
+import frc.robot.GlobalVars.DynamicArmAngles;
 import frc.robot.GlobalVars.GameStates;
 import frc.robot.GlobalVars.SniperMode;
 import frc.robot.commands.ArcadeCommand;
@@ -55,6 +57,8 @@ public class RobotContainer {
       robotDrive
       ));
 
+    Shuffleboard.getTab("Autonomous: ").add(autonChooser);
+
     autonChooser.addOption("PATH TOP", 
       new AutonCommand(robotDrive, robotArm, robotIntake, 1));
 
@@ -92,12 +96,20 @@ public class RobotContainer {
       .whileTrue(new InstantCommand( () -> { new AutoEngageCommand(robotDrive); }))
       .whileFalse(new InstantCommand( () -> { CommandScheduler.getInstance().cancel(new AutoEngageCommand(robotDrive)); }));
 
+    controller.b()
+      .toggleOnTrue(new InstantCommand( () -> { 
+        robotDrive.enableDriveMotorBrakes(true);
+      }))
+      .toggleOnFalse(new InstantCommand( () -> { 
+        robotDrive.enableDriveMotorBrakes(false);
+      }));
+
     //////////////////// BUTTON BOARD ////////////////////
-    pidArmInit(ButtonBoardConstants.SCORE_HIGH_BUTTON, 1.0);
-    pidArmInit(ButtonBoardConstants.SCORE_MID_BUTTON, 2.0);
-    pidArmInit(ButtonBoardConstants.SCORE_LOW_BUTTON, 3.0);
-    pidArmInit(ButtonBoardConstants.PICKUP_SUBSTATION_BUTTON, 4.0);
-    pidArmInit(ButtonBoardConstants.PICKUP_GROUND_BUTTON, 5.0);
+    pidArmInit(ButtonBoardConstants.SCORE_HIGH_BUTTON, DynamicArmAngles.scoreHighAngle);
+    pidArmInit(ButtonBoardConstants.SCORE_MID_BUTTON, DynamicArmAngles.scoreMidAngle);
+    pidArmInit(ButtonBoardConstants.SCORE_LOW_BUTTON, DynamicArmAngles.scoreLowAngle);
+    pidArmInit(ButtonBoardConstants.PICKUP_SUBSTATION_BUTTON, DynamicArmAngles.fetchSubstationAngle);
+    pidArmInit(ButtonBoardConstants.PICKUP_GROUND_BUTTON, DynamicArmAngles.fetchGroundAngle);
     pidArmInit(ButtonBoardConstants.RETURN_TO_IDLE_BUTTON, ArmConstants.IDLE);
 
     armMoveInit(ButtonBoardConstants.ARM_UP_BUTTON, 1);
@@ -105,12 +117,20 @@ public class RobotContainer {
 
     buttonBoard.button(ButtonBoardConstants.TOGGLE_CUBE_MODE_BUTTON)
       .toggleOnTrue(new InstantCommand( () -> { 
-        GameStates.isCube = true;
-        PDH.setSwitchableChannel(false);
+        robotDrive.enableDriveMotorBrakes(true);
       }))
       .toggleOnFalse(new InstantCommand( () -> { 
+        robotDrive.enableDriveMotorBrakes(false);
+      }));
+
+    buttonBoard.button(ButtonBoardConstants.TOGGLE_CONE_MODE_BUTTON)
+      .toggleOnTrue(new InstantCommand( () -> { 
         GameStates.isCube = false; 
         PDH.setSwitchableChannel(true);
+      }))
+      .toggleOnFalse(new InstantCommand( () -> { 
+        GameStates.isCube = true;
+        PDH.setSwitchableChannel(false);
       }));
 
     buttonBoard.button(ButtonBoardConstants.TOGGLE_SNIPER_MODE_BUTTON)
