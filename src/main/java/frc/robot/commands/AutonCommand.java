@@ -8,7 +8,6 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Constants.AutonomousConstants;
 import frc.robot.GlobalVars.GameStates;
 import frc.robot.subsystems.*;
 
@@ -23,6 +22,8 @@ public class AutonCommand extends CommandBase {
     private ArmCommand armCmd;
     private ArmCommand retractCmd;
     private ArcadeCommand arcadeCmd;
+    private ArcadeCommand forwardArcadeCmd;
+    private AutoEngageCommand autoEngageCmd;
 
     private double autonomousStartTime;
     private double timeElapsed;
@@ -107,35 +108,6 @@ public class AutonCommand extends CommandBase {
      * forward on to the charge station and attempt to dock
      * and engage
      */
-
-     /* 
-    public void centerAuton() {
-      if (timeElapsed < scoringTime) {
-        stopAll();
-        new ArmCommand(robotArm, 175);
-      }
-      else if (timeElapsed < outtakeTime) {
-        stopAll();
-        robotIntake.setspin(0.5);
-      }
-      else if (timeElapsed < retractingTime) {
-        stopAll();
-        new ArmCommand(robotArm, 0);
-      }
-      else if (timeElapsed < fullDriveBackTime) {
-        stopAll();
-        robotDrive.setLeftRightMotors(-AutonomousConstants.DRIVE_SPEED, -AutonomousConstants.DRIVE_SPEED);
-      }
-      else if (timeElapsed < driveForwardsTime) {
-        stopAll();
-        robotDrive.setLeftRightMotors(AutonomousConstants.DRIVE_SPEED, AutonomousConstants.DRIVE_SPEED);
-      }
-      else if (timeElapsed < dockingTime) {
-        stopAll();
-        new AutoEngageCommand(robotDrive);
-      }
-    }*/
-
     public void centerAuton() {
       if (timeElapsed < scoringTime) {
         stopAll();
@@ -156,8 +128,20 @@ public class AutonCommand extends CommandBase {
         arcadeCmd = new ArcadeCommand(() -> 1, () -> 0, robotDrive);
         CommandScheduler.getInstance().schedule(arcadeCmd);
       }
-      else {
+      else if (timeElapsed < driveForwardsTime) {
+        stopAll();
         CommandScheduler.getInstance().cancel(arcadeCmd);
+        forwardArcadeCmd = new ArcadeCommand( () -> -1, () -> 0, robotDrive);
+        CommandScheduler.getInstance().schedule(forwardArcadeCmd);
+      }
+      else if (timeElapsed < dockingTime) {
+        stopAll();
+        CommandScheduler.getInstance().cancel(forwardArcadeCmd);
+        autoEngageCmd = new AutoEngageCommand(robotDrive);
+        CommandScheduler.getInstance().schedule(autoEngageCmd);
+      }
+      else {
+        CommandScheduler.getInstance().cancel(autoEngageCmd);
         robotDrive.enableDriveMotorBrakes(true);
         stopAll();
       }
