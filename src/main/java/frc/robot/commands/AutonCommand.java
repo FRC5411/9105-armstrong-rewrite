@@ -168,7 +168,7 @@ public class AutonCommand extends CommandBase {
       else if (timeElapsed < fullDriveBackTime) {
         CommandScheduler.getInstance().cancel(retractCmd);
         robotArm.setArm(0);
-        arcadeCmd = new ArcadeCommand(() -> 0.5, () -> 0, robotDrive);
+        arcadeCmd = new ArcadeCommand(() -> 0.75, () -> 0, robotDrive);
         CommandScheduler.getInstance().schedule(arcadeCmd);
       }
       else {
