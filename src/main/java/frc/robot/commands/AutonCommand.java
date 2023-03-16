@@ -91,7 +91,7 @@ public class AutonCommand extends CommandBase {
       else if (timeElapsed < fullDriveBackTime) {
         CommandScheduler.getInstance().cancel(retractCmd);
         robotArm.setArm(0);
-        arcadeCmd = new ArcadeCommand(() -> 1, () -> 0, robotDrive);
+        arcadeCmd = new ArcadeCommand(() -> 0.5, () -> 0, robotDrive);
         CommandScheduler.getInstance().schedule(arcadeCmd);
       }
       else {
@@ -125,13 +125,13 @@ public class AutonCommand extends CommandBase {
       else if (timeElapsed < fullDriveBackTime) {
         CommandScheduler.getInstance().cancel(retractCmd);
         robotArm.setArm(0);
-        arcadeCmd = new ArcadeCommand(() -> 1, () -> 0, robotDrive);
+        arcadeCmd = new ArcadeCommand(() -> 0.5, () -> 0, robotDrive);
         CommandScheduler.getInstance().schedule(arcadeCmd);
       }
       else if (timeElapsed < driveForwardsTime) {
         stopAll();
         CommandScheduler.getInstance().cancel(arcadeCmd);
-        forwardArcadeCmd = new ArcadeCommand( () -> -1, () -> 0, robotDrive);
+        forwardArcadeCmd = new ArcadeCommand( () -> -0.5, () -> 0, robotDrive);
         CommandScheduler.getInstance().schedule(forwardArcadeCmd);
       }
       else if (timeElapsed < dockingTime) {
@@ -168,7 +168,7 @@ public class AutonCommand extends CommandBase {
       else if (timeElapsed < fullDriveBackTime) {
         CommandScheduler.getInstance().cancel(retractCmd);
         robotArm.setArm(0);
-        arcadeCmd = new ArcadeCommand(() -> 1, () -> 0, robotDrive);
+        arcadeCmd = new ArcadeCommand(() -> 0.5, () -> 0, robotDrive);
         CommandScheduler.getInstance().schedule(arcadeCmd);
       }
       else {

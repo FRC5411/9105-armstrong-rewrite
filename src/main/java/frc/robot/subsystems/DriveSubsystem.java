@@ -137,6 +137,7 @@ public class DriveSubsystem extends SubsystemBase {
     else {
       rotation *= DrivebaseConstants.ROTATION_REDUCTION;
     }
+
     robotDrive.arcadeDrive(speed, rotation);
   }
 
