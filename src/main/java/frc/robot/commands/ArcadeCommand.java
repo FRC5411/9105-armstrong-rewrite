@@ -34,7 +34,6 @@ public class ArcadeCommand extends CommandBase {
 
   @Override
   public void end(boolean interrupted) {
-    robotDrive.enableDriveMotorBrakes(true);
     System.out.println("Command ARCADE has ended");
   }
 
