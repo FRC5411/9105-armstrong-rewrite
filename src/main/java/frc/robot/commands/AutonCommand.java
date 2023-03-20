@@ -1,7 +1,3 @@
-/*
- * NOTE: fullDriveBackwards = 3.60 metres - 3.2s
- *       driveForward = 1.40 metres - 1.48
- */
 
 package frc.robot.commands;
 
@@ -23,7 +19,7 @@ public class AutonCommand extends CommandBase {
     private ArmCommand retractCmd;
     private ArcadeCommand arcadeCmd;
     private ArcadeCommand forwardArcadeCmd;
-    private AutoEngageCommand autoEngageCmd;
+    //private AutoEngageCommand autoEngageCmd;
 
     private double autonomousStartTime;
     private double timeElapsed;
@@ -34,7 +30,7 @@ public class AutonCommand extends CommandBase {
     private double retractingTime;
     private double fullDriveBackTime;
     private double driveForwardsTime;
-    private double dockingTime;
+    //private double dockingTime;
 
     public AutonCommand(DriveSubsystem robotDrive, ArmSubsystem robotArm, IntakeSubsystem robotIntake, int path) {
       this.robotArm = robotArm;
@@ -54,7 +50,7 @@ public class AutonCommand extends CommandBase {
       retractingTime = 6.2;
       fullDriveBackTime = 9.5;
       driveForwardsTime = 12.0;
-      dockingTime = 14.0;
+      //dockingTime = 14.0;
       GameStates.chosenAuton = path;
 
       armCmd = new ArmCommand(robotArm, 175);
@@ -72,9 +68,10 @@ public class AutonCommand extends CommandBase {
 
     /*
      * This auton is for the grid closest to the substations,
-     * it will aim, outtake, retract, and move to community
+     * it will aim, outtake (cone), retract, and move to community
      */
-    public void topAuton() {
+
+    public void coneMob() {
       if (timeElapsed < scoringTime) {
         stopAll();
         CommandScheduler.getInstance().schedule(armCmd);
@@ -103,14 +100,13 @@ public class AutonCommand extends CommandBase {
 
     /*
      * This auton is for the middle grid
-     * it will aim, outtake, retract, and move to community
+     * it will aim, outtake (cone), retract, and move to community
      * by crossing the charge station; then it will move
      * forward on to the charge station and attempt to dock
      * and engage
      */
 
-     
-    public void centerAuton() {
+    public void coneMobDock() {
       if (timeElapsed < scoringTime) {
         stopAll();
         CommandScheduler.getInstance().schedule(armCmd);
@@ -150,11 +146,11 @@ public class AutonCommand extends CommandBase {
     }
 
     /*
-     * This auton is for the grid closest to the wall,
-     * it will aim, outtake, retract, and move to community
+     * This auton will only aim, outtake (cone)
+     * and will not move at all
      */
 
-    public void scoreOnly() {
+    public void coneOnly() {
       if (timeElapsed < scoringTime) {
         stopAll();
         CommandScheduler.getInstance().schedule(armCmd);
@@ -183,13 +179,13 @@ public class AutonCommand extends CommandBase {
       timeElapsed = Timer.getFPGATimestamp() - autonomousStartTime;
 
       if (GameStates.chosenAuton == 1) {
-        topAuton();
+        coneMob();
       } 
       else if (GameStates.chosenAuton == 2) {
-        centerAuton();
+        coneMobDock();
       }
       else if (GameStates.chosenAuton == 3) {
-        scoreOnly();
+        coneOnly();
       }
       else {
         System.out.println("CRITICAL ERROR: NO AUTON CHOSEN! \nCURRENT AUTON: " + GameStates.chosenAuton);

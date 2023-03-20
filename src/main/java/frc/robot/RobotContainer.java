@@ -138,8 +138,8 @@ public class RobotContainer {
       .toggleOnFalse(new InstantCommand( () -> { SniperMode.armSniperMode = false; }));
   }
 
-  // Custom Functions for Abstraction
   // #region CUSTOM ABSTRACTION FUNCTIONS
+  
   // Simply abstracts PID positions arm must go to when button pressed
   private void pidArmInit(int btnPort, Double passedSetpointPar) {
     buttonBoard.button(btnPort)

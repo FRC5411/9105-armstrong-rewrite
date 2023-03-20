@@ -35,7 +35,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   private Pose2d initialPose;
 
-  //private AHRS navX;
+  private AHRS navX;
 
   private DifferentialDrivePoseEstimator odometry;
 
@@ -80,19 +80,18 @@ public class DriveSubsystem extends SubsystemBase {
 
     initialPose = new Pose2d();
 
-    //navX = new AHRS(SPI.Port.kMXP);
+    navX = new AHRS(SPI.Port.kMXP);
 
-    /* 
     odometry = new DifferentialDrivePoseEstimator(
       AutonomousConstants.DRIVE_KINEMATICS, 
       navX.getRotation2d(), 
       leftFrontEncoder.getPosition(), 
       rightFrontEncoder.getPosition(), 
-      initialPose);*/
+      initialPose);
 
     resetEncoders();
-    //zeroHeading();
-    //resetOdometry(getPose());
+    zeroHeading();
+    resetOdometry(getPose());
   }
 
   public void arcadeDrive(double speed, double rotation) {
@@ -157,10 +156,10 @@ public class DriveSubsystem extends SubsystemBase {
   public double getRightFrontEncoderVelocity() {
     return rightFrontEncoder.getVelocity();
   }
-/* 
+
   public double getGyroHeading() {
     return navX.getRotation2d().getDegrees();
-  }*/
+  }
 
   public double getLeftFrontMotorTemp() {
     return leftFrontMotor.getMotorTemperature();
@@ -177,10 +176,10 @@ public class DriveSubsystem extends SubsystemBase {
   public double getRightBackMotorTemp() {
     return rightBackMotor.getMotorTemperature();
   }
-/* 
+
   public Pose2d getPose() {
     return odometry.getEstimatedPosition();
-  }*/
+  }
 
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
     return new DifferentialDriveWheelSpeeds(getLeftFrontEncoderVelocity(), getRightFrontEncoderVelocity());
@@ -195,15 +194,15 @@ public class DriveSubsystem extends SubsystemBase {
   public void setMaxOutput(double maxOutput) {
     robotDrive.setMaxOutput(maxOutput);
   }
-/* 
+
   public void zeroHeading() {
     navX.calibrate();
     navX.reset();
-  }*/
+  }
 
   public void resetOdometry(Pose2d pose) {
     resetEncoders();
-    //odometry.resetPosition(navX.getRotation2d(), getLeftFrontEncoderPosition(), getGyroHeading(), pose);
+    odometry.resetPosition(navX.getRotation2d(), getLeftFrontEncoderPosition(), getGyroHeading(), pose);
   }
 
   public void enableDriveMotorBrakes(boolean enabled) {
@@ -234,7 +233,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    //odometry.update(navX.getRotation2d(), leftFrontEncoder.getPosition(), rightFrontEncoder.getPosition());
+    odometry.update(navX.getRotation2d(), leftFrontEncoder.getPosition(), rightFrontEncoder.getPosition());
 
     SmartDashboard.putNumber("LEFT FRONT ENCODER POS: ", getLeftFrontEncoderPosition());
     SmartDashboard.putNumber("RIGHT FRONT ENCODER POS: ", getRightFrontEncoderPosition());
