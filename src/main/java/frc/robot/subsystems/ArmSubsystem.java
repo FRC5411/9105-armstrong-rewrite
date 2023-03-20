@@ -32,7 +32,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     public void setArm(double speed) {
       if (SniperMode.armSniperMode) { speed *= ArmConstants.ARM_SNIPER_SPEED; }
-      bicep.set(speed);
+      bicep.set(speed * ArmConstants.ARM_REDUCED_SPEED);
     }
 
     public double getBicepEncoderPosition() {

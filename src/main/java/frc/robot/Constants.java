@@ -62,7 +62,8 @@ public final class Constants {
     public static final double DRIVE_SPEED = 0.25;
   }
 
-  public static class ArmConstants { 
+  public static class ArmConstants {
+    public static final double ARM_REDUCED_SPEED = 1.0;
     public static final double ARM_SNIPER_SPEED = 0.3;
 
     public static final int ARM_MOTOR_CANID = 21;
@@ -88,7 +89,7 @@ public final class Constants {
     public static final double FRONT = 178; 
     public static final double STRAIGHT = 180;
     public static final double HOLD = 75; 
-    public static final double IDLE = 30; 
+    public static final double IDLE = 59; 
    }
 
   public static class ButtonBoardConstants {

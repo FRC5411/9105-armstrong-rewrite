@@ -30,7 +30,6 @@ public class AutoEngageCommand extends CommandBase {
 
 // ...
 
-
 @Override
 public void initialize() {
     m_gyro = new AHRS(SPI.Port.kMXP);
@@ -40,14 +39,14 @@ public void initialize() {
     m_setpoint = 0;
 
     // WARNING, must tune these
-    kP = 0;
+    kP = 0.021277;
     kI = 0;
     kD = 0;
 
     m_pid = new PIDController(kP, kI, kD);
 
     m_pid.setTolerance(2.5);
-    System.out.println("The AUTO ENGAGEMENT command has been INITIALIZED");
+    System.out.println("Command AUTO ENGAGE has started");
   }
 
   @Override
@@ -61,7 +60,7 @@ public void initialize() {
 
   @Override
   public void end(boolean interrupted) {
-    System.out.println("The AUTO ENGAGEMENT command has been ENDED");
+    System.out.println("Command AUTO ENGAGE has ended");
   }
 
   @Override
