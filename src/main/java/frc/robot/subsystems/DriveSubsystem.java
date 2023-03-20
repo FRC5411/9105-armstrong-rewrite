@@ -5,7 +5,6 @@ import com.kauailabs.navx.frc.AHRS;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
@@ -203,21 +202,6 @@ public class DriveSubsystem extends SubsystemBase {
   public void resetOdometry(Pose2d pose) {
     resetEncoders();
     odometry.resetPosition(navX.getRotation2d(), getLeftFrontEncoderPosition(), getGyroHeading(), pose);
-  }
-
-  public void enableDriveMotorBrakes(boolean enabled) {
-    if (enabled) {
-      leftFrontMotor.setIdleMode(IdleMode.kBrake);
-      leftBackMotor.setIdleMode(IdleMode.kBrake);
-      rightFrontMotor.setIdleMode(IdleMode.kBrake);
-      rightBackMotor.setIdleMode(IdleMode.kBrake);
-    }
-    else {
-      leftFrontMotor.setIdleMode(IdleMode.kCoast);
-      leftBackMotor.setIdleMode(IdleMode.kCoast);
-      rightFrontMotor.setIdleMode(IdleMode.kCoast);
-      rightBackMotor.setIdleMode(IdleMode.kCoast);     
-    }
   }
 
   public void resetEncoders() {

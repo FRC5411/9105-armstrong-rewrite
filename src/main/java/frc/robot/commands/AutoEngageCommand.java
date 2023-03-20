@@ -33,8 +33,6 @@ public class AutoEngageCommand extends CommandBase {
 @Override
 public void initialize() {
     m_gyro = new AHRS(SPI.Port.kMXP);
-
-    m_robotDrive.enableDriveMotorBrakes(false);
     
     m_setpoint = 0;
 
@@ -66,7 +64,6 @@ public void initialize() {
   @Override
   public boolean isFinished() {
     if (m_gyro.getPitch() <= 2.5 && m_gyro.getPitch() >= -2.5){
-      m_robotDrive.enableDriveMotorBrakes(true);
       return true;
     }
     return false;

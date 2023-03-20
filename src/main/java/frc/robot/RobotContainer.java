@@ -96,14 +96,6 @@ public class RobotContainer {
       .whileTrue(new InstantCommand( () -> { new AutoEngageCommand(robotDrive); }))
       .whileFalse(new InstantCommand( () -> { CommandScheduler.getInstance().cancel(new AutoEngageCommand(robotDrive)); }));
 
-    controller.b()
-      .toggleOnTrue(new InstantCommand( () -> { 
-        robotDrive.enableDriveMotorBrakes(true);
-      }))
-      .toggleOnFalse(new InstantCommand( () -> { 
-        robotDrive.enableDriveMotorBrakes(false);
-      }));
-
     //////////////////// BUTTON BOARD ////////////////////
     pidArmInit(ButtonBoardConstants.SCORE_HIGH_BUTTON, DynamicArmAngles.scoreHighAngle);
     pidArmInit(ButtonBoardConstants.SCORE_MID_BUTTON, DynamicArmAngles.scoreMidAngle);
@@ -114,14 +106,6 @@ public class RobotContainer {
 
     armMoveInit(ButtonBoardConstants.ARM_UP_BUTTON, 1);
     armMoveInit(ButtonBoardConstants.ARM_DOWN_BUTTON, -1);
-
-    buttonBoard.button(ButtonBoardConstants.TOGGLE_CUBE_MODE_BUTTON)
-      .toggleOnTrue(new InstantCommand( () -> { 
-        robotDrive.enableDriveMotorBrakes(true);
-      }))
-      .toggleOnFalse(new InstantCommand( () -> { 
-        robotDrive.enableDriveMotorBrakes(false);
-      }));
 
     buttonBoard.button(ButtonBoardConstants.TOGGLE_CONE_MODE_BUTTON)
       .toggleOnTrue(new InstantCommand( () -> { 

@@ -23,7 +23,6 @@ public class ArcadeCommand extends CommandBase {
 
   @Override
   public void initialize() {
-    robotDrive.enableDriveMotorBrakes(false);
     System.out.println("Command ARCADE has started");
   }
 

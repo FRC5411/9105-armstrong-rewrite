@@ -25,7 +25,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledInit() {
-    m_robotContainer.getRobotDrive().enableDriveMotorBrakes(true);
     CommandScheduler.getInstance().cancelAll();
   }
 
@@ -48,7 +47,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    m_robotContainer.getRobotDrive().enableDriveMotorBrakes(false);
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }

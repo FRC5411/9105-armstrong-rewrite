@@ -93,7 +93,6 @@ public class AutonCommand extends CommandBase {
       }
       else {
         CommandScheduler.getInstance().cancel(arcadeCmd);
-        robotDrive.enableDriveMotorBrakes(true);
         stopAll();
       }
     }
@@ -140,7 +139,6 @@ public class AutonCommand extends CommandBase {
       else {
         CommandScheduler.getInstance().cancel(forwardArcadeCmd);
         //CommandScheduler.getInstance().cancel(autoEngageCmd);
-        robotDrive.enableDriveMotorBrakes(true);
         stopAll();
       }
     }
@@ -169,7 +167,6 @@ public class AutonCommand extends CommandBase {
         robotArm.setArm(0);
       }
       else {
-        robotDrive.enableDriveMotorBrakes(true);
         stopAll();
       }
     }
