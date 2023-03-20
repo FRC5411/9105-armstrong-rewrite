@@ -92,7 +92,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     resetEncoders();
     //zeroHeading();
-    resetOdometry(getPose());
+    //resetOdometry(getPose());
   }
 
   public void arcadeDrive(double speed, double rotation) {
@@ -177,10 +177,10 @@ public class DriveSubsystem extends SubsystemBase {
   public double getRightBackMotorTemp() {
     return rightBackMotor.getMotorTemperature();
   }
-
+/* 
   public Pose2d getPose() {
     return odometry.getEstimatedPosition();
-  }
+  }*/
 
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
     return new DifferentialDriveWheelSpeeds(getLeftFrontEncoderVelocity(), getRightFrontEncoderVelocity());

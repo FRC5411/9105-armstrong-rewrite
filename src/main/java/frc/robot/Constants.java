@@ -88,7 +88,7 @@ public final class Constants {
     public static final double FRONT = 178; 
     public static final double STRAIGHT = 180;
     public static final double HOLD = 75; 
-    public static final double IDLE = 60; 
+    public static final double IDLE = 30; 
    }
 
   public static class ButtonBoardConstants {

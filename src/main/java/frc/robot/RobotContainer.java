@@ -59,13 +59,13 @@ public class RobotContainer {
 
     Shuffleboard.getTab("Autonomous: ").add(autonChooser);
 
-    autonChooser.addOption("PATH TOP", 
+    autonChooser.addOption("CONE MOBILITY", 
       new AutonCommand(robotDrive, robotArm, robotIntake, 1));
 
-    autonChooser.addOption("PATH MID", 
+    autonChooser.addOption("CONE MOBILITY DOCK", 
       new AutonCommand(robotDrive, robotArm, robotIntake, 2));
 
-    autonChooser.addOption("PATH BOTTOM", 
+    autonChooser.addOption("CONE SCORE ONLY", 
       new AutonCommand(robotDrive, robotArm, robotIntake, 3));
 
     configureBindings();
@@ -147,7 +147,7 @@ public class RobotContainer {
     .whileFalse(new InstantCommand( () -> { robotArm.setArm(0); }));
   }
 
-  // Moves arm motor based on speed on button press
+  // Moves arm motor based on spee/d on button press
   private void armMoveInit(int btnPort, int speedPar) {
     buttonBoard.button(btnPort)
     .whileTrue(new InstantCommand( () -> { 

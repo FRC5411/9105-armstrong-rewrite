@@ -53,7 +53,7 @@ public class AutonCommand extends CommandBase {
       outtakeTime = 3.2;
       retractingTime = 6.2;
       fullDriveBackTime = 9.5;
-      driveForwardsTime = 11.2;
+      driveForwardsTime = 12.0;
       dockingTime = 14.0;
       GameStates.chosenAuton = path;
 
@@ -109,7 +109,7 @@ public class AutonCommand extends CommandBase {
      * and engage
      */
 
-     /* 
+     
     public void centerAuton() {
       if (timeElapsed < scoringTime) {
         stopAll();
@@ -135,25 +135,26 @@ public class AutonCommand extends CommandBase {
         CommandScheduler.getInstance().cancel(arcadeCmd);
         forwardArcadeCmd = new ArcadeCommand( () -> -0.75, () -> 0, robotDrive);
         CommandScheduler.getInstance().schedule(forwardArcadeCmd);
-      }
+      } /* 
       else if (timeElapsed < dockingTime) {
         stopAll();
-        CommandScheduler.getInstance().cancel(forwardArcadeCmd);
-        autoEngageCmd = new AutoEngageCommand(robotDrive);
-        CommandScheduler.getInstance().schedule(autoEngageCmd);
-      }
+        //autoEngageCmd = new AutoEngageCommand(robotDrive);
+        //CommandScheduler.getInstance().schedule(autoEngageCmd);
+      }*/
       else {
-        CommandScheduler.getInstance().cancel(autoEngageCmd);
+        CommandScheduler.getInstance().cancel(forwardArcadeCmd);
+        //CommandScheduler.getInstance().cancel(autoEngageCmd);
         robotDrive.enableDriveMotorBrakes(true);
         stopAll();
       }
-    }*/
+    }
 
     /*
      * This auton is for the grid closest to the wall,
      * it will aim, outtake, retract, and move to community
      */
-    public void bottomAuton() {
+
+    public void scoreOnly() {
       if (timeElapsed < scoringTime) {
         stopAll();
         CommandScheduler.getInstance().schedule(armCmd);
@@ -170,11 +171,8 @@ public class AutonCommand extends CommandBase {
       else if (timeElapsed < fullDriveBackTime) {
         CommandScheduler.getInstance().cancel(retractCmd);
         robotArm.setArm(0);
-        arcadeCmd = new ArcadeCommand(() -> 0.75, () -> 0, robotDrive);
-        CommandScheduler.getInstance().schedule(arcadeCmd);
       }
       else {
-        CommandScheduler.getInstance().cancel(arcadeCmd);
         robotDrive.enableDriveMotorBrakes(true);
         stopAll();
       }
@@ -188,11 +186,11 @@ public class AutonCommand extends CommandBase {
         topAuton();
       } 
       else if (GameStates.chosenAuton == 2) {
-        //centerAuton();
+        centerAuton();
       }
       else if (GameStates.chosenAuton == 3) {
-        bottomAuton();
-      } 
+        scoreOnly();
+      }
       else {
         System.out.println("CRITICAL ERROR: NO AUTON CHOSEN! \nCURRENT AUTON: " + GameStates.chosenAuton);
       }

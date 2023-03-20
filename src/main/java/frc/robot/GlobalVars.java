@@ -20,7 +20,7 @@ public class GlobalVars {
     public static class DynamicArmAngles {
         public static double scoreHighAngle = 175;
         public static double scoreMidAngle = 197;
-        public static double scoreLowAngle = 235;
+        public static double scoreLowAngle = 110;
 
         public static double fetchSubstationAngle = 175;
         public static double fetchGroundAngle = 260;
