@@ -28,7 +28,7 @@ public class ArmCommand extends CommandBase {
 
     @Override
     public void initialize() {
-      kP = 0.031219;
+      kP = 0.0423;
       kI = 0;
       kD = 0;
 
