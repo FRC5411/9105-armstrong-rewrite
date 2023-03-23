@@ -15,6 +15,9 @@ public class GlobalVars {
     public static class GameStates {
         public static boolean isCube = true;
         public static int chosenAuton = 0;
+
+        public static boolean shouldLock = false;
+        public static double pidArmAngle = 0;
     }
 
     public static class DynamicArmAngles {

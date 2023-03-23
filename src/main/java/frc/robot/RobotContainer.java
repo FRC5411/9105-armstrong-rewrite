@@ -137,6 +137,7 @@ public class RobotContainer {
     .whileTrue(new InstantCommand( () -> { 
       DebugInfo.currentArmSpeed = speedPar; 
       robotArm.setArm(DebugInfo.currentArmSpeed); 
+      GlobalVars.GameStates.shouldLock = false;
     }))
     .whileFalse(new InstantCommand( () -> { robotArm.setArm(0); }));
   }
