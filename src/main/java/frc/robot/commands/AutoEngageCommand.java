@@ -1,11 +1,13 @@
+
 package frc.robot.commands;
 
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.DriveSubsystem;
-import edu.wpi.first.wpilibj.SPI;
 
 public class AutoEngageCommand extends CommandBase {
   
@@ -16,30 +18,29 @@ public class AutoEngageCommand extends CommandBase {
   private double m_setpoint;
   private PIDController m_pid;
   
-  private double gyroPitch;
+  private double gyroRoll;
   private double kP;
   private double kI;
   private double kD;
 
   private DriveSubsystem m_robotDrive;
+  private ArcadeCommand arcadeCmd;
 
   public AutoEngageCommand(DriveSubsystem robotDrive) {
     this.m_robotDrive = robotDrive;
-    addRequirements(robotDrive);
+    this.m_gyro = robotDrive.getGyro();
   }
 
 // ...
 
 @Override
 public void initialize() {
-    m_gyro = new AHRS(SPI.Port.kMXP);
-    
     m_setpoint = 0;
 
     // WARNING, must tune these
-    kP = 0.021277;
-    kI = 0;
-    kD = 0;
+    kP = SmartDashboard.getNumber("Gyro Proportional", 0.035);
+    kI = SmartDashboard.getNumber("Gyro Integral", 0.0);
+    kD = SmartDashboard.getNumber("Gyro Derivitive", 0.005);
 
     m_pid = new PIDController(kP, kI, kD);
 
@@ -49,23 +50,80 @@ public void initialize() {
 
   @Override
   public void execute() {
-    gyroPitch = m_gyro.getPitch();
+    gyroRoll = m_gyro.getRoll();
 
-    double calc = m_pid.calculate(gyroPitch, m_setpoint);
+    double calc = m_pid.calculate(gyroRoll, m_setpoint);
 
-    m_robotDrive.arcadeDrive(calc, 0.0);
+    System.out.println("Gyro Pitch: " + gyroRoll + "\n" + "PID calculation: " + calc);
+
+    arcadeCmd = new ArcadeCommand(() -> calc, () -> 0, m_robotDrive);
+    CommandScheduler.getInstance().schedule(arcadeCmd);
   }
 
   @Override
   public void end(boolean interrupted) {
+    CommandScheduler.getInstance().cancel(arcadeCmd);
     System.out.println("Command AUTO ENGAGE has ended");
   }
 
   @Override
   public boolean isFinished() {
-    if (m_gyro.getPitch() <= 2.5 && m_gyro.getPitch() >= -2.5){
-      return true;
-    }
     return false;
   }
+} 
+
+/*
+// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
+// information, see:
+// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
+public class AutoEngageCommand extends ProfiledPIDCommand {
+
+  /** Creates a new AutoBalance. */
+  /* 
+  private DriveSubsystem robot;
+
+  public AutoEngageCommand(DriveSubsystem robotDrive) {
+    super(
+        // The ProfiledPIDController used by the command
+        new ProfiledPIDController(
+            // The PID gains
+            0.035,
+            0,
+            0.0005,
+            // The motion profile constraints
+            new TrapezoidProfile.Constraints(1, 1)),
+        // This should return the measurement
+        robotDrive::getGyroRoll, //gyro X angle
+        // This should return the goal (can also be a constant)
+        -2,
+        // This uses the output
+        (output, setpoint) -> {
+          // Use the output (and setpoint, if desired) here
+          output /= 2;
+          robotDrive.arcadeDrive(output, 0);
+        });
+    // Use addRequirements() here to declare subsystem dependencies.
+    // Configure additional PID options by calling `getController` here.
+    addRequirements(robotDrive);
+    this.robot = robotDrive;
+    getController().setTolerance(2); //degrees
+  }
+  public void initialize() {
+  }
+  // Returns true when the command should end.
+  @Override
+  public boolean isFinished() {
+    return false;
+  }
+  public void end() {
+  }
 }
+*/
+
+
+
+
+
+
+
+

@@ -67,6 +67,17 @@ public class RobotContainer {
 
     autonChooser.addOption("CONE SCORE ONLY", 
       new AutonCommand(robotDrive, robotArm, robotIntake, 3));
+    
+    autonChooser.addOption("CUBE SCORE ONLY", 
+      new AutonCommand(robotDrive, robotArm, robotIntake, 4));
+
+    autonChooser.addOption("CONE MOBILITY EXTEND", 
+      new AutonCommand(robotDrive, robotArm, robotIntake, 5));
+
+    autonChooser.addOption("TEST AUTON COMMAND", 
+      new AutonCommand(robotDrive, robotArm, robotIntake, 6));
+
+      autonChooser.addOption(("the thing idk"), new AutonCommand(robotDrive, robotArm, robotIntake, 0));
 
     configureBindings();
   }
@@ -93,8 +104,22 @@ public class RobotContainer {
       .whileFalse(new InstantCommand( () -> { robotIntake.spinoff(); }));
 
     controller.a()
-      .whileTrue(new InstantCommand( () -> { new AutoEngageCommand(robotDrive); }))
+      .whileTrue(new AutoEngageCommand(robotDrive))
       .whileFalse(new InstantCommand( () -> { CommandScheduler.getInstance().cancel(new AutoEngageCommand(robotDrive)); }));
+
+    controller.x()
+    .whileTrue(new InstantCommand( () -> { 
+      DebugInfo.currentArmSpeed = -1; 
+      robotArm.setArm(DebugInfo.currentArmSpeed); 
+    }))
+    .whileFalse(new InstantCommand( () -> { robotArm.setArm(0); }));
+
+    controller.b()
+    .whileTrue(new InstantCommand( () -> { 
+      DebugInfo.currentArmSpeed = 1; 
+      robotArm.setArm(DebugInfo.currentArmSpeed); 
+    }))
+    .whileFalse(new InstantCommand( () -> { robotArm.setArm(0); }));
 
     //////////////////// BUTTON BOARD ////////////////////
     pidArmInit(ButtonBoardConstants.SCORE_HIGH_BUTTON, DynamicArmAngles.scoreHighAngle);

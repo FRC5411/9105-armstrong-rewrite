@@ -176,6 +176,22 @@ public class DriveSubsystem extends SubsystemBase {
     return rightBackMotor.getMotorTemperature();
   }
 
+  public double getGyroRoll() {
+    return navX.getRoll();
+  }
+
+  public double getGyroPitch() {
+    return navX.getRoll();
+  }
+
+  public double getGyroYaw() {
+    return navX.getYaw();
+  }
+
+  public AHRS getGyro() {
+    return navX;
+  }
+
   public Pose2d getPose() {
     return odometry.getEstimatedPosition();
   }
@@ -195,7 +211,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void zeroHeading() {
-    navX.calibrate();
+    //navX.calibrate();
     navX.reset();
   }
 
@@ -211,10 +227,6 @@ public class DriveSubsystem extends SubsystemBase {
     rightBackEncoder.setPosition(0);
   }
 
-  public void setLeftRightMotors(double speed, double rotation) {
-
-  }
-
   @Override
   public void periodic() {
     odometry.update(navX.getRotation2d(), leftFrontEncoder.getPosition(), rightFrontEncoder.getPosition());
@@ -225,5 +237,8 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("LEFT BACK TEMP: ", getLeftBackMotorTemp());
     SmartDashboard.putNumber("RIGHT FRONT TEMP: ", getRightFrontMotorTemp());
     SmartDashboard.putNumber("RIGHT BACK TEMP: ", getRightBackMotorTemp());
+    SmartDashboard.putNumber("GYRO ROLL: ", getGyroRoll());
+    SmartDashboard.putNumber("GYRO YAW: ", getGyroYaw());
+    SmartDashboard.putNumber("GYRO PITCH: ", getGyroPitch());
   }
 }

@@ -4,7 +4,6 @@ package frc.robot.commands;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants.ArmConstants;
 import frc.robot.GlobalVars.DebugInfo;
 import frc.robot.subsystems.ArmSubsystem;
 
@@ -28,7 +27,7 @@ public class ArmCommand extends CommandBase {
 
     @Override
     public void initialize() {
-      kP = 0.0423;
+      kP = 0.065;
       kI = 0;
       kD = 0;
 
@@ -41,7 +40,7 @@ public class ArmCommand extends CommandBase {
     @Override
     public void execute() {
         double calc = pid.calculate(robotArm.getBicepEncoderPosition(), setpoint);
-        calc *= ArmConstants.ARM_REDUCED_SPEED;
+        //calc *= ArmConstants.ARM_REDUCED_SPEED;
         
         robotArm.setArm(calc);
 
@@ -56,6 +55,6 @@ public class ArmCommand extends CommandBase {
   
     @Override
     public boolean isFinished() {
-      return false;
+      return pid.atSetpoint();
     }
 }
