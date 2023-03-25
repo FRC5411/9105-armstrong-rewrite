@@ -5,6 +5,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.GlobalVars.DebugInfo;
+import frc.robot.GlobalVars.GameStates;
 import frc.robot.subsystems.ArmSubsystem;
 
 public class ArmCommand extends CommandBase {
@@ -22,6 +23,7 @@ public class ArmCommand extends CommandBase {
     public ArmCommand(ArmSubsystem robotArm, double setpoint) {
         this.robotArm = robotArm;
         this.setpoint = setpoint;
+        GameStates.pidArmAngle = setpoint;
         SendableRegistry.setName(pid, "ArmSubsystem", "PID");
     }
 
@@ -32,7 +34,8 @@ public class ArmCommand extends CommandBase {
       kD = 0;
 
       pid = new PIDController(kP, kI, kD);
-      pid.setTolerance(1);
+      pid.setTolerance(4);
+
 
       System.out.println("Command ARM ALIGN has started");
     }
@@ -45,6 +48,10 @@ public class ArmCommand extends CommandBase {
         robotArm.setArm(calc);
 
         DebugInfo.currentArmSpeed = calc;
+
+        // POTENTIAL BUG! If the controller P is not tuned properly then this will not fire and the robot will not lock
+        // This is because the PID controller will never be at the setpoint if its off the threshold and setpoint
+        GameStates.shouldLock = pid.atSetpoint();
     }
   
     @Override

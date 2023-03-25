@@ -51,6 +51,10 @@ public class ArmSubsystem extends SubsystemBase {
       ) { setArm(0); }
     }
 
+    public void moveTicks(int ticks){
+      bicep.getEncoder().setPosition(getBicepEncoderPosition() + ticks);
+    }
+
     @Override  
     public void periodic() {
       limitArmSpeed();
