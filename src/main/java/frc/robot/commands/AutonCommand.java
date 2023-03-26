@@ -186,8 +186,8 @@ public class AutonCommand extends CommandBase {
 
     public SequentialCommandGroup testAuton(){
       return new SequentialCommandGroup(
-        new ArmCommand(robotArm, 175).withTimeout(1),
-        new InstantCommand( () -> { robotIntake.setspin(-0.5); }),
+        new ArmCommand(robotArm, 175).repeatedly().withTimeout(1),
+        new InstantCommand( () -> { robotIntake.setspin(-0.5); }).withTimeout(1),
         new ArmCommand(robotArm, 59).withTimeout(1),
         new ArcadeCommand(() -> 0.75, () -> 0.0, robotDrive).withTimeout(3)
       );

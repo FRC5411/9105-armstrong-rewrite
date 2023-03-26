@@ -2,6 +2,16 @@
 
 package frc.robot;
 
+import java.io.IOException;
+import java.nio.file.Path;
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryUtil;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -9,9 +19,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.ButtonBoardConstants;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.GlobalVars.DebugInfo;
@@ -38,6 +51,7 @@ public class RobotContainer {
   private PowerDistribution PDH;
 
   private SendableChooser<Command> autonChooser;
+  private SendableChooser<Command> pathPlannerChooser;
 
   public RobotContainer() {
     controller = new CommandXboxController(DrivebaseConstants.CONTROLLER_PORT);
@@ -50,6 +64,7 @@ public class RobotContainer {
     PDH = new PowerDistribution(DrivebaseConstants.PDH_PORT_CANID, ModuleType.kRev);
 
     autonChooser = new SendableChooser<>();
+    pathPlannerChooser = new SendableChooser<>();
 
     robotDrive.setDefaultCommand(new ArcadeCommand(
       () -> controller.getLeftY(),
@@ -77,9 +92,44 @@ public class RobotContainer {
     autonChooser.addOption("TEST AUTON COMMAND", 
       new AutonCommand(robotDrive, robotArm, robotIntake, 6));
 
-      autonChooser.addOption(("the thing idk"), new AutonCommand(robotDrive, robotArm, robotIntake, 0));
 
+    /* PATH PLANNER CHOOSER */
+
+    Shuffleboard.getTab("Autonomous: ").add(pathPlannerChooser);
+    
+    pathPlannerChooser.addOption("TEST PATH", loadPathplannerTrajectoryToRamseteCommand(
+      "pathplanner/generatedJSON/straight.wpilib.json", true));
     configureBindings();
+  }
+
+  public Command loadPathplannerTrajectoryToRamseteCommand(String filename, boolean resetOdomtry) {
+    Trajectory trajectory;
+
+    try {
+      Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(filename);
+      trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+    } catch (IOException exception) {
+      DriverStation.reportError("Unable to open trajectory" + filename, exception.getStackTrace());
+      System.out.println("Unable to read from file " + filename);
+      return new InstantCommand();
+    }
+
+    RamseteCommand ramseteCommand = new RamseteCommand(trajectory, robotDrive::getPose,
+        new RamseteController(AutonomousConstants.RAMSETE_B, AutonomousConstants.RAMSETE_ZETA),
+        new SimpleMotorFeedforward(AutonomousConstants.VOLTS, AutonomousConstants.VOLT_SECONDS_PER_METER,
+        AutonomousConstants.VOLT_SECONDS_SQUARED_PER_METER),
+        AutonomousConstants.DRIVE_KINEMATICS, robotDrive::getWheelSpeeds,
+        new PIDController(AutonomousConstants.DRIVE_VELOCITY, 0, 0),
+        new PIDController(AutonomousConstants.DRIVE_VELOCITY, 0, 0), robotDrive::setTankDriveVolts,
+        robotDrive);
+
+    if (resetOdomtry) {
+      return new SequentialCommandGroup(
+          new InstantCommand(() -> robotDrive.resetOdometry(trajectory.getInitialPose())), ramseteCommand);
+    } else {
+      return ramseteCommand;
+    }
+
   }
 
   private void configureBindings() {
@@ -105,7 +155,7 @@ public class RobotContainer {
 
     controller.a()
       .whileTrue(new AutoEngageCommand(robotDrive))
-      .whileFalse(new InstantCommand( () -> { CommandScheduler.getInstance().cancel(new AutoEngageCommand(robotDrive)); }));
+      .whileFalse(new InstantCommand( () -> {}));
 
     controller.x()
     .whileTrue(new InstantCommand( () -> { 
@@ -173,6 +223,7 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return autonChooser.getSelected();
+    //return autonChooser.getSelected();
+    return pathPlannerChooser.getSelected();
   }
 }

@@ -4,11 +4,15 @@ package frc.robot.commands;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import frc.robot.subsystems.DriveSubsystem;
 
+/* 
 public class AutoEngageCommand extends CommandBase {
   
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
@@ -31,8 +35,6 @@ public class AutoEngageCommand extends CommandBase {
     this.m_gyro = robotDrive.getGyro();
   }
 
-// ...
-
 @Override
 public void initialize() {
     m_setpoint = 0;
@@ -44,7 +46,7 @@ public void initialize() {
 
     m_pid = new PIDController(kP, kI, kD);
 
-    m_pid.setTolerance(2.5);
+    m_pid.setTolerance(3);
     System.out.println("Command AUTO ENGAGE has started");
   }
 
@@ -71,15 +73,15 @@ public void initialize() {
     return false;
   }
 } 
+*/
 
-/*
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class AutoEngageCommand extends ProfiledPIDCommand {
 
   /** Creates a new AutoBalance. */
-  /* 
+  
   private DriveSubsystem robot;
 
   public AutoEngageCommand(DriveSubsystem robotDrive) {
@@ -118,7 +120,7 @@ public class AutoEngageCommand extends ProfiledPIDCommand {
   public void end() {
   }
 }
-*/
+
 
 
 

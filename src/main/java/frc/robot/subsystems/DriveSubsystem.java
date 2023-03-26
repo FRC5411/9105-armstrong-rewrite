@@ -177,6 +177,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public double getGyroRoll() {
+    // return navX.getRoll();
     return navX.getRoll();
   }
 
@@ -237,8 +238,10 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("LEFT BACK TEMP: ", getLeftBackMotorTemp());
     SmartDashboard.putNumber("RIGHT FRONT TEMP: ", getRightFrontMotorTemp());
     SmartDashboard.putNumber("RIGHT BACK TEMP: ", getRightBackMotorTemp());
-    SmartDashboard.putNumber("GYRO ROLL: ", getGyroRoll());
-    SmartDashboard.putNumber("GYRO YAW: ", getGyroYaw());
-    SmartDashboard.putNumber("GYRO PITCH: ", getGyroPitch());
+    SmartDashboard.putNumber("GYRO ROLL ", getGyroRoll());
+    //SmartDashboard.putNumber("GYRO YAW: ", getGyroYaw());
+    //SmartDashboard.putNumber("GYRO PITCH: ", getGyroPitch());
+
+    //System.out.println(getGyroRoll());
   }
 }
