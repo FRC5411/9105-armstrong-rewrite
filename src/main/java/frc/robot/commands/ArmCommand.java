@@ -34,7 +34,7 @@ public class ArmCommand extends CommandBase {
       kD = 0;
 
       pid = new PIDController(kP, kI, kD);
-      pid.setTolerance(4);
+      pid.setTolerance(2);
 
 
       System.out.println("Command ARM ALIGN has started");
@@ -51,7 +51,6 @@ public class ArmCommand extends CommandBase {
 
         // POTENTIAL BUG! If the controller P is not tuned properly then this will not fire and the robot will not lock
         // This is because the PID controller will never be at the setpoint if its off the threshold and setpoint
-        GameStates.shouldLock = pid.atSetpoint();
     }
   
     @Override
@@ -62,6 +61,6 @@ public class ArmCommand extends CommandBase {
   
     @Override
     public boolean isFinished() {
-      return pid.atSetpoint();
+      return false;
     }
 }

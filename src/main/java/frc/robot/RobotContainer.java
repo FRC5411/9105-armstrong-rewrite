@@ -118,6 +118,11 @@ public class RobotContainer {
     }))
     .whileFalse(new InstantCommand( () -> { robotArm.setArm(0); }));
 
+    //Test Button
+    controller.y()
+    .whileTrue(new ArmCommand(robotArm, DynamicArmAngles.scoreHighAngle))
+    .whileFalse(new InstantCommand( () -> { robotArm.setArm(0);}));
+
     //////////////////// BUTTON BOARD ////////////////////
     pidArmInit(ButtonBoardConstants.SCORE_HIGH_BUTTON, DynamicArmAngles.scoreHighAngle);
     pidArmInit(ButtonBoardConstants.SCORE_MID_BUTTON, DynamicArmAngles.scoreMidAngle);
