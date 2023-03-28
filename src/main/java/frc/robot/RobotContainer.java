@@ -85,6 +85,7 @@ public class RobotContainer {
       .whileTrue(new InstantCommand( () -> { SniperMode.driveSniperMode = true; }))
       .whileFalse(new InstantCommand( () -> { SniperMode.driveSniperMode = false; }));
     
+    // Intake
     controller.leftBumper()
       .whileTrue(new InstantCommand( () -> {
         if (GameStates.isCube) { robotIntake.spinout(); }
@@ -119,8 +120,15 @@ public class RobotContainer {
 
     //Test Button
     controller.y()
-    .whileTrue(new ArmCommand(robotArm, DynamicArmAngles.scoreHighAngle))
-    .whileFalse(new InstantCommand( () -> { robotArm.setArm(0);}));
+    .whileTrue(new InstantCommand( () -> {
+      GameStates.shouldRunPID = false;
+      GameStates.armSetpoint = DynamicArmAngles.scoreHighAngle;
+      GameStates.shouldRunPID = true;
+    }))
+    .whileFalse(new InstantCommand( () -> {
+      holdPos();
+      //  robotArm.setArm(0);
+      }));
 
     //////////////////// BUTTON BOARD ////////////////////
     pidArmInit(ButtonBoardConstants.SCORE_HIGH_BUTTON, DynamicArmAngles.scoreHighAngle);
@@ -150,26 +158,49 @@ public class RobotContainer {
 
   // #region CUSTOM ABSTRACTION FUNCTIONS
   
+  private void holdPos(){
+    GameStates.shouldRunPID = false;
+    GameStates.armSetpoint = robotArm.getBicepEncoderPosition();
+    GameStates.shouldRunPID = true;
+  }
+
   // Simply abstracts PID positions arm must go to when button pressed
   private void pidArmInit(int btnPort, Double passedSetpointPar) {
     buttonBoard.button(btnPort)
-    .whileTrue(new ArmCommand(robotArm, passedSetpointPar))
-    .whileFalse(new InstantCommand( () -> { robotArm.setArm(0); }));
+    .whileTrue(
+      new InstantCommand( () -> {
+        GameStates.shouldRunPID = false;
+        GameStates.armSetpoint = passedSetpointPar;
+        GameStates.shouldRunPID = true;
+      }))
+    .whileFalse(new InstantCommand( () -> { 
+      // robotArm.setArm(0);
+      holdPos();
+    }));
   }
+  
 
   // Moves arm motor based on spee/d on button press
   private void armMoveInit(int btnPort, int speedPar) {
     buttonBoard.button(btnPort)
     .whileTrue(new InstantCommand( () -> { 
+      GameStates.shouldRunPID = false;
       DebugInfo.currentArmSpeed = speedPar; 
       robotArm.setArm(DebugInfo.currentArmSpeed); 
     }))
-    .whileFalse(new InstantCommand( () -> { robotArm.setArm(0); }));
+    .whileFalse(new InstantCommand( () -> {
+      //  robotArm.setArm(0); 
+      holdPos();
+    }));
   }
   // endregion
 
   public DriveSubsystem getRobotDrive() {
     return robotDrive;
+  }
+
+  public ArmSubsystem getRobotArm() {
+    return robotArm;
   }
 
   public Command getAutonomousCommand() {
