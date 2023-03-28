@@ -65,9 +65,9 @@ public class AutonCommand extends CommandBase {
       //dockingTime = 14.0;
       GameStates.chosenAuton = path;
 
-      armCmd = new ArmCommand(robotArm, 175);
-      retractCmd = new ArmCommand(robotArm, 0);
-      armOutCmd = new ArmCommand(robotArm, 260.5);
+      // armCmd = new ArmCommand(robotArm, 175);
+      // retractCmd = new ArmCommand(robotArm, 0);
+      // armOutCmd = new ArmCommand(robotArm, 260.5);
       
       System.out.println("Command AUTONOMOUS has started");
     }
@@ -186,9 +186,9 @@ public class AutonCommand extends CommandBase {
 
     public SequentialCommandGroup testAuton(){
       return new SequentialCommandGroup(
-        new ArmCommand(robotArm, 175).repeatedly().withTimeout(1),
+        // new ArmCommand(robotArm, 175).repeatedly().withTimeout(1),
         new InstantCommand( () -> { robotIntake.setspin(-0.5); }).withTimeout(1),
-        new ArmCommand(robotArm, 59).withTimeout(1),
+        // new ArmCommand(robotArm, 59).withTimeout(1),
         new ArcadeCommand(() -> 0.75, () -> 0.0, robotDrive).withTimeout(3)
       );
     }

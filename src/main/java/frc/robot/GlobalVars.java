@@ -16,8 +16,8 @@ public class GlobalVars {
         public static boolean isCube = true;
         public static int chosenAuton = 0;
 
-        public static boolean shouldLock = false;
-        public static double pidArmAngle = 0;
+        public static boolean shouldRunPID = false;
+        public static double armSetpoint = 3;
     }
 
     public static class DynamicArmAngles {
