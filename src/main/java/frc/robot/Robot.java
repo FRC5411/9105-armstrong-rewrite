@@ -20,8 +20,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Gyro Integral", 0.0);
     SmartDashboard.putNumber("Gyro Derivitive", 0.005);
 
-    robotArm = new ArmSubsystem();
     m_robotContainer = new RobotContainer();
+    robotArm = m_robotContainer.getRobotArm();
     armCmd = new ArmCommand(robotArm);
   }
 

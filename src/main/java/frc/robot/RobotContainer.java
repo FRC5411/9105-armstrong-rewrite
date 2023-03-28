@@ -200,6 +200,10 @@ public class RobotContainer {
     return robotDrive;
   }
 
+  public ArmSubsystem getRobotArm() {
+    return robotArm;
+  }
+
   public Command getAutonomousCommand() {
     return autonChooser.getSelected();
   }
