@@ -212,8 +212,8 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void zeroHeading() {
-    //navX.calibrate();
-    navX.reset();
+    navX.calibrate();
+    //navX.reset();
   }
 
   public void resetOdometry(Pose2d pose) {

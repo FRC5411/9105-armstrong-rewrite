@@ -43,14 +43,10 @@ public class ArmCommand extends CommandBase {
     @Override
     public void execute() {
         double calc = pid.calculate(robotArm.getBicepEncoderPosition(), setpoint);
-        //calc *= ArmConstants.ARM_REDUCED_SPEED;
-        
+
         robotArm.setArm(calc);
 
         DebugInfo.currentArmSpeed = calc;
-
-        // POTENTIAL BUG! If the controller P is not tuned properly then this will not fire and the robot will not lock
-        // This is because the PID controller will never be at the setpoint if its off the threshold and setpoint
     }
   
     @Override

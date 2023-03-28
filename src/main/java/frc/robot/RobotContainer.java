@@ -20,8 +20,8 @@ import frc.robot.GlobalVars.SniperMode;
 import frc.robot.commands.ArcadeCommand;
 import frc.robot.commands.ArmCommand;
 import frc.robot.commands.AutoEngageCommand;
-import frc.robot.commands.AutonCommand;
 import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.AutonSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 
@@ -33,6 +33,7 @@ public class RobotContainer {
   private DriveSubsystem robotDrive;
   private ArmSubsystem robotArm;
   private IntakeSubsystem robotIntake;
+  private AutonSubsystem robotAuton;
 
   private PowerDistribution PDH;
 
@@ -45,6 +46,7 @@ public class RobotContainer {
     robotDrive = new DriveSubsystem();
     robotArm = new ArmSubsystem();
     robotIntake = new IntakeSubsystem();
+    robotAuton = new AutonSubsystem(robotDrive, robotArm, robotIntake);
 
     PDH = new PowerDistribution(DrivebaseConstants.PDH_PORT_CANID, ModuleType.kRev);
 
@@ -59,22 +61,19 @@ public class RobotContainer {
     Shuffleboard.getTab("Autonomous: ").add(autonChooser);
 
     autonChooser.addOption("CONE MOBILITY", 
-      new AutonCommand(robotDrive, robotArm, robotIntake, 1));
+      robotAuton.autonomousCmd(1));
 
     autonChooser.addOption("CONE MOBILITY DOCK", 
-      new AutonCommand(robotDrive, robotArm, robotIntake, 2));
+      robotAuton.autonomousCmd(2));
 
     autonChooser.addOption("CONE SCORE ONLY", 
-      new AutonCommand(robotDrive, robotArm, robotIntake, 3));
+      robotAuton.autonomousCmd(3));
     
     autonChooser.addOption("CUBE SCORE ONLY", 
-      new AutonCommand(robotDrive, robotArm, robotIntake, 4));
+      robotAuton.autonomousCmd(4));
 
     autonChooser.addOption("CONE MOBILITY EXTEND", 
-      new AutonCommand(robotDrive, robotArm, robotIntake, 5));
-
-    autonChooser.addOption("TEST AUTON COMMAND", 
-      new AutonCommand(robotDrive, robotArm, robotIntake, 6));
+      robotAuton.autonomousCmd(5));
 
     configureBindings();
   }
@@ -164,7 +163,6 @@ public class RobotContainer {
     .whileTrue(new InstantCommand( () -> { 
       DebugInfo.currentArmSpeed = speedPar; 
       robotArm.setArm(DebugInfo.currentArmSpeed); 
-      GlobalVars.GameStates.shouldLock = false;
     }))
     .whileFalse(new InstantCommand( () -> { robotArm.setArm(0); }));
   }

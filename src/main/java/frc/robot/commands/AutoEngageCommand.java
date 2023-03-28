@@ -1,14 +1,9 @@
 
 package frc.robot.commands;
 
-import com.kauailabs.navx.frc.AHRS;
-
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import frc.robot.subsystems.DriveSubsystem;
 
@@ -82,43 +77,36 @@ public class AutoEngageCommand extends ProfiledPIDCommand {
 
   /** Creates a new AutoBalance. */
   
-  private DriveSubsystem robot;
+  //private DriveSubsystem robot;
 
   public AutoEngageCommand(DriveSubsystem robotDrive) {
     super(
-        // The ProfiledPIDController used by the command
         new ProfiledPIDController(
-            // The PID gains
-            0.035,
+            0.034,
             0,
             0.0005,
-            // The motion profile constraints
             new TrapezoidProfile.Constraints(1, 1)),
-        // This should return the measurement
-        robotDrive::getGyroRoll, //gyro X angle
+        robotDrive::getGyroRoll,
         // This should return the goal (can also be a constant)
-        -2,
-        // This uses the output
+        1,
         (output, setpoint) -> {
-          // Use the output (and setpoint, if desired) here
-          output /= 2;
+          SmartDashboard.putNumber("GYRO CALC", output);
           robotDrive.arcadeDrive(output, 0);
         });
-    // Use addRequirements() here to declare subsystem dependencies.
-    // Configure additional PID options by calling `getController` here.
     addRequirements(robotDrive);
-    this.robot = robotDrive;
-    getController().setTolerance(2); //degrees
+    //this.robot = robotDrive;
+    getController().setTolerance(2);
   }
-  public void initialize() {
-  }
+
+  public void initialize() {}
   // Returns true when the command should end.
+
   @Override
   public boolean isFinished() {
     return false;
   }
-  public void end() {
-  }
+
+  public void end() {}
 }
 
 
