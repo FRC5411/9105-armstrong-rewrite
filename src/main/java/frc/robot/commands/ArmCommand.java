@@ -13,14 +13,17 @@ public class ArmCommand extends CommandBase {
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
     
     private ArmSubsystem robotArm;
+    private double setpoint;
     private PIDController pid;
 
     private double kP;
     private double kI;
     private double kD;
 
-    public ArmCommand(ArmSubsystem robotArm) {
+    public ArmCommand(ArmSubsystem robotArm, double setpoint) {
         this.robotArm = robotArm;
+        this.setpoint = setpoint;
+        GameStates.pidArmAngle = setpoint;
         SendableRegistry.setName(pid, "ArmSubsystem", "PID");
     }
 
@@ -39,15 +42,11 @@ public class ArmCommand extends CommandBase {
   
     @Override
     public void execute() {
-      System.out.println(GameStates.shouldRunPID);
-      if(GameStates.shouldRunPID){
-        double calc = pid.calculate(robotArm.getBicepEncoderPosition(), GameStates.armSetpoint);
-        //calc *= ArmConstants.ARM_REDUCED_SPEED;
-        
+        double calc = pid.calculate(robotArm.getBicepEncoderPosition(), setpoint);
+
         robotArm.setArm(calc);
 
         DebugInfo.currentArmSpeed = calc;
-      }
     }
   
     @Override
