@@ -91,7 +91,9 @@ public class AutoEngageCommand extends ProfiledPIDCommand {
           SmartDashboard.putNumber("GYRO CALC", output);
           robotDrive.arcadeDrive(output, 0);
         });
+
     addRequirements(robotDrive);
+
     getController().setTolerance(1);
   }
 
