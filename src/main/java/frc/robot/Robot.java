@@ -12,14 +12,10 @@ public class Robot extends TimedRobot {
   
   @Override
   public void robotInit() {
-    SmartDashboard.putNumber("Gyro Proportional", 0.035);
-    SmartDashboard.putNumber("Gyro Integral", 0.0);
-    SmartDashboard.putNumber("Gyro Derivitive", 0.005);
     SmartDashboard.putNumber("GYRO CALC", 0);
 
     m_robotContainer = new RobotContainer();
   }
-
 
   @Override
   public void robotPeriodic() {

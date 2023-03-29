@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.GlobalVars.DebugInfo;
 import frc.robot.subsystems.ArmSubsystem;
 
-public class ArmCommand extends CommandBase {
+public class ManualArmCommand extends CommandBase {
 
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
     
@@ -19,7 +19,7 @@ public class ArmCommand extends CommandBase {
     private double kI;
     private double kD;
 
-    public ArmCommand(ArmSubsystem robotArm, double setpoint) {
+    public ManualArmCommand(ArmSubsystem robotArm, double setpoint) {
         this.robotArm = robotArm;
         this.setpoint = setpoint;
         SendableRegistry.setName(pid, "ArmSubsystem", "PID");
@@ -33,7 +33,6 @@ public class ArmCommand extends CommandBase {
 
       pid = new PIDController(kP, kI, kD);
       pid.setTolerance(2);
-
 
       System.out.println("Command ARM ALIGN has started");
     }
