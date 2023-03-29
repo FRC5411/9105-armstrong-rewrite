@@ -14,7 +14,6 @@ import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ButtonBoardConstants;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.GlobalVars.DebugInfo;
-import frc.robot.GlobalVars.DynamicArmAngles;
 import frc.robot.GlobalVars.GameStates;
 import frc.robot.GlobalVars.SniperMode;
 import frc.robot.commands.ArcadeCommand;
@@ -119,15 +118,15 @@ public class RobotContainer {
 
     //Test Button
     controller.y()
-    .whileTrue(new ArmCommand(robotArm, DynamicArmAngles.scoreHighAngle))
+    .whileTrue(new ArmCommand(robotArm, ArmConstants.SCORE_HIGH_ANGLE))
     .whileFalse(new InstantCommand( () -> { robotArm.setArm(0);}));
 
     //////////////////// BUTTON BOARD ////////////////////
-    pidArmInit(ButtonBoardConstants.SCORE_HIGH_BUTTON, DynamicArmAngles.scoreHighAngle);
-    pidArmInit(ButtonBoardConstants.SCORE_MID_BUTTON, DynamicArmAngles.scoreMidAngle);
-    pidArmInit(ButtonBoardConstants.SCORE_LOW_BUTTON, DynamicArmAngles.scoreLowAngle);
-    pidArmInit(ButtonBoardConstants.PICKUP_SUBSTATION_BUTTON, DynamicArmAngles.fetchSubstationAngle);
-    pidArmInit(ButtonBoardConstants.PICKUP_GROUND_BUTTON, DynamicArmAngles.fetchGroundAngle);
+    pidArmInit(ButtonBoardConstants.SCORE_HIGH_BUTTON, ArmConstants.SCORE_HIGH_ANGLE);
+    pidArmInit(ButtonBoardConstants.SCORE_MID_BUTTON, ArmConstants.SCORE_MID_ANGLE);
+    pidArmInit(ButtonBoardConstants.SCORE_LOW_BUTTON, ArmConstants.SCORE_LOW_ANGLE);
+    pidArmInit(ButtonBoardConstants.PICKUP_SUBSTATION_BUTTON, ArmConstants.FETCH_SUBSTATION_ANGLE);
+    pidArmInit(ButtonBoardConstants.PICKUP_GROUND_BUTTON, ArmConstants.FETCH_GROUND_ANGLE);
     pidArmInit(ButtonBoardConstants.RETURN_TO_IDLE_BUTTON, ArmConstants.IDLE);
 
     armMoveInit(ButtonBoardConstants.ARM_UP_BUTTON, 1);

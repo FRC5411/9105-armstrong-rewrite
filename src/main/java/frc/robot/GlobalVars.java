@@ -18,15 +18,4 @@ public class GlobalVars {
 
         public static double armSetpoint = 3;
     }
-
-    public static class DynamicArmAngles {
-        public static double scoreHighAngle = 167;
-        public static double scoreMidAngle = 187;
-        public static double scoreLowAngle = 110;
-
-        public static double fetchSubstationAngle = 167;
-        public static double fetchGroundAngle = 251;
-
-        public static double gyroP = 0;
-    }
 }

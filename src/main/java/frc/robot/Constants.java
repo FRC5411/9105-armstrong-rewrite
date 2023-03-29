@@ -71,21 +71,14 @@ public final class Constants {
 
     public static final int ARM_MOTOR_CURRENT_LIMIT = 60;
     public static final int GRABBER_MOTOR_CURRENT_LIMIT = 50;
-/* 
-    public static final double LOW_CUBE_ANG = 280; 
-    public static final double MID_CUBE_ANG = 220; 
-    public static final double HIGH_CUBE_ANG = 175; 
 
-    public static final double LOW_CONE_ANG = 280; 
-    public static final double MID_CONE_ANG = 200; 
-    public static final double HIGH_CONE_ANG = 175; 
+    public static double SCORE_HIGH_ANGLE = 167;
+    public static double SCORE_MID_ANGLE = 187;
+    public static double SCORE_LOW_ANGLE = 110;
 
-    public static double FETCH_CONE_SUBSTATION = 116.3;
-    public static double FETCH_CUBE_SUBSTATION = 125.4;
-
-    public static final double FETCH_CONE_GROUND = 264; 
-    public static final double FETCH_CUBE_GROUND = 265; 
-*/
+    public static double FETCH_SUBSTATION_ANGLE = 167;
+    public static double FETCH_GROUND_ANGLE = 251;
+    
     public static final double FRONT = 178; 
     public static final double STRAIGHT = 180;
     public static final double HOLD = 75; 
