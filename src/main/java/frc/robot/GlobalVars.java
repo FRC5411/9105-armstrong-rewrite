@@ -1,4 +1,4 @@
-// Constants but not constant
+
 package frc.robot;
 
 public class GlobalVars {
@@ -16,17 +16,16 @@ public class GlobalVars {
         public static boolean isCube = true;
         public static int chosenAuton = 0;
 
-        public static boolean shouldLock = false;
-        public static double pidArmAngle = 0;
+        public static double armSetpoint = 3;
     }
 
     public static class DynamicArmAngles {
-        public static double scoreHighAngle = 173;
-        public static double scoreMidAngle = 197;
+        public static double scoreHighAngle = 167;
+        public static double scoreMidAngle = 187;
         public static double scoreLowAngle = 110;
 
-        public static double fetchSubstationAngle = 170;
-        public static double fetchGroundAngle = 260;
+        public static double fetchSubstationAngle = 167;
+        public static double fetchGroundAngle = 251;
 
         public static double gyroP = 0;
     }

@@ -5,7 +5,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.GlobalVars.DebugInfo;
-import frc.robot.GlobalVars.GameStates;
 import frc.robot.subsystems.ArmSubsystem;
 
 public class ArmCommand extends CommandBase {
@@ -23,7 +22,6 @@ public class ArmCommand extends CommandBase {
     public ArmCommand(ArmSubsystem robotArm, double setpoint) {
         this.robotArm = robotArm;
         this.setpoint = setpoint;
-        GameStates.pidArmAngle = setpoint;
         SendableRegistry.setName(pid, "ArmSubsystem", "PID");
     }
 

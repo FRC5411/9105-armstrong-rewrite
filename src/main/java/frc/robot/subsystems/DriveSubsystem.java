@@ -138,6 +138,8 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     robotDrive.arcadeDrive(speed, rotation);
+
+    robotDrive.feed();
   }
 
   public double getLeftFrontEncoderPosition() {

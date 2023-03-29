@@ -63,7 +63,7 @@ public final class Constants {
   }
 
   public static class ArmConstants {
-    public static final double ARM_REDUCED_SPEED = 0.5;
+    public static final double ARM_REDUCED_SPEED = 0.6;
     public static final double ARM_SNIPER_SPEED = 0.3;
 
     public static final int ARM_MOTOR_CANID = 21;

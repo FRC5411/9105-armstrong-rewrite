@@ -19,6 +19,8 @@ public class IntakeSubsystem extends SubsystemBase{
       ArmConstants.GRABBER_MOTOR_CANID, 
       MotorType.kBrushless
     );
+
+    grabber.setSmartCurrentLimit(20, 40);
   }
 
   public void setspin(double speed) {
