@@ -17,7 +17,6 @@ import frc.robot.GlobalVars.DebugInfo;
 import frc.robot.GlobalVars.GameStates;
 import frc.robot.GlobalVars.SniperMode;
 import frc.robot.commands.ArcadeCommand;
-import frc.robot.commands.ArmCommand;
 import frc.robot.commands.AutoEngageCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.AutonSubsystem;
@@ -116,10 +115,10 @@ public class RobotContainer {
     }))
     .whileFalse(new InstantCommand( () -> { robotArm.setArm(0); }));
 
-    //Test Button
+    // Test Button
     controller.y()
-    .whileTrue(new ArmCommand(robotArm, ArmConstants.SCORE_HIGH_ANGLE))
-    .whileFalse(new InstantCommand( () -> { robotArm.setArm(0);}));
+    .whileTrue(new InstantCommand( () -> holdAtSetpoint(ArmConstants.SCORE_HIGH_ANGLE)))
+    .whileFalse(new InstantCommand( () -> { holdCurrentPos(); }));
 
     //////////////////// BUTTON BOARD ////////////////////
     pidArmInit(ButtonBoardConstants.SCORE_HIGH_BUTTON, ArmConstants.SCORE_HIGH_ANGLE);
@@ -150,20 +149,33 @@ public class RobotContainer {
   // #region CUSTOM ABSTRACTION FUNCTIONS
   
   // Simply abstracts PID positions arm must go to when button pressed
-  private void pidArmInit(int btnPort, Double passedSetpointPar) {
+  private void pidArmInit(int btnPort, double passedSetpointPar) {
     buttonBoard.button(btnPort)
-    .whileTrue(new ArmCommand(robotArm, passedSetpointPar))
-    .whileFalse(new InstantCommand( () -> { robotArm.setArm(0); }));
+    .whileTrue(new InstantCommand( () -> holdAtSetpoint(passedSetpointPar)))
+    .whileFalse(new InstantCommand( () -> holdCurrentPos()));
   }
 
   // Moves arm motor based on spee/d on button press
   private void armMoveInit(int btnPort, int speedPar) {
     buttonBoard.button(btnPort)
     .whileTrue(new InstantCommand( () -> { 
+      GameStates.shouldHoldArm = false;
       DebugInfo.currentArmSpeed = speedPar; 
       robotArm.setArm(DebugInfo.currentArmSpeed); 
     }))
-    .whileFalse(new InstantCommand( () -> { robotArm.setArm(0); }));
+    .whileFalse(new InstantCommand( () -> { holdCurrentPos(); }));
+  }
+
+  private void holdCurrentPos() {
+    GameStates.shouldHoldArm = false;
+    GameStates.armSetpoint = robotArm.getBicepEncoderPosition();
+    GameStates.shouldHoldArm = true;
+  } 
+
+  private void holdAtSetpoint(double setpoint_par){
+    GameStates.shouldHoldArm = false;
+    GameStates.armSetpoint = setpoint_par;
+    GameStates.shouldHoldArm = true;
   }
   // endregion
 

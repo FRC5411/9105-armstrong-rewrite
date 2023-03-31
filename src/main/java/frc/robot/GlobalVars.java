@@ -16,6 +16,7 @@ public class GlobalVars {
         public static boolean isCube = true;
         public static int chosenAuton = 0;
 
+        public static boolean shouldHoldArm = false;
         public static double armSetpoint = 3;
     }
 }
