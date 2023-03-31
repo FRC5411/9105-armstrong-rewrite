@@ -7,12 +7,15 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.*;
 
 public class IntakeSubsystem extends SubsystemBase{
 
   private CANSparkMax grabber;
+
+  private LinearFilter filter;
 
   public IntakeSubsystem() {
     grabber = new CANSparkMax(
@@ -50,5 +53,12 @@ public class IntakeSubsystem extends SubsystemBase{
   @Override  
   public void periodic() {
       SmartDashboard.putNumber("INTAKE CURRENT: ", getIntakeCurrent());
+
+      filter = LinearFilter.movingAverage(25);
+      double calc = filter.calculate(getIntakeCurrent());
+
+      if (calc > ArmConstants.GRABBER_MOTOR_CURRENT_LIMIT) {
+        spinoff();
+      }
   }
 }

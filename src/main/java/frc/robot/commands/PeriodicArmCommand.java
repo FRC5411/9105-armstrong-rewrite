@@ -5,6 +5,7 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.GlobalVars.DebugInfo;
 import frc.robot.GlobalVars.GameStates;
 import frc.robot.subsystems.ArmSubsystem;
@@ -45,17 +46,32 @@ public class PeriodicArmCommand extends CommandBase {
       feedforward = new ArmFeedforward(kS, kG, kV, kA);
       pid = new PIDController(kP, kI, kD);
       pid.setTolerance(2);
+      pid.enableContinuousInput(0, 360);
 
       System.out.println("Command PERIODIC ARM ALIGN has started");
     }
   
     @Override
     public void execute() {
+        double currentPosition = robotArm.getBicepEncoderPosition();
+
+        currentPosition = currentPosition - (180 - Constants.ArmConstants.FLAT);
+
+        if(currentPosition < 0 ){
+          currentPosition += 360;
+        }
+
       if (GameStates.shouldHoldArm) {
         double calc = pid.calculate(
-          robotArm.getBicepEncoderPosition(), GameStates.armSetpoint) + 
-          feedforward.calculate(Math.toRadians(GameStates.armSetpoint), robotArm.getEncoderVelocity()
+          currentPosition, 
+          GameStates.armSetpoint
+        ) +   
+          
+          feedforward.calculate(Math.toRadians(GameStates.armSetpoint + Constants.ArmConstants.SETPOINT_OFFSET), 
+          robotArm.getEncoderVelocity()
         );
+
+
     
         robotArm.setArm(calc);
 

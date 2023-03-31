@@ -83,6 +83,10 @@ public final class Constants {
     public static final double STRAIGHT = 180;
     public static final double HOLD = 75; 
     public static final double IDLE = 59; 
+    public static final double TUCKED = 59; 
+    public static final double FLAT = 29; // TUNE ME!!
+
+    public static final double SETPOINT_OFFSET = -32; // TUNE ME!!
    }
 
   public static class ButtonBoardConstants {
