@@ -4,6 +4,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.commands.ArcadeCommand;
 import frc.robot.commands.ManualArmCommand;
 import frc.robot.commands.AutoEngageCommand;
@@ -71,7 +72,18 @@ public class AutonSubsystem {
                 new ArcadeCommand(() -> 0, () -> 0.75, robotDrive).withTimeout(1.85),
                 new ArcadeCommand(() -> -0.75, () -> 0.0, robotDrive).withTimeout(3.1),
                 new ManualArmCommand(robotArm, 260.5).withTimeout(0.25),
-                new IntakeCommand(robotIntake, -0.5).withTimeout(0.5)
+                new IntakeCommand(robotIntake, -0.5).withTimeout(0.25)
+            );
+
+            /* CONE > MOBILITY > TURN > EXTEND */
+            case 6:
+            return new SequentialCommandGroup(
+                new ManualArmCommand(robotArm, 175).withTimeout(1.9),
+                new IntakeCommand(robotIntake, 0.5).withTimeout(0.5),
+                new ManualArmCommand(robotArm, 59).withTimeout(1.5),
+                new ArcadeCommand(() -> 0.75, () -> 0.0, robotDrive).withTimeout(3.3),
+                new ArcadeCommand(() -> 0.0, () -> 0.75, robotDrive).withTimeout(1.2),
+                new ManualArmCommand(robotArm, ArmConstants.FETCH_GROUND_ANGLE).withTimeout(0.25)
             );
 
             default: 

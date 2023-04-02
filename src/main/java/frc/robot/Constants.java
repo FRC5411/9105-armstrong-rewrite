@@ -74,19 +74,19 @@ public final class Constants {
 
     public static double SCORE_HIGH_ANGLE = 167;
     public static double SCORE_MID_ANGLE = 187;
-    public static double SCORE_LOW_ANGLE = 110;
+    public static double SCORE_LOW_ANGLE = 112; // Adjusted to reduce oscilation
 
-    public static double FETCH_SUBSTATION_ANGLE = 167;
+    public static double FETCH_SUBSTATION_ANGLE = 165;
     public static double FETCH_GROUND_ANGLE = 251;
     
     public static final double FRONT = 178; 
     public static final double STRAIGHT = 180;
     public static final double HOLD = 75; 
-    public static final double IDLE = 59; 
-    public static final double TUCKED = 59; 
-    public static final double FLAT = 29; // TUNE ME!!
+    public static final double IDLE = 30; 
+    //public static final double TUCKED = 59; 
+    //public static final double FLAT = 29;
 
-    public static final double SETPOINT_OFFSET = -32; // TUNE ME!!
+    //public static final double SETPOINT_OFFSET = -32; 
    }
 
   public static class ButtonBoardConstants {
@@ -96,7 +96,7 @@ public final class Constants {
     public static final int SCORE_MID_BUTTON = 2;
     public static final int SCORE_LOW_BUTTON = 3;
 
-    public static final int TOGGLE_CUBE_MODE_BUTTON = 6;
+    //public static final int TOGGLE_CUBE_MODE_BUTTON = 6;
     public static final int TOGGLE_CONE_MODE_BUTTON = 5;
 
     public static final int PICKUP_SUBSTATION_BUTTON = 8;
@@ -108,6 +108,9 @@ public final class Constants {
 
     public static final int ARM_UP_BUTTON = 10;
     public static final int ARM_DOWN_BUTTON = 11;
+
+    public static final int TOGGLE_INTAKE_BUTTON = 12; 
+    public static final int TOGGLE_OUTAKE_BUTTON = 6; 
 
   }
 }

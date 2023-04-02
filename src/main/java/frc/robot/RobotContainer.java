@@ -70,8 +70,11 @@ public class RobotContainer {
     autonChooser.addOption("CUBE SCORE ONLY", 
       robotAuton.autonomousCmd(4));
 
-    autonChooser.addOption("CONE MOBILITY EXTEND", 
+    autonChooser.addOption("CONE MOBILITY EXTEND GRAB", 
       robotAuton.autonomousCmd(5));
+
+    autonChooser.addOption("CONE MOBILITY TURN EXTEND", 
+      robotAuton.autonomousCmd(6));
 
     configureBindings();
   }
@@ -131,6 +134,21 @@ public class RobotContainer {
     armMoveInit(ButtonBoardConstants.ARM_UP_BUTTON, 1);
     armMoveInit(ButtonBoardConstants.ARM_DOWN_BUTTON, -1);
 
+    buttonBoard.button(ButtonBoardConstants.TOGGLE_INTAKE_BUTTON)
+      .whileTrue(new InstantCommand( () -> {
+        if (GameStates.isCube) { robotIntake.spinin(); }
+        else { robotIntake.spinout();
+      }
+      }))
+      .whileFalse(new InstantCommand( () -> { robotIntake.spinoff(); }));
+
+    buttonBoard.button(ButtonBoardConstants.TOGGLE_OUTAKE_BUTTON)
+      .whileTrue(new InstantCommand( () -> {
+        if (GameStates.isCube) { robotIntake.spinout(); }
+        else { robotIntake.spinin(); }
+      }))
+      .whileFalse(new InstantCommand( () -> { robotIntake.spinoff(); }));
+
     buttonBoard.button(ButtonBoardConstants.TOGGLE_CONE_MODE_BUTTON)
       .toggleOnTrue(new InstantCommand( () -> { 
         GameStates.isCube = false; 
@@ -140,7 +158,9 @@ public class RobotContainer {
         GameStates.isCube = true;
         PDH.setSwitchableChannel(false);
       }));
-
+    
+    
+    
     buttonBoard.button(ButtonBoardConstants.TOGGLE_SNIPER_MODE_BUTTON)
       .toggleOnTrue(new InstantCommand( () -> { SniperMode.armSniperMode = true; }))
       .toggleOnFalse(new InstantCommand( () -> { SniperMode.armSniperMode = false; }));

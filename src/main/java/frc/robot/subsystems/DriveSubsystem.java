@@ -158,6 +158,14 @@ public class DriveSubsystem extends SubsystemBase {
     return rightFrontEncoder.getVelocity();
   }
 
+  public double getLefrtBackEncoderVelocity() {
+    return -leftBackEncoder.getVelocity();
+  }
+
+  public double getRightBackEncoderVelocity() {
+    return rightBackEncoder.getVelocity();
+  }
+
   public double getGyroHeading() {
     return navX.getRotation2d().getDegrees();
   }

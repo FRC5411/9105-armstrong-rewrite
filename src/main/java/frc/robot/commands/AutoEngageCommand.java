@@ -80,15 +80,19 @@ public class AutoEngageCommand extends ProfiledPIDCommand {
   public AutoEngageCommand(DriveSubsystem robotDrive) {
     super(
         new ProfiledPIDController(
-            0.034,
+            0.038,
             0,
-            0.0005,
-            new TrapezoidProfile.Constraints(1, 0.5)),
+            0.001,
+            new TrapezoidProfile.Constraints(1, 0.75)),
         robotDrive::getGyroRoll,
         // This should return the goal (can also be a constant)
         2.5,
         (output, setpoint) -> {
           SmartDashboard.putNumber("GYRO CALC", output);
+          if (output < 0) {
+            output = output * 1.05;
+          }
+
           robotDrive.arcadeDrive(output, 0);
         });
 
