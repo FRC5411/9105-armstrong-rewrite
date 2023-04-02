@@ -83,7 +83,7 @@ public class AutoEngageCommand extends ProfiledPIDCommand {
             0.038,
             0,
             0.001,
-            new TrapezoidProfile.Constraints(1, 0.75)),
+            new TrapezoidProfile.Constraints(1, 0.5)),
         robotDrive::getGyroRoll,
         // This should return the goal (can also be a constant)
         2.5,
@@ -94,7 +94,7 @@ public class AutoEngageCommand extends ProfiledPIDCommand {
           }
 
           robotDrive.arcadeDrive(output, 0);
-        });
+      });
 
     addRequirements(robotDrive);
 
@@ -110,12 +110,3 @@ public class AutoEngageCommand extends ProfiledPIDCommand {
 
   public void end() {}
 }
-
-
-
-
-
-
-
-
-

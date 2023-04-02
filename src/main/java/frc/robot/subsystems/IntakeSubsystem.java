@@ -14,6 +14,7 @@ import frc.robot.Constants.*;
 public class IntakeSubsystem extends SubsystemBase{
 
   private CANSparkMax grabber;
+  private LinearFilter filter;
 
   private LinearFilter filter;
 
@@ -22,8 +23,6 @@ public class IntakeSubsystem extends SubsystemBase{
       ArmConstants.GRABBER_MOTOR_CANID, 
       MotorType.kBrushless
     );
-
-    grabber.setSmartCurrentLimit(20, 40);
   }
 
   public void setspin(double speed) {
