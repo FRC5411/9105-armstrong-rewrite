@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.GlobalVars.DebugInfo;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
@@ -18,6 +19,8 @@ public class Robot extends TimedRobot {
     CameraServer.startAutomaticCapture();
 
     m_robotContainer = new RobotContainer();
+
+    DebugInfo.initialGyroPitch = m_robotContainer.getRobotDrive().getGyroPitch();
   }
 
   @Override

@@ -187,7 +187,6 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public double getGyroRoll() {
-    // return navX.getRoll();
     return navX.getRoll();
   }
 

@@ -10,6 +10,7 @@ public class GlobalVars {
 
     public static class DebugInfo {
         public static double currentArmSpeed = 0;
+        public static double initialGyroPitch = 0;
     }
 
     public static class GameStates {
