@@ -16,8 +16,6 @@ public class IntakeSubsystem extends SubsystemBase{
   private CANSparkMax grabber;
   private LinearFilter filter;
 
-  private LinearFilter filter;
-
   public IntakeSubsystem() {
     grabber = new CANSparkMax(
       ArmConstants.GRABBER_MOTOR_CANID, 
