@@ -83,7 +83,7 @@ public class AutonSubsystem {
                 new ManualArmCommand(robotArm, 59).withTimeout(1.5),
                 new ArcadeCommand(() -> 0.75, () -> 0.0, robotDrive).withTimeout(3.3),
                 new ArcadeCommand(() -> 0.0, () -> 0.75, robotDrive).withTimeout(1.2),
-                new ManualArmCommand(robotArm, ArmConstants.FETCH_GROUND_ANGLE).withTimeout(0.25)
+                new ManualArmCommand(robotArm, ArmConstants.CONE_GROUND_ANGLE).withTimeout(0.25)
             );
 
             default: 

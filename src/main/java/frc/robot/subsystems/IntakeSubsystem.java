@@ -12,10 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.*;
 
 public class IntakeSubsystem extends SubsystemBase{
-
   private CANSparkMax grabber;
-  private LinearFilter filter;
-
   private LinearFilter filter;
 
   public IntakeSubsystem() {

@@ -120,15 +120,16 @@ public class RobotContainer {
 
     // Test Button
     controller.y()
-    .whileTrue(new InstantCommand( () -> holdAtSetpoint(ArmConstants.SCORE_HIGH_ANGLE)))
+    .whileTrue(new InstantCommand( () -> returnAngle("high")))
     .whileFalse(new InstantCommand( () -> { holdCurrentPos(); }));
 
     //////////////////// BUTTON BOARD ////////////////////
-    pidArmInit(ButtonBoardConstants.SCORE_HIGH_BUTTON, ArmConstants.SCORE_HIGH_ANGLE);
-    pidArmInit(ButtonBoardConstants.SCORE_MID_BUTTON, ArmConstants.SCORE_MID_ANGLE);
-    pidArmInit(ButtonBoardConstants.SCORE_LOW_BUTTON, ArmConstants.SCORE_LOW_ANGLE);
-    pidArmInit(ButtonBoardConstants.PICKUP_SUBSTATION_BUTTON, ArmConstants.FETCH_SUBSTATION_ANGLE);
-    pidArmInit(ButtonBoardConstants.PICKUP_GROUND_BUTTON, ArmConstants.FETCH_GROUND_ANGLE);
+
+    pidArmInit(ButtonBoardConstants.SCORE_HIGH_BUTTON, returnAngle("high"));
+    pidArmInit(ButtonBoardConstants.SCORE_MID_BUTTON, returnAngle("mid"));
+    pidArmInit(ButtonBoardConstants.SCORE_LOW_BUTTON, returnAngle("low"));
+    pidArmInit(ButtonBoardConstants.PICKUP_GROUND_BUTTON, returnAngle("ground"));
+    pidArmInit(ButtonBoardConstants.PICKUP_SUBSTATION_BUTTON, returnAngle("substation"));
     pidArmInit(ButtonBoardConstants.RETURN_TO_IDLE_BUTTON, ArmConstants.IDLE);
 
     armMoveInit(ButtonBoardConstants.ARM_UP_BUTTON, 1);
@@ -164,6 +165,34 @@ public class RobotContainer {
     buttonBoard.button(ButtonBoardConstants.TOGGLE_SNIPER_MODE_BUTTON)
       .toggleOnTrue(new InstantCommand( () -> { SniperMode.armSniperMode = true; }))
       .toggleOnFalse(new InstantCommand( () -> { SniperMode.armSniperMode = false; }));
+  }
+
+  private double returnAngle(String pos){
+    switch(pos){
+      case "high":
+        if (GameStates.isCube) return ArmConstants.CUBE_HIGH_ANGLE;
+        else return ArmConstants.CONE_HIGH_ANGLE;
+        
+      case "mid":
+        if (GameStates.isCube) return ArmConstants.CUBE_MID_ANGLE;
+        else return ArmConstants.CONE_MID_ANGLE;
+        
+      case "low":
+        if (GameStates.isCube) return ArmConstants.CUBE_LOW_ANGLE;
+        else return ArmConstants.CONE_LOW_ANGLE;
+        
+      case "ground":
+        if (GameStates.isCube) return ArmConstants.CUBE_GROUND_ANGLE;
+        else return ArmConstants.CONE_GROUND_ANGLE;
+        
+      case "substation":
+        if (GameStates.isCube) return ArmConstants.CUBE_SUBSTATION_ANGLE;
+        else return ArmConstants.CONE_SUBSTATION_ANGLE;
+        
+      default:
+        System.out.println("CODE ERROR! INVALID POSITION! CHECK ROBOTCONTAINER!");
+        return 0;
+    }
   }
 
   // #region CUSTOM ABSTRACTION FUNCTIONS

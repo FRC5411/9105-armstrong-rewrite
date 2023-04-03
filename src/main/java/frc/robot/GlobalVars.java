@@ -18,5 +18,12 @@ public class GlobalVars {
 
         public static boolean shouldHoldArm = false;
         public static double armSetpoint = 3;
+
+        // Current angles to go to, get updated (this is for dynamic setpoints)
+        // public static double curHighAng = 0;
+        // public static double curMiddleAng = 0;
+        // public static double curLowAng = 0;
+        // public static double curSubstationAng = 0;
+        // public static double curGroundAng = 0;
     }
 }
