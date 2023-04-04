@@ -30,6 +30,8 @@ public final class Constants {
     public static final double DEADZONE = 0.1;
     public static final double SPEED_REDUCTION = 0.95;
     public static final double ROTATION_REDUCTION = 0.6;
+
+    public static final double AUTO_ENGAGE_DRIVE_BOOST = 1.0; // does nothing but may be useful later
   }
   
   public static class LEDsConstants {

@@ -15,6 +15,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     SmartDashboard.putNumber("GYRO CALC", 0);
+    SmartDashboard.putNumber("GYRO P", 0);
 
     CameraServer.startAutomaticCapture();
 

@@ -142,6 +142,12 @@ public class DriveSubsystem extends SubsystemBase {
     robotDrive.feed();
   }
 
+  public void autonomousArcadeDrive(double speed, double rotation) {
+    robotDrive.arcadeDrive(speed, rotation);
+
+    robotDrive.feed();
+  }
+
   public double getLeftFrontEncoderPosition() {
     return -leftFrontEncoder.getPosition();
   }
@@ -191,7 +197,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public double getGyroPitch() {
-    return navX.getRoll();
+    return navX.getPitch();
   }
 
   public double getGyroYaw() {
@@ -222,7 +228,6 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void zeroHeading() {
     navX.calibrate();
-    //navX.reset();
   }
 
   public void resetOdometry(Pose2d pose) {
@@ -247,10 +252,8 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("LEFT BACK TEMP: ", getLeftBackMotorTemp());
     SmartDashboard.putNumber("RIGHT FRONT TEMP: ", getRightFrontMotorTemp());
     SmartDashboard.putNumber("RIGHT BACK TEMP: ", getRightBackMotorTemp());
-    SmartDashboard.putNumber("GYRO ROLL ", getGyroRoll());
-    //SmartDashboard.putNumber("GYRO YAW: ", getGyroYaw());
-    //SmartDashboard.putNumber("GYRO PITCH: ", getGyroPitch());
-
-    //System.out.println(getGyroRoll());
+    SmartDashboard.putNumber("GYRO PITCH ", getGyroPitch());
+    SmartDashboard.putNumber("GYRO ROLL", getGyroRoll());
+    SmartDashboard.putNumber("GYRO YAW", getGyroYaw());
   }
 }
