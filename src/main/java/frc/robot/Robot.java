@@ -15,7 +15,10 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     SmartDashboard.putNumber("GYRO CALC", 0);
-    SmartDashboard.putNumber("GYRO P", 0);
+    SmartDashboard.putNumber("ARM OUTPUT", 0);
+    SmartDashboard.putNumber("ARM P", 0);
+    SmartDashboard.putNumber("ARM I", 0);
+    SmartDashboard.putNumber("ARM D", 0);
 
     CameraServer.startAutomaticCapture();
 
@@ -49,6 +52,10 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     CommandScheduler.getInstance().run();
+
+    DebugInfo.profiledArmP = SmartDashboard.getNumber("ARM P", 0.01);
+    DebugInfo.profiledArmI = SmartDashboard.getNumber("ARM I", 0.0);
+    DebugInfo.profiledArmD = SmartDashboard.getNumber("ARM D", 0.0);
   }
 
   @Override

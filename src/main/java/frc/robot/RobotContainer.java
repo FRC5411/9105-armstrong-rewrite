@@ -18,6 +18,8 @@ import frc.robot.GlobalVars.GameStates;
 import frc.robot.GlobalVars.SniperMode;
 import frc.robot.commands.ArcadeCommand;
 import frc.robot.commands.AutoEngageCommand;
+import frc.robot.commands.Men;
+import frc.robot.commands.ProfiledArmCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.AutonSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
@@ -120,8 +122,11 @@ public class RobotContainer {
 
     // Test Button
     controller.y()
-    .whileTrue(new InstantCommand( () -> returnAngle("high")))
-    .whileFalse(new InstantCommand( () -> { holdCurrentPos(); }));
+    .whileTrue(new Men(robotArm))
+    .whileFalse(new InstantCommand( () -> {
+       holdCurrentPos();
+      robotArm.setArm(0); 
+    }));
 
     //////////////////// BUTTON BOARD ////////////////////
 

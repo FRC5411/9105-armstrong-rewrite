@@ -40,6 +40,16 @@ public class ArmSubsystem extends SubsystemBase {
       bicep.set(speed * ArmConstants.ARM_REDUCED_SPEED);
     }
 
+    /*
+     * NOTE: This method is to be used carefully 
+     * since there is no speed reduction that
+     * will slow the arm down. Expect arm to go
+     * brr
+     */
+    public void setManualArm(double speed) {
+      bicep.set(speed);
+    }
+
     public double getBicepEncoderPosition() {
       return armBoreEncoder.getDistance() / 22.755;
     }
