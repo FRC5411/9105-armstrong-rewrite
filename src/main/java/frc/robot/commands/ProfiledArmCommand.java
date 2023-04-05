@@ -3,42 +3,59 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
-import frc.robot.GlobalVars.DebugInfo;
-import frc.robot.GlobalVars.GameStates;
+import edu.wpi.first.util.sendable.SendableRegistry;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants.ArmConstants;
+// import frc.robot.GlobalVars.DebugInfo;
+// import frc.robot.GlobalVars.GameStates;
 import frc.robot.subsystems.ArmSubsystem;
 
-public class ProfiledArmCommand extends ProfiledPIDCommand {
-  
-    public ProfiledArmCommand(ArmSubsystem robotArm, double goal) {
-      super(
-          new ProfiledPIDController(
-              DebugInfo.profiledArmP,//SmartDashboard.getNumber("ARM P", 0.034),
-              DebugInfo.profiledArmI,//SmartDashboard.getNumber("ARM I", 0.0),
-              DebugInfo.profiledArmD,//SmartDashboard.getNumber("ARM D", 0.0),
-              new TrapezoidProfile.Constraints(1, 0.5)),
-          robotArm::getBicepEncoderPosition,
-          200,
-          (output, setpoint) -> {
-            SmartDashboard.putNumber("ARM OUTPUT", output);
+public class ProfiledArmCommand extends CommandBase {
 
-            robotArm.setArm(output);
-        });
-      GameStates.shouldHoldArm = false;
-      addRequirements(robotArm);
-  
-      getController().setTolerance(1);
+    @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
+    
+    private ArmSubsystem robotArm;
+    private ProfiledPIDController pid;
+    private double setpoint;
+
+    private double kP;
+    private double kI;
+    private double kD;
+
+    public ProfiledArmCommand(ArmSubsystem robotArm, double setpoint) {
+        this.robotArm = robotArm;
+        this.setpoint = setpoint;
+        SendableRegistry.setName(pid, "ArmSubsystem", "PID");
+    }
+
+    @Override
+    public void initialize() {
+      kP = 0.066;
+      kI = 0;
+      kD = 0;
+
+      pid = new ProfiledPIDController(kP, kI, kD, new TrapezoidProfile.Constraints(ArmConstants.ARM_VELOCITY, ArmConstants.ARM_ACCELERATION));
+      pid.setTolerance(2);
+      pid.reset(robotArm.getBicepEncoderPosition());
+
+      System.out.println("Command PERIODIC ARM ALIGN has started");
     }
   
-    public void initialize() {
+    @Override
+    public void execute() {
+      double calc = pid.calculate(robotArm.getBicepEncoderPosition(), setpoint);
 
+      robotArm.setArm(calc);
+    }
+  
+    @Override
+    public void end(boolean interrupted) {
+      robotArm.setArm(0);
+      System.out.println("Command PERIODIC ARM ALIGN has ended");
     }
   
     @Override
     public boolean isFinished() {
       return false;
     }
-  
-    public void end() {}
-  }
+}
