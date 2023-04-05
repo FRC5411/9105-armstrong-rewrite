@@ -19,6 +19,7 @@ import frc.robot.GlobalVars.SniperMode;
 import frc.robot.commands.ArcadeCommand;
 import frc.robot.commands.AutoEngageCommand;
 import frc.robot.commands.PeriodicArmCommand;
+import frc.robot.commands.TurnCommand;
 // import frc.robot.commands.PeriodicArmCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.AutonSubsystem;
@@ -110,18 +111,9 @@ public class RobotContainer {
       .whileTrue(new AutoEngageCommand(robotDrive))
       .whileFalse(new InstantCommand( () -> {}));
 
-    controller.x()
-    .whileTrue(new InstantCommand( () -> { 
-      DebugInfo.currentArmSpeed = -1; 
-      robotArm.setArm(DebugInfo.currentArmSpeed); 
-    }))
-    .whileFalse(new InstantCommand( () -> { robotArm.setArm(0); }));
 
     controller.b()
-    .whileTrue(new InstantCommand( () -> { 
-      DebugInfo.currentArmSpeed = 1; 
-      robotArm.setArm(DebugInfo.currentArmSpeed); 
-    }))
+    .whileTrue(new TurnCommand(robotDrive, 180))
     .whileFalse(new InstantCommand( () -> { robotArm.setArm(0); }));
 
     // Test Button

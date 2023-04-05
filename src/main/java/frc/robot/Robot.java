@@ -19,6 +19,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("ARM P", 0);
     SmartDashboard.putNumber("ARM I", 0);
     SmartDashboard.putNumber("ARM D", 0);
+    SmartDashboard.putNumber("TURN OUTPUT", 0);
 
     CameraServer.startAutomaticCapture();
 
