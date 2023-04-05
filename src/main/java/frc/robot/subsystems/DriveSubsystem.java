@@ -89,7 +89,7 @@ public class DriveSubsystem extends SubsystemBase {
       initialPose);
 
     resetEncoders();
-    zeroHeading();
+    // zeroHeading();
     resetOdometry(getPose());
   }
 

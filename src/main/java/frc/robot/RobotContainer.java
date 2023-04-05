@@ -18,7 +18,8 @@ import frc.robot.GlobalVars.GameStates;
 import frc.robot.GlobalVars.SniperMode;
 import frc.robot.commands.ArcadeCommand;
 import frc.robot.commands.AutoEngageCommand;
-import frc.robot.commands.ProfiledArmCommand;
+import frc.robot.commands.PeriodicArmCommand;
+// import frc.robot.commands.PeriodicArmCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.AutonSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
@@ -38,7 +39,11 @@ public class RobotContainer {
 
   private SendableChooser<Command> autonChooser;
 
+  private Command PeriodicArmCommand;
+
   public RobotContainer() {
+
+    
     controller = new CommandXboxController(DrivebaseConstants.CONTROLLER_PORT);
     buttonBoard = new CommandGenericHID(ButtonBoardConstants.BUTTON_BOARD_PORT);
 
@@ -121,10 +126,9 @@ public class RobotContainer {
 
     // Test Button
     controller.y()
-    .whileTrue(new ProfiledArmCommand(robotArm, ArmConstants.CONE_HIGH_ANGLE))
+    .whileTrue(new InstantCommand( () -> holdAtSetpoint(ArmConstants.CONE_HIGH_ANGLE)))
     .whileFalse(new InstantCommand( () -> {
-       holdCurrentPos();
-      robotArm.setArm(0); 
+      holdCurrentPos();
     }));
 
     //////////////////// BUTTON BOARD ////////////////////
@@ -220,12 +224,14 @@ public class RobotContainer {
   }
 
   private void holdCurrentPos() {
+    robotArm.getPeriodicArmCommand().resetPID();
     GameStates.shouldHoldArm = false;
     GameStates.armSetpoint = robotArm.getBicepEncoderPosition();
     GameStates.shouldHoldArm = true;
   } 
 
   private void holdAtSetpoint(double setpoint_par){
+    robotArm.getPeriodicArmCommand().resetPID();
     GameStates.shouldHoldArm = false;
     GameStates.armSetpoint = setpoint_par;
     GameStates.shouldHoldArm = true;
