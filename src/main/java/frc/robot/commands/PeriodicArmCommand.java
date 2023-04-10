@@ -35,7 +35,7 @@ public class PeriodicArmCommand extends CommandBase {
       kD = 0;
 
       pid = new ProfiledPIDController(kP, kI, kD, new TrapezoidProfile.Constraints(ArmConstants.ARM_VELOCITY, ArmConstants.ARM_ACCELERATION));
-      pid.setTolerance(2);
+      pid.setTolerance(1);
       pid.reset(robotArm.getBicepEncoderPosition());
 
       System.out.println("Command PERIODIC ARM ALIGN has started");
@@ -46,7 +46,7 @@ public class PeriodicArmCommand extends CommandBase {
       if (GameStates.shouldHoldArm) {
         double calc = pid.calculate(robotArm.getBicepEncoderPosition(), GameStates.armSetpoint);
 
-        robotArm.setArm(calc);
+        robotArm.setManualArm(calc);
       }
     }
   

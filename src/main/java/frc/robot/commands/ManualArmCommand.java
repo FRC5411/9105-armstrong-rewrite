@@ -45,7 +45,7 @@ public class ManualArmCommand extends CommandBase {
     @Override
     public void execute() {
       double calc = pid.calculate(robotArm.getBicepEncoderPosition(), setpoint);
-      robotArm.setArm(calc);
+      robotArm.setManualArm(calc);
     }
   
     @Override

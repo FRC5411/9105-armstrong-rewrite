@@ -12,10 +12,12 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.GlobalVars.SniperMode;
+import frc.robot.commands.ArcadeCommand;
 import edu.wpi.first.wpilibj.SPI;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -143,9 +145,20 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void autonomousArcadeDrive(double speed, double rotation) {
+    SmartDashboard.putNumber("TURN OUTPUT", rotation);
+    
+    rotation = rotation * 0.1;
+    rotation = rotation * -1;
+
     robotDrive.arcadeDrive(speed, rotation);
 
+    System.out.println("ROTATION : " + rotation);
+    
     robotDrive.feed();
+  }
+
+  public Command arcadeDriveCMD(double speed, double rotation) {
+    return new ArcadeCommand(() -> speed, () -> rotation,  this);
   }
 
   public double getLeftFrontEncoderPosition() {

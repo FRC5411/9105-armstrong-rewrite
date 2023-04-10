@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ButtonBoardConstants;
 import frc.robot.Constants.DrivebaseConstants;
@@ -18,7 +19,7 @@ import frc.robot.GlobalVars.GameStates;
 import frc.robot.GlobalVars.SniperMode;
 import frc.robot.commands.ArcadeCommand;
 import frc.robot.commands.AutoEngageCommand;
-import frc.robot.commands.PeriodicArmCommand;
+// import frc.robot.commands.PeriodicArmCommand;
 import frc.robot.commands.TurnCommand;
 // import frc.robot.commands.PeriodicArmCommand;
 import frc.robot.subsystems.ArmSubsystem;
@@ -40,7 +41,9 @@ public class RobotContainer {
 
   private SendableChooser<Command> autonChooser;
 
-  private Command PeriodicArmCommand;
+  Trigger chosenButton;
+
+  // private Command PeriodicArmCommand;
 
   public RobotContainer() {
 
@@ -83,6 +86,9 @@ public class RobotContainer {
     autonChooser.addOption("CONE MOBILITY TURN EXTEND", 
       robotAuton.autonomousCmd(6));
 
+    autonChooser.addOption("RED CONE MOBILITY TURN", 
+      robotAuton.autonomousCmd(7));
+
     configureBindings();
   }
 
@@ -111,26 +117,30 @@ public class RobotContainer {
       .whileTrue(new AutoEngageCommand(robotDrive))
       .whileFalse(new InstantCommand( () -> {}));
 
-
+    /*
+     * NOTE: Leave this as onTrue, the timeout
+     * will interrupt the command so no while
+     * false or while true is needed here
+     */
     controller.b()
-    .whileTrue(new TurnCommand(robotDrive, 180))
-    .whileFalse(new InstantCommand( () -> { robotArm.setArm(0); }));
+    .whileTrue(new TurnCommand(robotDrive, 180));
+    //.whileFalse(new InstantCommand( () -> { robotArm.setArm(0); }));
 
     // Test Button
     controller.y()
-    .whileTrue(new InstantCommand( () -> holdAtSetpoint(ArmConstants.CONE_HIGH_ANGLE)))
+    .whileTrue(new InstantCommand( () -> holdAtSetpoint("high")))
     .whileFalse(new InstantCommand( () -> {
       holdCurrentPos();
     }));
 
     //////////////////// BUTTON BOARD ////////////////////
 
-    pidArmInit(ButtonBoardConstants.SCORE_HIGH_BUTTON, returnAngle("high"));
-    pidArmInit(ButtonBoardConstants.SCORE_MID_BUTTON, returnAngle("mid"));
-    pidArmInit(ButtonBoardConstants.SCORE_LOW_BUTTON, returnAngle("low"));
-    pidArmInit(ButtonBoardConstants.PICKUP_GROUND_BUTTON, returnAngle("ground"));
-    pidArmInit(ButtonBoardConstants.PICKUP_SUBSTATION_BUTTON, returnAngle("substation"));
-    pidArmInit(ButtonBoardConstants.RETURN_TO_IDLE_BUTTON, ArmConstants.IDLE);
+    pidArmInit(ButtonBoardConstants.SCORE_HIGH_BUTTON, "high");
+    pidArmInit(ButtonBoardConstants.SCORE_MID_BUTTON, "mid");
+    pidArmInit(ButtonBoardConstants.SCORE_LOW_BUTTON, "low");
+    pidArmInit(ButtonBoardConstants.PICKUP_GROUND_BUTTON, "ground");
+    pidArmInit(ButtonBoardConstants.PICKUP_SUBSTATION_BUTTON, "substation");
+    pidArmInit(ButtonBoardConstants.RETURN_TO_IDLE_BUTTON, "idle");
 
     armMoveInit(ButtonBoardConstants.ARM_UP_BUTTON, 1);
     armMoveInit(ButtonBoardConstants.ARM_DOWN_BUTTON, -1);
@@ -162,6 +172,7 @@ public class RobotContainer {
     
     
     
+    
     buttonBoard.button(ButtonBoardConstants.TOGGLE_SNIPER_MODE_BUTTON)
       .toggleOnTrue(new InstantCommand( () -> { SniperMode.armSniperMode = true; }))
       .toggleOnFalse(new InstantCommand( () -> { SniperMode.armSniperMode = false; }));
@@ -188,6 +199,9 @@ public class RobotContainer {
       case "substation":
         if (GameStates.isCube) return ArmConstants.CUBE_SUBSTATION_ANGLE;
         else return ArmConstants.CONE_SUBSTATION_ANGLE;
+
+      case "idle":
+        return ArmConstants.IDLE;
         
       default:
         System.out.println("CODE ERROR! INVALID POSITION! CHECK ROBOTCONTAINER!");
@@ -198,34 +212,42 @@ public class RobotContainer {
   // #region CUSTOM ABSTRACTION FUNCTIONS
   
   // Simply abstracts PID positions arm must go to when button pressed
-  private void pidArmInit(int btnPort, double passedSetpointPar) {
-    buttonBoard.button(btnPort)
-    .whileTrue(new InstantCommand( () -> holdAtSetpoint(passedSetpointPar)))
-    .whileFalse(new InstantCommand( () -> holdCurrentPos()));
+  private void pidArmInit(int btnPort, String desiredAngle) {
+    chosenButton = buttonBoard.button(btnPort);
+
+    chosenButton
+    .whileTrue(new InstantCommand( () -> holdAtSetpoint(desiredAngle)))
+    .onFalse(new InstantCommand( () -> holdCurrentPos()));
   }
 
   // Moves arm motor based on spee/d on button press
   private void armMoveInit(int btnPort, int speedPar) {
-    buttonBoard.button(btnPort)
+    chosenButton = buttonBoard.button(btnPort);
+
+    chosenButton
     .whileTrue(new InstantCommand( () -> { 
       GameStates.shouldHoldArm = false;
       DebugInfo.currentArmSpeed = speedPar; 
       robotArm.setArm(DebugInfo.currentArmSpeed); 
     }))
-    .whileFalse(new InstantCommand( () -> { holdCurrentPos(); }));
+    .onFalse(new InstantCommand( () -> { holdCurrentPos(); }));
   }
 
   private void holdCurrentPos() {
     robotArm.getPeriodicArmCommand().resetPID();
-    GameStates.shouldHoldArm = false;
-    GameStates.armSetpoint = robotArm.getBicepEncoderPosition();
-    GameStates.shouldHoldArm = true;
+    double curPos =  robotArm.getBicepEncoderPosition();
+
+    if (!chosenButton.getAsBoolean()){      
+      GameStates.shouldHoldArm = false;
+      GameStates.armSetpoint = curPos;
+      GameStates.shouldHoldArm = true;
+    }
   } 
 
-  private void holdAtSetpoint(double setpoint_par){
+  private void holdAtSetpoint(String setpoint_par){
     robotArm.getPeriodicArmCommand().resetPID();
     GameStates.shouldHoldArm = false;
-    GameStates.armSetpoint = setpoint_par;
+    GameStates.armSetpoint = returnAngle(setpoint_par);
     GameStates.shouldHoldArm = true;
   }
   // endregion
