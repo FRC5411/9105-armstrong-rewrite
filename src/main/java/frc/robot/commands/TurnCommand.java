@@ -1,68 +1,47 @@
+
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.PIDCommand;
+import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.subsystems.DriveSubsystem;
 
-public class TurnCommand extends CommandBase {
+public class TurnCommand extends PIDCommand {
   
-    @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
+    public TurnCommand (DriveSubsystem robotDrive, double setpoint) {
+      super(
+        new PIDController(
+          // Might work idk :T
+          DrivebaseConstants.P_DRIVE_TURN, 
+          DrivebaseConstants.I_DRIVE_TURN, 
+          DrivebaseConstants.D_DRIVE_TURN), 
+        robotDrive::getGyroYaw, 
+        setpoint, 
+        output -> robotDrive.autonomousArcadeDrive(0, output), 
+        robotDrive);
 
-    private DriveSubsystem robotDrive;
+      getController().enableContinuousInput(-180, 180);
 
-    private PIDController pid;
+      if(getController().atSetpoint()){
+        System.out.println("❤AT SETPOINT❤");
+      }
 
-    private double setpoint;
-    private double kP, kI, kD;
-  
-    public TurnCommand(DriveSubsystem robotDrive, double setpoint) {
-      this.robotDrive = robotDrive;
-      this.setpoint = setpoint;
-
-      kP = 0.0001;
-      kI = 0.0;
-      kD = 0.0005;
-
-      pid = new PIDController(kP, kI, kD);
-      pid.setTolerance(3);
       
-    }
-    
-    @Override
-    public void initialize() {
-      System.out.println("Command TURN has started");
-      setpoint = robotDrive.getGyroYaw();
-      
-      System.out.print("Debug Me!!! ");
-      System.out.println(robotDrive.getGyroYaw());
-      System.out.println(setpoint);
-      
-      if (setpoint <= 0) setpoint += 180;
-      else setpoint -= 180;
-      
-      pid.enableContinuousInput(-180, setpoint);
+
+      System.out.println("VEL ERROR: " + getController().getVelocityError());
+      System.out.println("POS ERROR: " + getController().getPositionError());
+      System.out.println("SETPOINT: " + getController().getSetpoint());
+      // Tune these before moving to constants
+      getController()
+        .setTolerance(1.0, 10.0);
     }
   
-    @Override
-    public void execute() {
-        double pidCalc = pid.calculate(robotDrive.getGyroYaw(), 180);
-        pidCalc *= 0.5;
+    public void initialize() {}
 
-        SmartDashboard.putNumber("TURN OUTPUT", pidCalc);
-
-
-        robotDrive.autonomousArcadeDrive(0, pidCalc);
-    }
-  
-    @Override
-    public void end(boolean interrupted) {
-      System.out.println("Command TURN has ended");
-    }
-  
     @Override
     public boolean isFinished() {
-      
       return false;
     }
+  
+    public void end() {}
   }

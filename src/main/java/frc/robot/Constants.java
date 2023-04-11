@@ -32,6 +32,12 @@ public final class Constants {
     public static final double ROTATION_REDUCTION = 0.6;
 
     public static final double AUTO_ENGAGE_DRIVE_BOOST = 1.0; // does nothing but may be useful later
+
+    /* PID Constants for Turning */
+
+    public static final double P_DRIVE_TURN = 0.03;
+    public static final double I_DRIVE_TURN = 0.0;
+    public static final double D_DRIVE_TURN = 0.0005;
   }
   
   public static class LEDsConstants {
@@ -74,25 +80,25 @@ public final class Constants {
     public static final int ARM_MOTOR_CURRENT_LIMIT = 60;
     public static final int GRABBER_MOTOR_CURRENT_LIMIT = 50;
 
-    public static final double CONE_HIGH_ANGLE = 173;
+    public static final double CONE_HIGH_ANGLE = 172;
     public static final double CONE_MID_ANGLE = 193;
     public static final double CONE_LOW_ANGLE = 112; 
-    public static final double CONE_SUBSTATION_ANGLE = 168;
-    public static final double CONE_GROUND_ANGLE = 249;
+    public static final double CONE_SUBSTATION_ANGLE = 170;
+    public static final double CONE_GROUND_ANGLE = 254.5;
 
     public static final double CUBE_HIGH_ANGLE = 173;
     public static final double CUBE_MID_ANGLE = 193;
     public static final double CUBE_LOW_ANGLE = 112; 
-    public static final double CUBE_SUBSTATION_ANGLE = 172;
-    public static final double CUBE_GROUND_ANGLE = 256;
+    public static final double CUBE_SUBSTATION_ANGLE = 175; // 172
+    public static final double CUBE_GROUND_ANGLE = 260;
     
     
     public static final double FRONT = 178; 
     public static final double STRAIGHT = 180;
     public static final double HOLD = 75; 
-    public static final double IDLE = 30; 
+    public static final double IDLE = 3; 
 
-    public static final double ARM_VELOCITY = 400;
+    public static final double ARM_VELOCITY = 250;
     public static final double ARM_ACCELERATION = 100;
     //public static final double TUCKED = 59; 
     //public static final double FLAT = 29;

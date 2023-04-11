@@ -85,6 +85,18 @@ public class AutonSubsystem {
                 new ArcadeCommand(() -> 0.0, () -> 0.75, robotDrive).withTimeout(1.2),
                 new ManualArmCommand(robotArm, ArmConstants.CONE_GROUND_ANGLE).withTimeout(0.25)
             );
+            
+
+            /* TEST TURN */
+            case 7:
+            return new SequentialCommandGroup(
+                new ManualArmCommand(robotArm, 175).withTimeout(1.9),
+                new IntakeCommand(robotIntake, 0.5).withTimeout(0.5),
+                new ManualArmCommand(robotArm, 0).withTimeout(1.5),
+                new ArcadeCommand(() -> 0.75, () -> 0.0, robotDrive).withTimeout(2.3),
+                //new ArcadeCommand(() -> 0.0, () -> 0.6, robotDrive).withTimeout(1.2),
+                robotDrive.arcadeDriveCMD(0.0, 0.775).withTimeout(1.5)
+            );
 
             default: 
             return new SequentialCommandGroup (
