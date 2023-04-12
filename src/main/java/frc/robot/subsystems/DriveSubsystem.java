@@ -60,10 +60,25 @@ public class DriveSubsystem extends SubsystemBase {
     leftFrontMotor.setInverted(true);
     leftBackMotor.setInverted(true);
 
+    leftBackMotor.follow(leftFrontMotor);
+    rightBackMotor.follow(rightFrontMotor);
+
     leftFrontEncoder = leftFrontMotor.getEncoder();
     leftBackEncoder = leftBackMotor.getEncoder();
     rightFrontEncoder = rightFrontMotor.getEncoder();
     rightBackEncoder = rightBackMotor.getEncoder();
+
+    leftFrontEncoder.setPositionConversionFactor(
+      AutonomousConstants.LINEAR_DIST_CONVERSION_FACTOR);
+
+    leftBackEncoder.setPositionConversionFactor(
+      AutonomousConstants.LINEAR_DIST_CONVERSION_FACTOR);
+
+    rightFrontEncoder.setPositionConversionFactor(
+      AutonomousConstants.LINEAR_DIST_CONVERSION_FACTOR);
+
+    rightBackEncoder.setPositionConversionFactor( 
+      AutonomousConstants.LINEAR_DIST_CONVERSION_FACTOR);
 
     leftFrontEncoder.setVelocityConversionFactor(
       AutonomousConstants.LINEAR_DIST_CONVERSION_FACTOR);
@@ -94,6 +109,11 @@ public class DriveSubsystem extends SubsystemBase {
     // zeroHeading();
     resetOdometry(getPose());
   }
+
+  public Pose2d returnRobotPose(){
+    return getPose();
+  }
+
 
   public void arcadeDrive(double speed, double rotation) {
     /*
@@ -245,7 +265,9 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void resetOdometry(Pose2d pose) {
     resetEncoders();
-    odometry.resetPosition(navX.getRotation2d(), getLeftFrontEncoderPosition(), getGyroHeading(), pose);
+    zeroHeading();
+    navX.reset();
+    odometry.resetPosition(navX.getRotation2d(), getLeftFrontEncoderPosition(), getRightFrontEncoderPosition(), pose);
   }
 
   public void resetEncoders() {
@@ -268,5 +290,7 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("GYRO PITCH ", getGyroPitch());
     SmartDashboard.putNumber("GYRO ROLL", getGyroRoll());
     SmartDashboard.putNumber("GYRO YAW", getGyroYaw());
+    SmartDashboard.putNumber("METERS X", getPose().getTranslation().getX());
+    SmartDashboard.putNumber("METERS Y", getPose().getTranslation().getY());
   }
 }

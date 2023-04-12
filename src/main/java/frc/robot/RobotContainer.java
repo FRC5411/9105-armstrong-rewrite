@@ -2,6 +2,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -114,6 +116,9 @@ public class RobotContainer {
     controller.a()
       .whileTrue(new AutoEngageCommand(robotDrive))
       .whileFalse(new InstantCommand( () -> {}));
+
+    controller.y()
+      .onTrue(new InstantCommand(() -> robotDrive.resetOdometry(new Pose2d(0, 0, new Rotation2d(0)))));
 
     /*
      * NOTE: Leave this as onTrue, the timeout
