@@ -7,18 +7,14 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-// import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.GlobalVars.DebugInfo;
 import frc.robot.GlobalVars.GameStates;
 import frc.robot.GlobalVars.SniperMode;
-import frc.robot.commands.PeriodicArmCommand;
 
 public class ArmSubsystem extends SubsystemBase {
 
-  private PeriodicArmCommand periodicArmCommand;
   private CANSparkMax bicep;
   private Encoder armBoreEncoder;
 
@@ -32,8 +28,6 @@ public class ArmSubsystem extends SubsystemBase {
       bicep.setSmartCurrentLimit(ArmConstants.ARM_MOTOR_CURRENT_LIMIT);
 
       armBoreEncoder = new Encoder(0, 1);
-
-      periodicArmCommand = new PeriodicArmCommand(this);
     }
 
     public void setArm(double speed) {
@@ -59,9 +53,6 @@ public class ArmSubsystem extends SubsystemBase {
       return bicep.getOutputCurrent();
     }
 
-    public PeriodicArmCommand getPeriodicArmCommand() {
-      return periodicArmCommand;
-    }
     
     public void limitArmSpeed() {
       double bicepEncoderPos = getBicepEncoderPosition();
@@ -71,9 +62,16 @@ public class ArmSubsystem extends SubsystemBase {
       ) { setArm(0); }
     }
 
+    public double getXAngle() {
+      double val = getBicepEncoderPosition() - 32.45;
+      if(val < 0) {
+        val = 360 + val;
+      }
+      return val;
+    }
+
     @Override  
     public void periodic() {
-      CommandScheduler.getInstance().schedule(periodicArmCommand);
 
       limitArmSpeed();
       
@@ -84,7 +82,7 @@ public class ArmSubsystem extends SubsystemBase {
     @Override  public void simulationPeriodic() {}
 
     public double getEncoderVelocity() {
-        return 0;
+        return armBoreEncoder.getRate() / 22.75;
     }
 
     
