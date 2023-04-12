@@ -2,7 +2,8 @@
 package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
-
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -114,7 +115,6 @@ public class DriveSubsystem extends SubsystemBase {
     return getPose();
   }
 
-
   public void arcadeDrive(double speed, double rotation) {
     /*
      * If LY is between 0.1 & -0.1, if so set to 0 to decrease sensitivity
@@ -180,6 +180,8 @@ public class DriveSubsystem extends SubsystemBase {
   public Command arcadeDriveCMD(double speed, double rotation) {
     return new ArcadeCommand(() -> speed, () -> rotation,  this);
   }
+
+  
 
   public double getLeftFrontEncoderPosition() {
     return -leftFrontEncoder.getPosition();
@@ -262,6 +264,7 @@ public class DriveSubsystem extends SubsystemBase {
   public void zeroHeading() {
     navX.calibrate();
   }
+
 
   public void resetOdometry(Pose2d pose) {
     resetEncoders();
