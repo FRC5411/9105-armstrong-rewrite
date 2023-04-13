@@ -115,6 +115,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     field = new Field2d();
 
+    SmartDashboard.putData("Field", field);
+
     navX.calibrate();
     navX.reset();
 
@@ -191,8 +193,6 @@ public class DriveSubsystem extends SubsystemBase {
   public Command arcadeDriveCMD(double speed, double rotation) {
     return new ArcadeCommand(() -> speed, () -> rotation,  this);
   }
-
-  
 
   public double getLeftFrontEncoderPosition() {
     return -leftFrontEncoder.getPosition();
@@ -285,6 +285,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void resetOdometry(Pose2d pose) {
     resetEncoders();
+    navX.reset();
+    navX.calibrate();
     odometry.resetPosition(navX.getRotation2d(), getLeftFrontEncoderPosition(), getGyroHeading(), pose);
   }
 
@@ -295,21 +297,10 @@ public class DriveSubsystem extends SubsystemBase {
     rightBackEncoder.setPosition(0);
   }
 
-  /*
-   * Tuesday NOTES:
-   * Added setting the voltage for the back motors as
-   * well. Also resets odometry automatically. If this 
-   * fails to do anything, invert the left
-   * voltage to see if it will finally go in the correct
-   * direction. According to ChiefDelphi, this should
-   * fix the issue.
-   * 
-   * Otherwise, we should attempt to get the constants
-   * again. Just INVERT THE RIGHT SIDE, not the left as
-   * SysID is stupid.
-   */
-  public Command followPath(PathPlannerTrajectory trajectory) {
-    this.resetOdometry(trajectory.getInitialPose());
+  public Command followPath(PathPlannerTrajectory trajectory, boolean isFirstPath) {
+    if (isFirstPath) {
+      this.resetOdometry(trajectory.getInitialPose());
+    }
 
     return new PPRamseteCommand(
       trajectory, 
@@ -327,7 +318,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    odometry.update(navX.getRotation2d(), leftFrontEncoder.getPosition(), rightFrontEncoder.getPosition());
+    odometry.update(navX.getRotation2d(), -leftFrontEncoder.getPosition(), -rightFrontEncoder.getPosition());
     field.setRobotPose(odometry.getPoseMeters());
 
     SmartDashboard.putNumber("LEFT FRONT ENCODER POS: ", getLeftFrontEncoderPosition());
@@ -339,5 +330,8 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("GYRO PITCH ", getGyroPitch());
     SmartDashboard.putNumber("GYRO ROLL", getGyroRoll());
     SmartDashboard.putNumber("GYRO YAW", getGyroYaw());
+
+    SmartDashboard.putNumber("Odometry X", odometry.getPoseMeters().getX());
+    SmartDashboard.putNumber("Odometry Y", odometry.getPoseMeters().getY());
   }
 }

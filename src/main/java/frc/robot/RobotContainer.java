@@ -2,9 +2,12 @@
 
 package frc.robot;
 
+import java.util.HashMap;
+
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.FollowPathWithEvents;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -14,6 +17,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -26,6 +30,8 @@ import frc.robot.GlobalVars.GameStates;
 import frc.robot.GlobalVars.SniperMode;
 import frc.robot.commands.ArcadeCommand;
 import frc.robot.commands.AutoEngageCommand;
+import frc.robot.commands.AutonArmCommand;
+import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.TeleopArmCommand;
 import frc.robot.commands.TurnCommand;
 import frc.robot.subsystems.ArmSubsystem;
@@ -135,11 +141,6 @@ public class RobotContainer {
     .whileTrue(new TurnCommand(robotDrive, 180));
     //.whileFalse(new InstantCommand( () -> { robotArm.setArm(0); }));
 
-    // Test Button
-    controller.y()
-    .whileTrue(new InstantCommand( () -> { robotDrive.setTankDriveVolts(12, 12);}))
-    .whileFalse(new InstantCommand( () -> {}));
-
     //////////////////// BUTTON BOARD ////////////////////
 
     pidArmInit(ButtonBoardConstants.SCORE_HIGH_BUTTON, "high");
@@ -212,10 +213,31 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    PathConstraints trajectoryConstraints = new PathConstraints(AutonomousConstants.DRIVE_VELOCITY, AutonomousConstants.MAX_ACCELERATION);
+    /*PathConstraints trajectoryConstraints = new PathConstraints(AutonomousConstants.DRIVE_VELOCITY, AutonomousConstants.MAX_ACCELERATION);
     PathPlannerTrajectory mainTrajectory = PathPlanner.loadPath("Taha" , trajectoryConstraints);
-    robotDrive.getField().getObject("Taha").setTrajectory(mainTrajectory);
+    robotDrive.getField().getObject("field").setTrajectory(mainTrajectory);
 
-    return robotDrive.followPath(mainTrajectory);
+    return robotDrive.followPath(mainTrajectory);*/
+
+    PathPlannerTrajectory noBump = PathPlanner.loadPath("Nachos", new PathConstraints(AutonomousConstants.DRIVE_VELOCITY, AutonomousConstants.MAX_ACCELERATION));
+    HashMap<String, Command> eventMap = new HashMap<>();
+
+    AutonArmCommand testArmCommand = new AutonArmCommand(robotArm, ArmConstants.CONE_HIGH_ANGLE);
+    eventMap.put("scoreHigh", testArmCommand.withTimeout(1.9));
+    /*eventMap.put("scoreHigh", new AutonArmCommand(robotArm, ArmConstants.CONE_HIGH_ANGLE)).withTimeout(1.9);
+    eventMap.put("outtake", new IntakeCommand(robotIntake, -1)).withTimeout(0.5);
+    eventMap.put("stopIntake", new IntakeCommand(robotIntake, 0)).withTimeout(0.1);
+    eventMap.put("retract", new AutonArmCommand(robotArm, 10)).withTimeout(0.9);*/
+
+    //FollowPathWithEvents thing = new FollowPathWithEvents(getPathFollowCommand(noBump), null, eventMap)
+
+    robotDrive.getField().getObject("field").setTrajectory(noBump);
+
+    return new SequentialCommandGroup(
+      new FollowPathWithEvents(
+        robotDrive.followPath(noBump, true), 
+        noBump.getMarkers(), 
+        eventMap)
+    );
   }
 }

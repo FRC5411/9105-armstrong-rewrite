@@ -1,0 +1,77 @@
+{
+  "waypoints": [
+    {
+      "anchorPoint": {
+        "x": 1.9477191701737144,
+        "y": 0.45486683140661527
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.9477191701737127,
+        "y": 0.45486683140661527
+      },
+      "holonomicAngle": 0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 5.392031485616491,
+        "y": 0.47658701035905143
+      },
+      "prevControl": {
+        "x": 4.392031485616491,
+        "y": 0.47658701035905143
+      },
+      "nextControl": null,
+      "holonomicAngle": 0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    }
+  ],
+  "maxVelocity": null,
+  "maxAcceleration": null,
+  "isReversed": true,
+  "markers": [
+    {
+      "position": 0.0,
+      "names": [
+        "scoreHigh"
+      ]
+    },
+    {
+      "position": 0.3890214399857945,
+      "names": [
+        "stopIntake"
+      ]
+    },
+    {
+      "position": 0.0,
+      "names": [
+        "outtake"
+      ]
+    },
+    {
+      "position": 0.3810036399147723,
+      "names": [
+        "retract"
+      ]
+    }
+  ]
+}
