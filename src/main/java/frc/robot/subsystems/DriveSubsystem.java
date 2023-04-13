@@ -69,6 +69,9 @@ public class DriveSubsystem extends SubsystemBase {
     leftFrontMotor.setInverted(true);
     leftBackMotor.setInverted(true);
 
+    leftBackMotor.follow(leftFrontMotor);
+    rightBackMotor.follow(rightFrontMotor);
+
     leftFrontEncoder = leftFrontMotor.getEncoder();
     leftBackEncoder = leftBackMotor.getEncoder();
     rightFrontEncoder = rightFrontMotor.getEncoder();
@@ -76,6 +79,18 @@ public class DriveSubsystem extends SubsystemBase {
 
     leftFrontEncoder.setPositionConversionFactor(AutonomousConstants.LINEAR_DIST_CONVERSION_FACTOR);
     rightFrontEncoder.setPositionConversionFactor(AutonomousConstants.LINEAR_DIST_CONVERSION_FACTOR);
+
+    leftFrontEncoder.setPositionConversionFactor(
+      AutonomousConstants.LINEAR_DIST_CONVERSION_FACTOR);
+
+    leftBackEncoder.setPositionConversionFactor(
+      AutonomousConstants.LINEAR_DIST_CONVERSION_FACTOR);
+
+    rightFrontEncoder.setPositionConversionFactor(
+      AutonomousConstants.LINEAR_DIST_CONVERSION_FACTOR);
+
+    rightBackEncoder.setPositionConversionFactor( 
+      AutonomousConstants.LINEAR_DIST_CONVERSION_FACTOR);
 
     leftFrontEncoder.setVelocityConversionFactor(
       AutonomousConstants.LINEAR_DIST_CONVERSION_FACTOR / 60);
@@ -105,6 +120,10 @@ public class DriveSubsystem extends SubsystemBase {
 
     resetEncoders();
     resetOdometry(getPose());
+  }
+
+  public Pose2d returnRobotPose(){
+    return getPose();
   }
 
   public void arcadeDrive(double speed, double rotation) {
@@ -172,6 +191,8 @@ public class DriveSubsystem extends SubsystemBase {
   public Command arcadeDriveCMD(double speed, double rotation) {
     return new ArcadeCommand(() -> speed, () -> rotation,  this);
   }
+
+  
 
   public double getLeftFrontEncoderPosition() {
     return -leftFrontEncoder.getPosition();
@@ -261,9 +282,9 @@ public class DriveSubsystem extends SubsystemBase {
     navX.calibrate();
   }
 
+
   public void resetOdometry(Pose2d pose) {
     resetEncoders();
-    navX.reset();
     odometry.resetPosition(navX.getRotation2d(), getLeftFrontEncoderPosition(), getGyroHeading(), pose);
   }
 
@@ -315,17 +336,8 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("LEFT BACK TEMP: ", getLeftBackMotorTemp());
     SmartDashboard.putNumber("RIGHT FRONT TEMP: ", getRightFrontMotorTemp());
     SmartDashboard.putNumber("RIGHT BACK TEMP: ", getRightBackMotorTemp());
-    SmartDashboard.putNumber("GYRO PITCH: ", getGyroPitch());
-    SmartDashboard.putNumber("GYRO ROLL: ", getGyroRoll());
-    SmartDashboard.putNumber("GYRO YAW: ", getGyroYaw());
-    SmartDashboard.putNumber("Meters X: ", odometry.getPoseMeters().getX());
-    SmartDashboard.putNumber("Meters Y: ", odometry.getPoseMeters().getY());
-
-    SmartDashboard.putNumber("LF VELOCITY: ", leftFrontMotor.get());
-    SmartDashboard.putNumber("LB VELOCITY: ", leftBackMotor.get());
-    SmartDashboard.putNumber("RF VELOCITY: ", rightFrontMotor.get());
-    SmartDashboard.putNumber("RB VELOCITY: ", rightBackMotor.get());
-
-    SmartDashboard.putData("FIELD: ", field);
+    SmartDashboard.putNumber("GYRO PITCH ", getGyroPitch());
+    SmartDashboard.putNumber("GYRO ROLL", getGyroRoll());
+    SmartDashboard.putNumber("GYRO YAW", getGyroYaw());
   }
 }

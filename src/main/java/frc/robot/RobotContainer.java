@@ -6,6 +6,8 @@ import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -24,9 +26,8 @@ import frc.robot.GlobalVars.GameStates;
 import frc.robot.GlobalVars.SniperMode;
 import frc.robot.commands.ArcadeCommand;
 import frc.robot.commands.AutoEngageCommand;
-// import frc.robot.commands.PeriodicArmCommand;
+import frc.robot.commands.TeleopArmCommand;
 import frc.robot.commands.TurnCommand;
-// import frc.robot.commands.PeriodicArmCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.AutonSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
@@ -122,6 +123,9 @@ public class RobotContainer {
       .whileTrue(new AutoEngageCommand(robotDrive))
       .whileFalse(new InstantCommand( () -> {}));
 
+    controller.y()
+      .onTrue(new InstantCommand(() -> robotDrive.resetOdometry(new Pose2d(0, 0, new Rotation2d(0)))));
+
     /*
      * NOTE: Leave this as onTrue, the timeout
      * will interrupt the command so no while
@@ -150,16 +154,15 @@ public class RobotContainer {
 
     buttonBoard.button(ButtonBoardConstants.TOGGLE_INTAKE_BUTTON)
       .whileTrue(new InstantCommand( () -> {
-        if (GameStates.isCube) { robotIntake.spinin(); }
-        else { robotIntake.spinout();
-      }
+        if (GameStates.isCube) robotIntake.spinin();
+        else robotIntake.spinout();
       }))
       .whileFalse(new InstantCommand( () -> { robotIntake.spinoff(); }));
 
     buttonBoard.button(ButtonBoardConstants.TOGGLE_OUTAKE_BUTTON)
       .whileTrue(new InstantCommand( () -> {
-        if (GameStates.isCube) { robotIntake.spinout(); }
-        else { robotIntake.spinin(); }
+        if (GameStates.isCube) robotIntake.spinout(); 
+        else robotIntake.spinin(); 
       }))
       .whileFalse(new InstantCommand( () -> { robotIntake.spinoff(); }));
 
@@ -178,36 +181,6 @@ public class RobotContainer {
       .toggleOnFalse(new InstantCommand( () -> { SniperMode.armSniperMode = false; }));
   }
 
-  private double returnAngle(String pos){
-    switch(pos){
-      case "high":
-        if (GameStates.isCube) return ArmConstants.CUBE_HIGH_ANGLE;
-        else return ArmConstants.CONE_HIGH_ANGLE;
-        
-      case "mid":
-        if (GameStates.isCube) return ArmConstants.CUBE_MID_ANGLE;
-        else return ArmConstants.CONE_MID_ANGLE;
-        
-      case "low":
-        if (GameStates.isCube) return ArmConstants.CUBE_LOW_ANGLE;
-        else return ArmConstants.CONE_LOW_ANGLE;
-        
-      case "ground":
-        if (GameStates.isCube) return ArmConstants.CUBE_GROUND_ANGLE;
-        else return ArmConstants.CONE_GROUND_ANGLE;
-        
-      case "substation":
-        if (GameStates.isCube) return ArmConstants.CUBE_SUBSTATION_ANGLE;
-        else return ArmConstants.CONE_SUBSTATION_ANGLE;
-
-      case "idle":
-        return ArmConstants.IDLE;
-        
-      default:
-        System.out.println("CODE ERROR! INVALID POSITION! CHECK ROBOTCONTAINER!");
-        return 0;
-    }
-  }
 
   // #region CUSTOM ABSTRACTION FUNCTIONS
   
@@ -216,8 +189,8 @@ public class RobotContainer {
     chosenButton = buttonBoard.button(btnPort);
 
     chosenButton
-    .whileTrue(new InstantCommand( () -> holdAtSetpoint(desiredAngle)))
-    .onFalse(new InstantCommand( () -> holdCurrentPos()));
+    .whileTrue(new TeleopArmCommand(robotArm, desiredAngle))
+    .whileFalse(new InstantCommand( () -> robotArm.setArm(0)));
   }
 
   // Moves arm motor based on spee/d on button press
@@ -226,30 +199,12 @@ public class RobotContainer {
 
     chosenButton
     .whileTrue(new InstantCommand( () -> { 
-      GameStates.shouldHoldArm = false;
       DebugInfo.currentArmSpeed = speedPar; 
       robotArm.setArm(DebugInfo.currentArmSpeed); 
     }))
-    .onFalse(new InstantCommand( () -> { holdCurrentPos(); }));
+    .whileFalse(new InstantCommand( () -> { robotArm.setArm(0); }));
   }
 
-  private void holdCurrentPos() {
-    robotArm.getPeriodicArmCommand().resetPID();
-    double curPos =  robotArm.getBicepEncoderPosition();
-
-    if (!chosenButton.getAsBoolean()){      
-      GameStates.shouldHoldArm = false;
-      GameStates.armSetpoint = curPos;
-      GameStates.shouldHoldArm = true;
-    }
-  } 
-
-  private void holdAtSetpoint(String setpoint_par){
-    robotArm.getPeriodicArmCommand().resetPID();
-    GameStates.shouldHoldArm = false;
-    GameStates.armSetpoint = returnAngle(setpoint_par);
-    GameStates.shouldHoldArm = true;
-  }
   // endregion
 
   public DriveSubsystem getRobotDrive() {
