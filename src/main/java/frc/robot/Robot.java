@@ -16,9 +16,6 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     SmartDashboard.putNumber("GYRO CALC", 0);
     SmartDashboard.putNumber("ARM OUTPUT", 0);
-    SmartDashboard.putNumber("ARM P", 0);
-    SmartDashboard.putNumber("ARM I", 0);
-    SmartDashboard.putNumber("ARM D", 0);
     SmartDashboard.putNumber("TURN OUTPUT", 0);
 
     CameraServer.startAutomaticCapture();

@@ -39,11 +39,6 @@ public final class Constants {
     public static final double I_DRIVE_TURN = 0.0;
     public static final double D_DRIVE_TURN = 0.0005;
   }
-  
-  public static class LEDsConstants {
-    public static final int LED_PORT = 0;
-    public static final int LED_NUMBER = 60;
-  }
 
   public static class AutonomousConstants {
     public static final double VOLTS = 0.12547; //kS
@@ -56,16 +51,16 @@ public final class Constants {
       DifferentialDriveKinematics(TRACK_WIDTH_METERS);
     
     public static final double MAX_SPEED_METERS_PER_SECOND = 3; 
-    public static final double MAX_ACCELERATION = 3; 
+    public static final double MAX_ACCELERATION = 1; 
     
     public static final double RAMSETE_B = 2; 
     public static final double RAMSETE_ZETA = 0.7; 
     
-    public static final double GEAR_RATIO = 7.9;
+    public static final double GEAR_RATIO = 7.89;
     public static final double WHEEL_RADIUS = 3; 
     
-    public static final double LINEAR_DIST_CONVERSION_FACTOR = 
-      (convertToLinDist(GEAR_RATIO, WHEEL_RADIUS));
+    public static final double LINEAR_DIST_CONVERSION_FACTOR = 1/GEAR_RATIO * WHEEL_RADIUS * 2 * Math.PI;
+      //(convertToLinDist(GEAR_RATIO, WHEEL_RADIUS));
 
     public static final double DRIVE_SPEED = 0.25;
   }

@@ -2,6 +2,10 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -12,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.ButtonBoardConstants;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.GlobalVars.DebugInfo;
@@ -128,10 +133,8 @@ public class RobotContainer {
 
     // Test Button
     controller.y()
-    .whileTrue(new InstantCommand( () -> holdAtSetpoint("high")))
-    .whileFalse(new InstantCommand( () -> {
-      holdCurrentPos();
-    }));
+    .whileTrue(new InstantCommand( () -> { robotDrive.setTankDriveVolts(12, 12);}))
+    .whileFalse(new InstantCommand( () -> {}));
 
     //////////////////// BUTTON BOARD ////////////////////
 
@@ -169,9 +172,6 @@ public class RobotContainer {
         GameStates.isCube = true;
         PDH.setSwitchableChannel(false);
       }));
-    
-    
-    
     
     buttonBoard.button(ButtonBoardConstants.TOGGLE_SNIPER_MODE_BUTTON)
       .toggleOnTrue(new InstantCommand( () -> { SniperMode.armSniperMode = true; }))
@@ -257,6 +257,10 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return autonChooser.getSelected();
+    PathConstraints trajectoryConstraints = new PathConstraints(AutonomousConstants.DRIVE_VELOCITY, AutonomousConstants.MAX_ACCELERATION);
+    PathPlannerTrajectory mainTrajectory = PathPlanner.loadPath("Taha" , trajectoryConstraints);
+    robotDrive.getField().getObject("Taha").setTrajectory(mainTrajectory);
+
+    return robotDrive.followPath(mainTrajectory);
   }
 }

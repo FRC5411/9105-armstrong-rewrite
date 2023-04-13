@@ -2,15 +2,21 @@
 package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
-
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPRamseteCommand;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.RamseteController; // i like boys
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -27,6 +33,9 @@ public class DriveSubsystem extends SubsystemBase {
   private CANSparkMax rightFrontMotor;
   private CANSparkMax rightBackMotor;
 
+  private MotorControllerGroup leftMotors;
+  private MotorControllerGroup rightMotors;
+
   private RelativeEncoder leftFrontEncoder;
   private RelativeEncoder leftBackEncoder;
   private RelativeEncoder rightFrontEncoder;
@@ -34,11 +43,11 @@ public class DriveSubsystem extends SubsystemBase {
 
   private DifferentialDrive robotDrive;
 
-  private Pose2d initialPose;
-
   private AHRS navX;
 
-  private DifferentialDrivePoseEstimator odometry;
+  private DifferentialDriveOdometry odometry;
+
+  private Field2d field;
 
   public DriveSubsystem() {
     leftFrontMotor = new CANSparkMax(
@@ -65,33 +74,36 @@ public class DriveSubsystem extends SubsystemBase {
     rightFrontEncoder = rightFrontMotor.getEncoder();
     rightBackEncoder = rightBackMotor.getEncoder();
 
+    leftFrontEncoder.setPositionConversionFactor(AutonomousConstants.LINEAR_DIST_CONVERSION_FACTOR);
+    rightFrontEncoder.setPositionConversionFactor(AutonomousConstants.LINEAR_DIST_CONVERSION_FACTOR);
+
     leftFrontEncoder.setVelocityConversionFactor(
-      AutonomousConstants.LINEAR_DIST_CONVERSION_FACTOR);
+      AutonomousConstants.LINEAR_DIST_CONVERSION_FACTOR / 60);
 
     leftBackEncoder.setVelocityConversionFactor(
-      AutonomousConstants.LINEAR_DIST_CONVERSION_FACTOR);
+      AutonomousConstants.LINEAR_DIST_CONVERSION_FACTOR / 60);
 
     rightFrontEncoder.setVelocityConversionFactor(
-      AutonomousConstants.LINEAR_DIST_CONVERSION_FACTOR);
+      AutonomousConstants.LINEAR_DIST_CONVERSION_FACTOR / 60);
 
     rightBackEncoder.setVelocityConversionFactor(
-      AutonomousConstants.LINEAR_DIST_CONVERSION_FACTOR);
+      AutonomousConstants.LINEAR_DIST_CONVERSION_FACTOR / 60);
 
-    robotDrive = new DifferentialDrive(rightFrontMotor, leftFrontMotor);
+    leftMotors = new MotorControllerGroup(leftBackMotor, leftFrontMotor);
+    rightMotors = new MotorControllerGroup(rightBackMotor, rightFrontMotor);
 
-    initialPose = new Pose2d();
+    robotDrive = new DifferentialDrive(rightMotors, leftMotors);
 
     navX = new AHRS(SPI.Port.kMXP);
 
-    odometry = new DifferentialDrivePoseEstimator(
-      AutonomousConstants.DRIVE_KINEMATICS, 
-      navX.getRotation2d(), 
-      leftFrontEncoder.getPosition(), 
-      rightFrontEncoder.getPosition(), 
-      initialPose);
+    odometry = new DifferentialDriveOdometry(navX.getRotation2d(), leftFrontEncoder.getPosition(), rightFrontEncoder.getPosition());
+
+    field = new Field2d();
+
+    navX.calibrate();
+    navX.reset();
 
     resetEncoders();
-    // zeroHeading();
     resetOdometry(getPose());
   }
 
@@ -222,16 +234,22 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public Pose2d getPose() {
-    return odometry.getEstimatedPosition();
+    return odometry.getPoseMeters();
   }
 
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
     return new DifferentialDriveWheelSpeeds(getLeftFrontEncoderVelocity(), getRightFrontEncoderVelocity());
   }
 
+  public Field2d getField() {
+    return field;
+  }
+
   public void setTankDriveVolts(double leftVolts, double rightVolts) {
-    leftFrontMotor.setVoltage(leftVolts);
-    rightFrontMotor.setVoltage(rightVolts);
+    leftFrontMotor.setVoltage(-leftVolts);
+    leftBackMotor.setVoltage(-leftVolts);
+    rightFrontMotor.setVoltage(-rightVolts);
+    rightBackMotor.setVoltage(-rightVolts);
     robotDrive.feed();
   }
 
@@ -245,6 +263,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void resetOdometry(Pose2d pose) {
     resetEncoders();
+    navX.reset();
     odometry.resetPosition(navX.getRotation2d(), getLeftFrontEncoderPosition(), getGyroHeading(), pose);
   }
 
@@ -255,9 +274,40 @@ public class DriveSubsystem extends SubsystemBase {
     rightBackEncoder.setPosition(0);
   }
 
+  /*
+   * Tuesday NOTES:
+   * Added setting the voltage for the back motors as
+   * well. Also resets odometry automatically. If this 
+   * fails to do anything, invert the left
+   * voltage to see if it will finally go in the correct
+   * direction. According to ChiefDelphi, this should
+   * fix the issue.
+   * 
+   * Otherwise, we should attempt to get the constants
+   * again. Just INVERT THE RIGHT SIDE, not the left as
+   * SysID is stupid.
+   */
+  public Command followPath(PathPlannerTrajectory trajectory) {
+    this.resetOdometry(trajectory.getInitialPose());
+
+    return new PPRamseteCommand(
+      trajectory, 
+      this::getPose, 
+      new RamseteController(AutonomousConstants.RAMSETE_B, AutonomousConstants.RAMSETE_ZETA), 
+      new SimpleMotorFeedforward(AutonomousConstants.VOLTS, AutonomousConstants.VOLT_SECONDS_PER_METER, AutonomousConstants.VOLT_SECONDS_SQUARED_PER_METER), 
+      AutonomousConstants.DRIVE_KINEMATICS, 
+      this::getWheelSpeeds, 
+      new PIDController(0.001, 0, 0), 
+      new PIDController(0.001, 0, 0), 
+      this::setTankDriveVolts,
+      this
+      );
+  }
+
   @Override
   public void periodic() {
     odometry.update(navX.getRotation2d(), leftFrontEncoder.getPosition(), rightFrontEncoder.getPosition());
+    field.setRobotPose(odometry.getPoseMeters());
 
     SmartDashboard.putNumber("LEFT FRONT ENCODER POS: ", getLeftFrontEncoderPosition());
     SmartDashboard.putNumber("RIGHT FRONT ENCODER POS: ", getRightFrontEncoderPosition());
@@ -265,8 +315,17 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("LEFT BACK TEMP: ", getLeftBackMotorTemp());
     SmartDashboard.putNumber("RIGHT FRONT TEMP: ", getRightFrontMotorTemp());
     SmartDashboard.putNumber("RIGHT BACK TEMP: ", getRightBackMotorTemp());
-    SmartDashboard.putNumber("GYRO PITCH ", getGyroPitch());
-    SmartDashboard.putNumber("GYRO ROLL", getGyroRoll());
-    SmartDashboard.putNumber("GYRO YAW", getGyroYaw());
+    SmartDashboard.putNumber("GYRO PITCH: ", getGyroPitch());
+    SmartDashboard.putNumber("GYRO ROLL: ", getGyroRoll());
+    SmartDashboard.putNumber("GYRO YAW: ", getGyroYaw());
+    SmartDashboard.putNumber("Meters X: ", odometry.getPoseMeters().getX());
+    SmartDashboard.putNumber("Meters Y: ", odometry.getPoseMeters().getY());
+
+    SmartDashboard.putNumber("LF VELOCITY: ", leftFrontMotor.get());
+    SmartDashboard.putNumber("LB VELOCITY: ", leftBackMotor.get());
+    SmartDashboard.putNumber("RF VELOCITY: ", rightFrontMotor.get());
+    SmartDashboard.putNumber("RB VELOCITY: ", rightBackMotor.get());
+
+    SmartDashboard.putData("FIELD: ", field);
   }
 }
