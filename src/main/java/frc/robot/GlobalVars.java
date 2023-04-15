@@ -22,7 +22,6 @@ public class GlobalVars {
         public static int chosenAuton = 0;
 
         public static boolean shouldHoldArm = false;
-        public static double armSetpoint = 3;
 
         // Current angles to go to, get updated (this is for dynamic setpoints)
         // public static double curHighAng = 0;

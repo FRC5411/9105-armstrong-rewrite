@@ -57,7 +57,7 @@ public class ArmSubsystem extends SubsystemBase {
     public void limitArmSpeed() {
       double bicepEncoderPos = getBicepEncoderPosition();
       if (
-        (bicepEncoderPos > 277 && DebugInfo.currentArmSpeed > 0) || 
+        (bicepEncoderPos > 263 && DebugInfo.currentArmSpeed > 0) || 
         (bicepEncoderPos < 3 && DebugInfo.currentArmSpeed < 0)
       ) { setArm(0); }
     }
@@ -83,6 +83,10 @@ public class ArmSubsystem extends SubsystemBase {
 
     public double getEncoderVelocity() {
         return armBoreEncoder.getRate() / 22.75;
+    }
+
+    public double neoVelocity(){
+      return bicep.getEncoder().getVelocity() * 2 * Math.PI;
     }
 
     

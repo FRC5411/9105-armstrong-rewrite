@@ -1,5 +1,5 @@
 
-package frc.robot.commands;
+package frc.robot.commands.Arm;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -7,9 +7,6 @@ import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.GlobalVars.GameStates;
-// import frc.robot.GlobalVars.GameStates;
-// import frc.robot.GlobalVars.DebugInfo;
-// import frc.robot.GlobalVars.GameStates;
 import frc.robot.subsystems.ArmSubsystem;
 
 public class TeleopArmCommand extends CommandBase {
@@ -27,6 +24,7 @@ public class TeleopArmCommand extends CommandBase {
     public TeleopArmCommand(ArmSubsystem robotArm, String strSetpoint) {
         this.robotArm = robotArm;
         this.strSetpoint = strSetpoint;
+        GameStates.shouldHoldArm = false;
         SendableRegistry.setName(pid, "ArmSubsystem", "PID");
     }
 
@@ -40,7 +38,7 @@ public class TeleopArmCommand extends CommandBase {
       pid.setTolerance(2);
       pid.reset(robotArm.getBicepEncoderPosition());
 
-      System.out.println("Command PERIODIC ARM ALIGN has started");
+      System.out.println("Command TELEOP ARM ALIGN has started");
     }
   
     @Override
@@ -52,7 +50,7 @@ public class TeleopArmCommand extends CommandBase {
     @Override
     public void end(boolean interrupted) {
       robotArm.setArm(0);
-      System.out.println("Command PERIODIC ARM ALIGN has ended");
+      System.out.println("Command TELEOP ARM ALIGN has ended");
     }
 
   private double returnAngle(String pos){

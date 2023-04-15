@@ -90,7 +90,8 @@ public final class Constants {
     public static final double FRONT = 178; 
     public static final double STRAIGHT = 180;
     public static final double HOLD = 75; 
-    public static final double IDLE = 3; 
+    public static final double IDLE = 0; 
+    public static final double FLAT = 33.43;
 
     public static final double ARM_VELOCITY = 250;
     public static final double ARM_ACCELERATION = 100;

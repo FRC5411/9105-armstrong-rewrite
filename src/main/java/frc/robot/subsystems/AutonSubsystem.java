@@ -6,9 +6,9 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.commands.ArcadeCommand;
-import frc.robot.commands.AutonArmCommand;
 import frc.robot.commands.AutoEngageCommand;
 import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.Arm.AutonArmCommand;
 
 public class AutonSubsystem {
 

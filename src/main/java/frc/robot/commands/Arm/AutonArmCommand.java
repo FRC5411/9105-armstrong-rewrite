@@ -1,7 +1,7 @@
 
-package frc.robot.commands;
+package frc.robot.commands.Arm;
 
-import edu.wpi.first.math.controller.ArmFeedforward;
+// import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.util.sendable.SendableRegistry;
@@ -18,7 +18,7 @@ public class AutonArmCommand extends CommandBase {
     
     private ArmSubsystem robotArm;
     private ProfiledPIDController pid;
-    private ArmFeedforward FF;
+    // private ArmFeedforward FF;
     private double setpoint;
 
     private double kP;
@@ -37,25 +37,25 @@ public class AutonArmCommand extends CommandBase {
       kI = 0;
       kD = 0;
 
-      FF = new ArmFeedforward(setpoint, kP, kI, kD);
+      // FF = new ArmFeedforward(0.04, kP, kI, kD);
       pid = new ProfiledPIDController(kP, kI, kD, new TrapezoidProfile.Constraints(ArmConstants.ARM_VELOCITY, ArmConstants.ARM_ACCELERATION));
       pid.setTolerance(2);
       pid.reset(robotArm.getBicepEncoderPosition());
 
-      System.out.println("Command PERIODIC ARM ALIGN has started");
+      System.out.println("Command AUTON ARM ALIGN has started");
     }
   
     @Override
     public void execute() {
-      double calc = pid.calculate(robotArm.getBicepEncoderPosition(), setpoint) 
-      + FF.calculate(Math.toRadians(robotArm.getBicepEncoderPosition()), Math.toRadians(robotArm.getEncoderVelocity())/12);
+      double calc = pid.calculate(robotArm.getBicepEncoderPosition(), setpoint); 
+      // + FF.calculate(Math.toRadians(robotArm.getBicepEncoderPosition()), Math.toRadians(robotArm.getEncoderVelocity())/12);
       robotArm.setManualArm(calc);
     }
   
     @Override
     public void end(boolean interrupted) {
       robotArm.setArm(0);
-      System.out.println("Command PERIODIC ARM ALIGN has ended");
+      System.out.println("Command AUTON ARM ALIGN has ended");
     }
   
     @Override

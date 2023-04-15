@@ -6,11 +6,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.GlobalVars.DebugInfo;
+import frc.robot.commands.Arm.HoldArmCommand;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
+  private HoldArmCommand holdArmCmd;
   
   @Override
   public void robotInit() {
@@ -23,10 +25,14 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
 
     DebugInfo.initialGyroPitch = m_robotContainer.getRobotDrive().getGyroPitch();
+
+
+    holdArmCmd = new HoldArmCommand(m_robotContainer.getRobotArm());
   }
 
   @Override
   public void robotPeriodic() {
+    CommandScheduler.getInstance().schedule(holdArmCmd);
     CommandScheduler.getInstance().run();
   }
 
