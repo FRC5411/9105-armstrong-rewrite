@@ -77,14 +77,14 @@ public final class Constants {
     public static final double CONE_HIGH_ANGLE = 172;
     public static final double CONE_MID_ANGLE = 193;
     public static final double CONE_LOW_ANGLE = 112; 
-    public static final double CONE_SUBSTATION_ANGLE = 170;
-    public static final double CONE_GROUND_ANGLE = 254.5;
+    public static final double CONE_SUBSTATION_ANGLE = 174;
+    public static final double CONE_GROUND_ANGLE = 257;
 
     public static final double CUBE_HIGH_ANGLE = 173;
     public static final double CUBE_MID_ANGLE = 193;
     public static final double CUBE_LOW_ANGLE = 112; 
-    public static final double CUBE_SUBSTATION_ANGLE = 175; // 172
-    public static final double CUBE_GROUND_ANGLE = 260;
+    public static final double CUBE_SUBSTATION_ANGLE = 178;
+    public static final double CUBE_GROUND_ANGLE = 263;
     
     
     public static final double FRONT = 178; 
