@@ -7,7 +7,9 @@ import java.util.HashMap;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.auto.BaseAutoBuilder;
 import com.pathplanner.lib.commands.FollowPathWithEvents;
+import com.pathplanner.lib.server.PathPlannerServer;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -16,6 +18,7 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
@@ -30,9 +33,9 @@ import frc.robot.GlobalVars.GameStates;
 import frc.robot.GlobalVars.SniperMode;
 import frc.robot.commands.ArcadeCommand;
 import frc.robot.commands.AutoEngageCommand;
-import frc.robot.commands.TurnCommand;
 import frc.robot.commands.Arm.AutonArmCommand;
 import frc.robot.commands.Arm.TeleopArmCommand;
+import frc.robot.commands.TurnCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.AutonSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
@@ -53,21 +56,14 @@ public class RobotContainer {
   private SendableChooser<Command> autonChooser;
 
   Trigger chosenButton;
-  
-  Trigger toggleIntakeButton;
-  Trigger toggleOutakeButton;
-  Trigger toggleConeModeButton;
-  Trigger toggleSniperModeButton;
-  
+
+  // private Command PeriodicArmCommand;
+
   public RobotContainer() {
+
     
     controller = new CommandXboxController(DrivebaseConstants.CONTROLLER_PORT);
     buttonBoard = new CommandGenericHID(ButtonBoardConstants.BUTTON_BOARD_PORT);
-
-    toggleSniperModeButton = buttonBoard.button(ButtonBoardConstants.TOGGLE_SNIPER_MODE_BUTTON);
-    toggleOutakeButton = buttonBoard.button(ButtonBoardConstants.TOGGLE_OUTAKE_BUTTON);
-    toggleIntakeButton = buttonBoard.button(ButtonBoardConstants.TOGGLE_INTAKE_BUTTON);
-    toggleConeModeButton = buttonBoard.button(ButtonBoardConstants.TOGGLE_CONE_MODE_BUTTON);
 
     robotDrive = new DriveSubsystem();
     robotArm = new ArmSubsystem();
@@ -85,61 +81,70 @@ public class RobotContainer {
       ));
 
     Shuffleboard.getTab("Autonomous: ").add(autonChooser);
-    autonChooser.addOption("CONE MOBILITY", robotAuton.autonomousCmd(1));
-    autonChooser.addOption("CONE MOBILITY DOCK", robotAuton.autonomousCmd(2));
-    autonChooser.addOption("CONE SCORE ONLY", robotAuton.autonomousCmd(3));
-    autonChooser.addOption("CUBE SCORE ONLY", robotAuton.autonomousCmd(4));
-    autonChooser.addOption("CONE MOBILITY EXTEND GRAB", robotAuton.autonomousCmd(5));
-    autonChooser.addOption("CONE MOBILITY TURN EXTEND", robotAuton.autonomousCmd(6));
-    autonChooser.addOption("RED CONE MOBILITY TURN", robotAuton.autonomousCmd(7));
+
+    autonChooser.addOption("CONE MOBILITY", 
+      robotAuton.autonomousCmd(1));
+
+    autonChooser.addOption("CONE MOBILITY DOCK", 
+      robotAuton.autonomousCmd(2));
+
+    autonChooser.addOption("CONE SCORE ONLY", 
+      robotAuton.autonomousCmd(3));
+    
+    autonChooser.addOption("CUBE SCORE ONLY", 
+      robotAuton.autonomousCmd(4));
+
+    autonChooser.addOption("CONE MOBILITY EXTEND GRAB", 
+      robotAuton.autonomousCmd(5));
+
+    autonChooser.addOption("CONE MOBILITY TURN EXTEND", 
+      robotAuton.autonomousCmd(6));
+
+    autonChooser.addOption("RED CONE MOBILITY TURN", 
+      robotAuton.autonomousCmd(7));
 
     configureBindings();
   }
 
-  private void stopAll(){
-    GameStates.shouldHoldArm = false;
-    new TeleopArmCommand(robotArm, "idle");
-
-  }
-
   private void configureBindings() {
 
-    //////////////////// XBOX CONTROLLER ////////////////////
+    //////////////////// XBOX CONTROLLER //////////////////// 
+    controller.leftTrigger()
+      .whileTrue(new InstantCommand( () -> { SniperMode.driveSniperMode = true; }))
+      .whileFalse(new InstantCommand( () -> { SniperMode.driveSniperMode = false; }));
     
-    //////// Toggle Drive Sniper mode
-    whileHeld(controller.leftTrigger(), () -> SniperMode.driveSniperMode = true);
-    whileUnheld(controller.leftTrigger(), () -> SniperMode.driveSniperMode = false);
+    controller.leftBumper()
+      .whileTrue(new InstantCommand( () -> {
+        if (GameStates.isCube) { robotIntake.spinout(); }
+        else { robotIntake.spinin(); }
+      }))
+      .whileFalse(new InstantCommand( () -> { robotIntake.spinoff(); }));
 
+    controller.rightBumper()
+      .whileTrue(new InstantCommand( () -> {
+        if (GameStates.isCube) { robotIntake.spinin(); }
+        else { robotIntake.spinout(); }
+      }))
+      .whileFalse(new InstantCommand( () -> { robotIntake.spinoff(); }));
 
-    //////// Outake Button for cone, intake for cube
-    whileHeld(controller.leftBumper(), () -> {
-      if (GameStates.isCube) { robotIntake.spinout(); }
-      else { robotIntake.spinin(); }});
-    whileUnheld(controller.leftBumper(), () -> robotIntake.spinoff());
+    controller.a()
+      .whileTrue(new AutoEngageCommand(robotDrive))
+      .whileFalse(new InstantCommand( () -> {}));
 
+    controller.y()
+      .onTrue(new InstantCommand(() -> robotDrive.resetOdometry(new Pose2d(0, 0, new Rotation2d(0)))));
 
-    //////// Outake Button for cube, intake for cone
-    whileHeld(controller.rightBumper(), () -> {
-      if (GameStates.isCube) robotIntake.spinin();
-      else robotIntake.spinout();});
-    whileUnheld(controller.rightBumper(), () -> robotIntake.spinoff());
-
-
-    //////// Autobalance Drive
-    whileHeld(controller.a(), () -> new AutoEngageCommand(robotDrive));
-
-
-    //////// Reset Odometer
-    whenClicked(controller.y(), () -> robotDrive.resetOdometry(new Pose2d(0, 0, new Rotation2d(0))));
-      
-      
-    //////// Run Turn Command
-    whenClicked(controller.b(), () -> new TurnCommand(robotDrive, 180));
-
-    whileHeld(controller.x(), () -> stopAll());
+    /*
+     * NOTE: Leave this as onTrue, the timeout
+     * will interrupt the command so no while
+     * false or while true is needed here
+     */
+    controller.b()
+    .whileTrue(new TurnCommand(robotDrive, 180));
+    //.whileFalse(new InstantCommand( () -> { robotArm.setArm(0); }));
 
     //////////////////// BUTTON BOARD ////////////////////
-    
+
     pidArmInit(ButtonBoardConstants.SCORE_HIGH_BUTTON, "high");
     pidArmInit(ButtonBoardConstants.SCORE_MID_BUTTON, "mid");
     pidArmInit(ButtonBoardConstants.SCORE_LOW_BUTTON, "low");
@@ -150,87 +155,57 @@ public class RobotContainer {
     armMoveInit(ButtonBoardConstants.ARM_UP_BUTTON, 1);
     armMoveInit(ButtonBoardConstants.ARM_DOWN_BUTTON, -1);
 
+    buttonBoard.button(ButtonBoardConstants.TOGGLE_INTAKE_BUTTON)
+      .whileTrue(new InstantCommand( () -> {
+        if (GameStates.isCube) robotIntake.spinin();
+        else robotIntake.spinout();
+      }))
+      .whileFalse(new InstantCommand( () -> { robotIntake.spinoff(); }));
 
-    //////// Outake Button for cube, intake for cone
-    whileHeld(toggleIntakeButton, () -> {
-      if (GameStates.isCube) robotIntake.spinin();
-      else robotIntake.spinout();});
-    whileUnheld(toggleIntakeButton, () -> robotIntake.spinoff());
+    buttonBoard.button(ButtonBoardConstants.TOGGLE_OUTAKE_BUTTON)
+      .whileTrue(new InstantCommand( () -> {
+        if (GameStates.isCube) robotIntake.spinout(); 
+        else robotIntake.spinin(); 
+      }))
+      .whileFalse(new InstantCommand( () -> { robotIntake.spinoff(); }));
+
+    buttonBoard.button(ButtonBoardConstants.TOGGLE_CONE_MODE_BUTTON)
+      .toggleOnTrue(new InstantCommand( () -> { 
+        GameStates.isCube = false; 
+        PDH.setSwitchableChannel(true);
+      }))
+      .toggleOnFalse(new InstantCommand( () -> { 
+        GameStates.isCube = true;
+        PDH.setSwitchableChannel(false);
+      }));
     
-
-    //////// Intake Button for cube, outake for cone
-    whileHeld(toggleOutakeButton, () -> {
-      if (GameStates.isCube) robotIntake.spinout(); 
-      else robotIntake.spinin();});
-    whileUnheld(toggleOutakeButton, () -> robotIntake.spinoff());
-
-
-    //////// Toggle cone mode button
-    whenClicked(toggleConeModeButton, () -> { 
-      GameStates.isCube = false; 
-      PDH.setSwitchableChannel(true);});
-
-    whenUnClicked(toggleConeModeButton, () -> { 
-      GameStates.isCube = true;
-      PDH.setSwitchableChannel(false);});
-    
-
-    //////// Toggle Sniper Mode Button
-    whileHeld(toggleSniperModeButton,  () -> SniperMode.armSniperMode = true);
-    whileUnheld(toggleSniperModeButton, () -> SniperMode.armSniperMode = false);
-      
-    }
-
-    //////////////////
-    // DONT PASS COMMANDS INTO THESE. ONLY INSTANT COMMANDS
-    private void whileHeld(Trigger chosenButton, Runnable codeToRun){
-      chosenButton
-        .whileTrue(new InstantCommand(()-> codeToRun.run()));
-    }
-
-    private void whileUnheld(Trigger chosenButton, Runnable codeToRun){
-      chosenButton
-        .whileFalse(new InstantCommand(()-> codeToRun.run()));
-    }
-
-    private void whenClicked(Trigger chosenButton, Runnable codeToRun){
-      chosenButton
-        .onTrue(new InstantCommand(()-> codeToRun.run()));
-    }
-
-   
-
-    private void whenUnClicked(Trigger chosenButton, Runnable codeToRun){
-      chosenButton
-        .onFalse(new InstantCommand(()-> codeToRun.run()));
-    }
-
-    
-    // #region CUSTOM ABSTRACTION FUNCTIONS
-    
-    // Simply abstracts PID positions arm must go to when button pressed
-    private void pidArmInit(int btnPort, String desiredAngle) {
-      chosenButton = buttonBoard.button(btnPort);   
-      chosenButton.whileTrue(new TeleopArmCommand(robotArm, desiredAngle));
-      whileUnheld(chosenButton, () -> {
-        GameStates.shouldHoldArm = true;
-        robotArm.setArm(0);
-      });
+    buttonBoard.button(ButtonBoardConstants.TOGGLE_SNIPER_MODE_BUTTON)
+      .toggleOnTrue(new InstantCommand( () -> { SniperMode.armSniperMode = true; }))
+      .toggleOnFalse(new InstantCommand( () -> { SniperMode.armSniperMode = false; }));
   }
+
+
+  // #region CUSTOM ABSTRACTION FUNCTIONS
   
+  // Simply abstracts PID positions arm must go to when button pressed
+  private void pidArmInit(int btnPort, String desiredAngle) {
+    chosenButton = buttonBoard.button(btnPort);
+
+    chosenButton
+    .whileTrue(new TeleopArmCommand(robotArm, desiredAngle))
+    .whileFalse(new InstantCommand( () -> robotArm.setArm(0)));
+  }
+
   // Moves arm motor based on spee/d on button press
   private void armMoveInit(int btnPort, int speedPar) {
     chosenButton = buttonBoard.button(btnPort);
 
-    whileHeld(chosenButton, () -> { 
-      GameStates.shouldHoldArm = false;
+    chosenButton
+    .whileTrue(new InstantCommand( () -> { 
       DebugInfo.currentArmSpeed = speedPar; 
       robotArm.setArm(DebugInfo.currentArmSpeed); 
-    });
-    whileUnheld(chosenButton, () -> {
-      GameStates.shouldHoldArm = true;
-      robotArm.setArm(0);
-    });
+    }))
+    .whileFalse(new InstantCommand( () -> { robotArm.setArm(0); }));
   }
 
   // endregion
@@ -264,11 +239,14 @@ public class RobotContainer {
 
     robotDrive.getField().getObject("field").setTrajectory(noBump);
 
-    return new SequentialCommandGroup(
-      new FollowPathWithEvents(
-        robotDrive.followPath(noBump, true), 
-        noBump.getMarkers(), 
-        eventMap)
-    );
+    BaseAutoBuilder autoBuilder = new BaseAutoBuilder(robotDrive::getPose, eventMap, null, false) {
+
+      @Override
+      public CommandBase followPath(PathPlannerTrajectory trajectory) {
+        // TODO Auto-generated method stub
+        return null;
+      }};
+
+    return autoBuilder.fullAuto(noBump);
   }
 }

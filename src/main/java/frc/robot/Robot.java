@@ -26,7 +26,6 @@ public class Robot extends TimedRobot {
 
     DebugInfo.initialGyroPitch = m_robotContainer.getRobotDrive().getGyroPitch();
 
-
     holdArmCmd = new HoldArmCommand(m_robotContainer.getRobotArm());
   }
 
