@@ -7,9 +7,7 @@ import java.util.HashMap;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.auto.BaseAutoBuilder;
 import com.pathplanner.lib.commands.FollowPathWithEvents;
-import com.pathplanner.lib.server.PathPlannerServer;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -17,15 +15,12 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.ArmConstants;
-import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.ButtonBoardConstants;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.GlobalVars.DebugInfo;
@@ -33,7 +28,7 @@ import frc.robot.GlobalVars.GameStates;
 import frc.robot.GlobalVars.SniperMode;
 import frc.robot.commands.ArcadeCommand;
 import frc.robot.commands.AutoEngageCommand;
-import frc.robot.commands.Arm.AutonArmCommand;
+import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.Arm.TeleopArmCommand;
 import frc.robot.commands.TurnCommand;
 import frc.robot.subsystems.ArmSubsystem;
@@ -218,35 +213,89 @@ public class RobotContainer {
     return robotArm;
   }
 
+  /*
+   
+   armCubeHigh
+   armCubeMid
+   armCubeLow
+   armConeHigh
+   armConeMid
+   armConeLow
+   armConeGround
+   armCubeGround
+   autoEngage
+   intake
+   outtake
+   tuckArm // arm set to 0
+   dockArm // arm set to like 60 or sm
+
+   */
   public Command getAutonomousCommand() {
-    /*PathConstraints trajectoryConstraints = new PathConstraints(AutonomousConstants.DRIVE_VELOCITY, AutonomousConstants.MAX_ACCELERATION);
-    PathPlannerTrajectory mainTrajectory = PathPlanner.loadPath("Taha" , trajectoryConstraints);
-    robotDrive.getField().getObject("field").setTrajectory(mainTrajectory);
+    /*try {
+      PathPlannerTrajectory pathWithEvents = PathPlanner.loadPath("Saul", new PathConstraints(0.5, 1));
+      HashMap<String, Command> eventMap = new HashMap<>();
 
-    return robotDrive.followPath(mainTrajectory);*/
+      eventMap.put("event1", new TeleopArmCommand(robotArm, "high").withTimeout(2.0));
+      eventMap.put("event2", new TeleopArmCommand(robotArm, "idle").withTimeout(2.0));
 
-    PathPlannerTrajectory noBump = PathPlanner.loadPath("Nachos", new PathConstraints(AutonomousConstants.DRIVE_VELOCITY, AutonomousConstants.MAX_ACCELERATION));
+      FollowPathWithEvents auton = new FollowPathWithEvents(
+        robotDrive.followPath(pathWithEvents, true), 
+        pathWithEvents.getMarkers(), 
+        eventMap
+        );
+
+      robotDrive.getField().getObject("field").setTrajectory(pathWithEvents);
+
+      return auton;
+
+    } catch(Exception e){
+      // If auton failes to be selected run a default path here
+      System.out.println("Auton Crashed Lmao");
+
+      return new InstantCommand();
+    }*/
+
+    return itTurns();
+    
+    
+  }
+
+  public Command pathSetup() {
+    PathPlannerTrajectory testComplexPath = PathPlanner.loadPath("BotezGambit", new PathConstraints(4, 3));
     HashMap<String, Command> eventMap = new HashMap<>();
 
-    AutonArmCommand testArmCommand = new AutonArmCommand(robotArm, ArmConstants.CONE_HIGH_ANGLE);
-    eventMap.put("scoreHigh", testArmCommand.withTimeout(1.9));
-    /*eventMap.put("scoreHigh", new AutonArmCommand(robotArm, ArmConstants.CONE_HIGH_ANGLE)).withTimeout(1.9);
-    eventMap.put("outtake", new IntakeCommand(robotIntake, -1)).withTimeout(0.5);
-    eventMap.put("stopIntake", new IntakeCommand(robotIntake, 0)).withTimeout(0.1);
-    eventMap.put("retract", new AutonArmCommand(robotArm, 10)).withTimeout(0.9);*/
+    eventMap.put("armConeHigh", new TeleopArmCommand(robotArm, "high")).withTimeout(1.2);
+    eventMap.put("outtake", new IntakeCommand(robotIntake, -0.5)).withTimeout(0.2);
+    eventMap.put("duck", new TeleopArmCommand(robotArm, "idle")).withTimeout(0.7);
+    eventMap.put("armCubeGround", new TeleopArmCommand(robotArm, "ground")).withTimeout(1.2);
+    eventMap.put("intake", new IntakeCommand(robotIntake, -0.5)).withTimeout(0.3);
+    eventMap.put("outtakeCube", new IntakeCommand(robotIntake, 0.5)).withTimeout(0.2);
 
-    //FollowPathWithEvents thing = new FollowPathWithEvents(getPathFollowCommand(noBump), null, eventMap)
+    FollowPathWithEvents auton = new FollowPathWithEvents(
+      robotDrive.followPath(testComplexPath, true), 
+      testComplexPath.getMarkers(), 
+      eventMap);
 
-    robotDrive.getField().getObject("field").setTrajectory(noBump);
-
-    BaseAutoBuilder autoBuilder = new BaseAutoBuilder(robotDrive::getPose, eventMap, null, false) {
-
-      @Override
-      public CommandBase followPath(PathPlannerTrajectory trajectory) {
-        // TODO Auto-generated method stub
-        return null;
-      }};
-
-    return autoBuilder.fullAuto(noBump);
+    return auton;
   }
+
+  public Command itTurns() {
+    PathPlannerTrajectory simplePath = PathPlanner.loadPath("New Path", new PathConstraints(1.0, 0.5));
+    HashMap<String, Command> eventMap = new HashMap<>();
+
+    TeleopArmCommand high = new TeleopArmCommand(robotArm, "high");
+    TeleopArmCommand ground = new TeleopArmCommand(robotArm, "ground");
+    eventMap.put("event1", high.withTimeout(1.2));
+    eventMap.put("event2", ground.withTimeout(1.2));
+
+    robotDrive.getField().getObject("field").setTrajectory(simplePath);
+
+    FollowPathWithEvents auton = new FollowPathWithEvents(
+      robotDrive.followPath(simplePath, true), 
+      simplePath.getMarkers(), 
+      eventMap);
+
+    return auton;
+  }
+
 }

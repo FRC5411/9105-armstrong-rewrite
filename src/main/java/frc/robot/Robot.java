@@ -1,6 +1,5 @@
 package frc.robot;
 
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -19,8 +18,6 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("GYRO CALC", 0);
     SmartDashboard.putNumber("ARM OUTPUT", 0);
     SmartDashboard.putNumber("TURN OUTPUT", 0);
-
-    CameraServer.startAutomaticCapture();
 
     m_robotContainer = new RobotContainer();
 

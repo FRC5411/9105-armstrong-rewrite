@@ -1,6 +1,7 @@
 
 package frc.robot.commands.Arm;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.util.sendable.SendableRegistry;
@@ -21,6 +22,12 @@ public class TeleopArmCommand extends CommandBase {
     private double kI; 
     private double kD;
 
+    // private ArmFeedforward FF;
+    // private double ks;
+    // private double kg;
+    // private double kv;
+    // private double ka;
+
     public TeleopArmCommand(ArmSubsystem robotArm, String strSetpoint) {
         this.robotArm = robotArm;
         this.strSetpoint = strSetpoint;
@@ -34,6 +41,12 @@ public class TeleopArmCommand extends CommandBase {
       kI = 0;
       kD = 0;
 
+      // ks = 0.02;
+      // kg = 0;
+      // kv = 0.01;
+      // ka = 0;
+
+      // FF = new ArmFeedforward(ks, kg, kv, ka);
       pid = new ProfiledPIDController(kP, kI, kD, new TrapezoidProfile.Constraints(ArmConstants.ARM_VELOCITY, ArmConstants.ARM_ACCELERATION));
       pid.setTolerance(2);
       pid.reset(robotArm.getBicepEncoderPosition());
@@ -43,7 +56,14 @@ public class TeleopArmCommand extends CommandBase {
   
     @Override
     public void execute() {
-      double calc = pid.calculate(robotArm.getBicepEncoderPosition(), returnAngle(strSetpoint));
+      double calc = 
+        pid.calculate(robotArm.getBicepEncoderPosition(), returnAngle(strSetpoint));
+        // +
+        // FF.calculate(
+        //   Math.toRadians(robotArm.getBicepEncoderPosition() - ArmConstants.FLAT), 
+        //   Math.toRadians(robotArm.neoVelocity()) / 12
+        // ));
+
       robotArm.setManualArm(calc);
     }
   
