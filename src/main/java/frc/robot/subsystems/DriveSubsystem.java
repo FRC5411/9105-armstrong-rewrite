@@ -1,6 +1,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPRamseteCommand;
@@ -9,11 +11,13 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.RamseteController; // i like boys
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -24,6 +28,7 @@ import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.GlobalVars.SniperMode;
 import frc.robot.commands.ArcadeCommand;
+import frc.robot.commands.Move;
 import edu.wpi.first.wpilibj.SPI;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -35,6 +40,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   private MotorControllerGroup leftMotors;
   private MotorControllerGroup rightMotors;
+
+  private ProfiledPIDController movePID;
 
   private RelativeEncoder leftFrontEncoder;
   private RelativeEncoder leftBackEncoder;
@@ -108,6 +115,8 @@ public class DriveSubsystem extends SubsystemBase {
     rightMotors = new MotorControllerGroup(rightBackMotor, rightFrontMotor);
 
     robotDrive = new DifferentialDrive(rightMotors, leftMotors);
+
+    movePID = new ProfiledPIDController(0.001, 0, 0, new TrapezoidProfile.Constraints(1,1) );
 
     navX = new AHRS(SPI.Port.kMXP);
 
@@ -264,6 +273,10 @@ public class DriveSubsystem extends SubsystemBase {
 
   public Field2d getField() {
     return field;
+  }
+
+  public Command moveCommand(double setpoint, DoubleSupplier measure) {
+    return new Move(movePID, setpoint, measure, this);
   }
 
   public void setTankDriveVolts(double leftVolts, double rightVolts) {

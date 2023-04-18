@@ -239,6 +239,11 @@ public class RobotContainer {
     return robotDrive;
   }
 
+  public Command Auton() {
+    robotDrive.resetOdometry(new Pose2d(1.8, 0, new Rotation2d()));
+    return robotDrive.moveCommand(3, () -> robotDrive.getPose().getX());
+  }
+
   public ArmSubsystem getRobotArm() {
     return robotArm;
   }
@@ -250,11 +255,11 @@ public class RobotContainer {
 
     return robotDrive.followPath(mainTrajectory);*/
 
-    PathPlannerTrajectory noBump = PathPlanner.loadPath("Nachos", new PathConstraints(AutonomousConstants.DRIVE_VELOCITY, AutonomousConstants.MAX_ACCELERATION));
-    HashMap<String, Command> eventMap = new HashMap<>();
+    // PathPlannerTrajectory noBump = PathPlanner.loadPath("Nachos", new PathConstraints(AutonomousConstants.DRIVE_VELOCITY, AutonomousConstants.MAX_ACCELERATION));
+    // HashMap<String, Command> eventMap = new HashMap<>();
 
-    AutonArmCommand testArmCommand = new AutonArmCommand(robotArm, ArmConstants.CONE_HIGH_ANGLE);
-    eventMap.put("scoreHigh", testArmCommand.withTimeout(1.9));
+    // AutonArmCommand testArmCommand = new AutonArmCommand(robotArm, ArmConstants.CONE_HIGH_ANGLE);
+    // eventMap.put("scoreHigh", testArmCommand.withTimeout(1.9));
     /*eventMap.put("scoreHigh", new AutonArmCommand(robotArm, ArmConstants.CONE_HIGH_ANGLE)).withTimeout(1.9);
     eventMap.put("outtake", new IntakeCommand(robotIntake, -1)).withTimeout(0.5);
     eventMap.put("stopIntake", new IntakeCommand(robotIntake, 0)).withTimeout(0.1);
@@ -262,13 +267,13 @@ public class RobotContainer {
 
     //FollowPathWithEvents thing = new FollowPathWithEvents(getPathFollowCommand(noBump), null, eventMap)
 
-    robotDrive.getField().getObject("field").setTrajectory(noBump);
+    // robotDrive.getField().getObject("field").setTrajectory(noBump);
 
-    return new SequentialCommandGroup(
-      new FollowPathWithEvents(
-        robotDrive.followPath(noBump, true), 
-        noBump.getMarkers(), 
-        eventMap)
-    );
+    // return new SequentialCommandGroup(
+    //   new FollowPathWithEvents(
+    //     robotDrive.followPath(noBump, true), 
+    //     noBump.getMarkers(), 
+    //     eventMap)
+    return Auton();
   }
 }
