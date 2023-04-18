@@ -1,7 +1,6 @@
 package frc.robot;
 
-import com.pathplanner.lib.server.PathPlannerServer;
-
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -21,13 +20,14 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("ARM OUTPUT", 0);
     SmartDashboard.putNumber("TURN OUTPUT", 0);
 
+    CameraServer.startAutomaticCapture();
+
     m_robotContainer = new RobotContainer();
 
     DebugInfo.initialGyroPitch = m_robotContainer.getRobotDrive().getGyroPitch();
 
-    holdArmCmd = new HoldArmCommand(m_robotContainer.getRobotArm());
 
-    PathPlannerServer.startServer(5800);
+    holdArmCmd = new HoldArmCommand(m_robotContainer.getRobotArm());
   }
 
   @Override
