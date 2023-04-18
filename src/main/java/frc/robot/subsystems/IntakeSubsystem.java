@@ -10,6 +10,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.*;
+import frc.robot.GlobalVars.GameStates;
 
 public class IntakeSubsystem extends SubsystemBase{
   private CANSparkMax grabber;
@@ -27,11 +28,21 @@ public class IntakeSubsystem extends SubsystemBase{
   }
 
   public void spinin() {
-    grabber.set(1);
+    if (GameStates.isCube) {
+      grabber.set(0.5);
+    }
+    else {
+      grabber.set(1);
+    }
   }
 
   public void spinout() {
-    grabber.set(-1);
+    if (GameStates.isCube) {
+      grabber.set(-0.5);
+    }
+    else {
+      grabber.set(-1);
+    }
   }
 
   public void spinoff() {
