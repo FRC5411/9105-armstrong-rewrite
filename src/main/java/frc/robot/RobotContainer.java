@@ -260,16 +260,36 @@ public class RobotContainer {
     
   }
 
-  public Command pathSetup() {
-    PathPlannerTrajectory testComplexPath = PathPlanner.loadPath("BotezGambit", new PathConstraints(4, 3));
+  public Command setupPaths(String pathName) {
+    PathPlannerTrajectory testComplexPath = PathPlanner.loadPath(pathName, new PathConstraints(4, 3));
     HashMap<String, Command> eventMap = new HashMap<>();
 
-    eventMap.put("armConeHigh", new TeleopArmCommand(robotArm, "high")).withTimeout(1.2);
+    eventMap.put("armHigh", new TeleopArmCommand(robotArm, "high")).withTimeout(1.2);
     eventMap.put("outtake", new IntakeCommand(robotIntake, -0.5)).withTimeout(0.2);
     eventMap.put("duck", new TeleopArmCommand(robotArm, "idle")).withTimeout(0.7);
     eventMap.put("armCubeGround", new TeleopArmCommand(robotArm, "ground")).withTimeout(1.2);
-    eventMap.put("intake", new IntakeCommand(robotIntake, -0.5)).withTimeout(0.3);
+    eventMap.put("intake", new IntakeCommand(robotIntake, 0.5)).withTimeout(0.3);
     eventMap.put("outtakeCube", new IntakeCommand(robotIntake, 0.5)).withTimeout(0.2);
+
+    FollowPathWithEvents auton = new FollowPathWithEvents(
+      robotDrive.followPath(testComplexPath, true), 
+      testComplexPath.getMarkers(), 
+      eventMap);
+
+    return auton;
+  }
+
+  public Command pathSetup(String pathName) {
+    PathPlannerTrajectory testComplexPath = PathPlanner.loadPath(pathName, new PathConstraints(4, 3));
+    HashMap<String, Command> eventMap = new HashMap<>();
+
+    eventMap.put("coneMode", new InstantCommand( () -> { GameStates.isCube = false; PDH.setSwitchableChannel(true);}));
+    eventMap.put("cubeMode", new InstantCommand( () -> { GameStates.isCube = false; PDH.setSwitchableChannel(true);}));
+    eventMap.put("armHigh", new TeleopArmCommand(robotArm, "high")).withTimeout(1.2);
+    eventMap.put("outtake", new IntakeCommand(robotIntake, -0.5)).withTimeout(0.2);
+    eventMap.put("duck", new TeleopArmCommand(robotArm, "idle")).withTimeout(0.7);
+    eventMap.put("armGround", new TeleopArmCommand(robotArm, "ground")).withTimeout(1.2);
+    eventMap.put("intake", new IntakeCommand(robotIntake, -0.5)).withTimeout(0.3);
 
     FollowPathWithEvents auton = new FollowPathWithEvents(
       robotDrive.followPath(testComplexPath, true), 
