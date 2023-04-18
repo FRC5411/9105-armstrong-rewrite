@@ -255,9 +255,15 @@ public class RobotContainer {
       return new InstantCommand();
     }*/
 
-    return itTurns();
+    return Auton();
     
     
+  }
+
+
+  public Command Auton() {
+    robotDrive.resetOdometry(new Pose2d(1.8, 0, new Rotation2d()));
+    return robotDrive.moveCommand(3, () -> robotDrive.getPose().getX());
   }
 
   public Command setupPaths(String pathName) {
