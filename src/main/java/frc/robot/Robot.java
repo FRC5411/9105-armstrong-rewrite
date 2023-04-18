@@ -1,5 +1,7 @@
 package frc.robot;
 
+import com.pathplanner.lib.server.PathPlannerServer;
+
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -24,6 +26,8 @@ public class Robot extends TimedRobot {
     DebugInfo.initialGyroPitch = m_robotContainer.getRobotDrive().getGyroPitch();
 
     holdArmCmd = new HoldArmCommand(m_robotContainer.getRobotArm());
+
+    PathPlannerServer.startServer(5800);
   }
 
   @Override

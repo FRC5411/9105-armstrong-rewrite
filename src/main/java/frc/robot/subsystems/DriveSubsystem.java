@@ -77,6 +77,11 @@ public class DriveSubsystem extends SubsystemBase {
     rightFrontEncoder = rightFrontMotor.getEncoder();
     rightBackEncoder = rightBackMotor.getEncoder();
 
+    leftFrontEncoder.setInverted(true);
+    leftFrontEncoder.setInverted(true);
+    leftFrontEncoder.setInverted(true);
+    leftFrontEncoder.setInverted(true);
+
     leftFrontEncoder.setPositionConversionFactor(AutonomousConstants.LINEAR_DIST_CONVERSION_FACTOR);
     rightFrontEncoder.setPositionConversionFactor(AutonomousConstants.LINEAR_DIST_CONVERSION_FACTOR);
 
