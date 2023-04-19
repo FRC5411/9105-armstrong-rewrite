@@ -126,7 +126,7 @@ public class RobotContainer {
 
 
     //////// Autobalance Drive
-    whileHeld(controller.a(), () -> new AutoEngageCommand(robotDrive));
+    controller.a().whileTrue(new AutoEngageCommand(robotDrive));
 
 
     //////// Reset Odometer
