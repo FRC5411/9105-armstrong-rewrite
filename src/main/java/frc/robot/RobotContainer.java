@@ -2,13 +2,6 @@
 
 package frc.robot;
 
-import java.util.HashMap;
-
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.commands.FollowPathWithEvents;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -17,12 +10,9 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.ArmConstants;
-import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.ButtonBoardConstants;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.GlobalVars.DebugInfo;
@@ -31,7 +21,6 @@ import frc.robot.GlobalVars.SniperMode;
 import frc.robot.commands.ArcadeCommand;
 import frc.robot.commands.AutoEngageCommand;
 import frc.robot.commands.TurnCommand;
-import frc.robot.commands.Arm.AutonArmCommand;
 import frc.robot.commands.Arm.TeleopArmCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.AutonSubsystem;
