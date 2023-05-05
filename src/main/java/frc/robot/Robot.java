@@ -20,8 +20,6 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("ARM OUTPUT", 0);
     SmartDashboard.putNumber("TURN OUTPUT", 0);
 
-    CameraServer.startAutomaticCapture();
-
     m_robotContainer = new RobotContainer();
 
     DebugInfo.initialGyroPitch = m_robotContainer.getRobotDrive().getGyroPitch();

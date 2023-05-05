@@ -1,23 +1,14 @@
 
 package frc.robot.subsystems;
 
-import java.util.function.DoubleSupplier;
-
 import com.kauailabs.navx.frc.AHRS;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.commands.PPRamseteCommand;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.controller.RamseteController; // i like boys
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -28,7 +19,6 @@ import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.GlobalVars.SniperMode;
 import frc.robot.commands.ArcadeCommand;
-import frc.robot.commands.Move;
 import edu.wpi.first.wpilibj.SPI;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -40,8 +30,6 @@ public class DriveSubsystem extends SubsystemBase {
 
   private MotorControllerGroup leftMotors;
   private MotorControllerGroup rightMotors;
-
-  private ProfiledPIDController movePID;
 
   private RelativeEncoder leftFrontEncoder;
   private RelativeEncoder leftBackEncoder;
@@ -116,8 +104,6 @@ public class DriveSubsystem extends SubsystemBase {
 
     robotDrive = new DifferentialDrive(rightMotors, leftMotors);
 
-    movePID = new ProfiledPIDController(0.001, 0, 0, new TrapezoidProfile.Constraints(1,1) );
-
     navX = new AHRS(SPI.Port.kMXP);
 
     odometry = new DifferentialDriveOdometry(navX.getRotation2d(), leftFrontEncoder.getPosition(), rightFrontEncoder.getPosition());
@@ -188,10 +174,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void autonomousArcadeDrive(double speed, double rotation) {
     SmartDashboard.putNumber("TURN OUTPUT", rotation);
-    
-    rotation = rotation * 0.1;
-    rotation = rotation * -1;
-
+  
     robotDrive.arcadeDrive(speed, rotation);
 
     System.out.println("ROTATION : " + rotation);
@@ -275,10 +258,6 @@ public class DriveSubsystem extends SubsystemBase {
     return field;
   }
 
-  public Command moveCommand(double setpoint, DoubleSupplier measure) {
-    return new Move(movePID, setpoint, measure, this);
-  }
-
   public void setTankDriveVolts(double leftVolts, double rightVolts) {
     leftFrontMotor.setVoltage(-leftVolts);
     leftBackMotor.setVoltage(-leftVolts);
@@ -310,24 +289,24 @@ public class DriveSubsystem extends SubsystemBase {
     rightBackEncoder.setPosition(0);
   }
 
-  public Command followPath(PathPlannerTrajectory trajectory, boolean isFirstPath) {
-    if (isFirstPath) {
-      this.resetOdometry(trajectory.getInitialPose());
-    }
+  // public Command followPath(PathPlannerTrajectory trajectory, boolean isFirstPath) {
+  //   if (isFirstPath) {
+  //     this.resetOdometry(trajectory.getInitialPose());
+  //   }
 
-    return new PPRamseteCommand(
-      trajectory, 
-      this::getPose, 
-      new RamseteController(AutonomousConstants.RAMSETE_B, AutonomousConstants.RAMSETE_ZETA), 
-      new SimpleMotorFeedforward(AutonomousConstants.VOLTS, AutonomousConstants.VOLT_SECONDS_PER_METER, AutonomousConstants.VOLT_SECONDS_SQUARED_PER_METER), 
-      AutonomousConstants.DRIVE_KINEMATICS, 
-      this::getWheelSpeeds, 
-      new PIDController(0.001, 0, 0), 
-      new PIDController(0.001, 0, 0), 
-      this::setTankDriveVolts,
-      this
-      );
-  }
+  //   return new PPRamseteCommand(
+  //     trajectory, 
+  //     this::getPose, 
+  //     new RamseteController(AutonomousConstants.RAMSETE_B, AutonomousConstants.RAMSETE_ZETA), 
+  //     new SimpleMotorFeedforward(AutonomousConstants.VOLTS, AutonomousConstants.VOLT_SECONDS_PER_METER, AutonomousConstants.VOLT_SECONDS_SQUARED_PER_METER), 
+  //     AutonomousConstants.DRIVE_KINEMATICS, 
+  //     this::getWheelSpeeds, 
+  //     new PIDController(0.001, 0, 0), 
+  //     new PIDController(0.001, 0, 0), 
+  //     this::setTankDriveVolts,
+  //     this
+  //     );
+  // }
 
   @Override
   public void periodic() {

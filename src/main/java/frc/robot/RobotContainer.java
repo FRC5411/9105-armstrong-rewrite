@@ -78,9 +78,9 @@ public class RobotContainer {
     autonChooser.addOption("CONE MOBILITY DOCK", robotAuton.autonomousCmd(2));
     autonChooser.addOption("CONE SCORE ONLY", robotAuton.autonomousCmd(3));
     autonChooser.addOption("CUBE SCORE ONLY", robotAuton.autonomousCmd(4));
-    autonChooser.addOption("CONE MOBILITY EXTEND GRAB", robotAuton.autonomousCmd(5));
-    autonChooser.addOption("CONE MOBILITY TURN EXTEND", robotAuton.autonomousCmd(6));
-    autonChooser.addOption("RED CONE MOBILITY TURN", robotAuton.autonomousCmd(7));
+    autonChooser.addOption("CUBE MOBILITY EXTEND GRAB", robotAuton.autonomousCmd(5));
+    autonChooser.addOption("(Exp*) CONE MOBILITY TURN EXTEND", robotAuton.autonomousCmd(6));
+    autonChooser.addOption("(Exp*) RED CONE MOBILITY TURN", robotAuton.autonomousCmd(7));
 
     configureBindings();
   }
@@ -228,41 +228,12 @@ public class RobotContainer {
     return robotDrive;
   }
 
-  public Command Auton() {
-    robotDrive.resetOdometry(new Pose2d(1.8, 0, new Rotation2d()));
-    return robotDrive.moveCommand(3, () -> robotDrive.getPose().getX());
-  }
 
   public ArmSubsystem getRobotArm() {
     return robotArm;
   }
 
   public Command getAutonomousCommand() {
-    /*PathConstraints trajectoryConstraints = new PathConstraints(AutonomousConstants.DRIVE_VELOCITY, AutonomousConstants.MAX_ACCELERATION);
-    PathPlannerTrajectory mainTrajectory = PathPlanner.loadPath("Taha" , trajectoryConstraints);
-    robotDrive.getField().getObject("field").setTrajectory(mainTrajectory);
-
-    return robotDrive.followPath(mainTrajectory);*/
-
-    // PathPlannerTrajectory noBump = PathPlanner.loadPath("Nachos", new PathConstraints(AutonomousConstants.DRIVE_VELOCITY, AutonomousConstants.MAX_ACCELERATION));
-    // HashMap<String, Command> eventMap = new HashMap<>();
-
-    // AutonArmCommand testArmCommand = new AutonArmCommand(robotArm, ArmConstants.CONE_HIGH_ANGLE);
-    // eventMap.put("scoreHigh", testArmCommand.withTimeout(1.9));
-    /*eventMap.put("scoreHigh", new AutonArmCommand(robotArm, ArmConstants.CONE_HIGH_ANGLE)).withTimeout(1.9);
-    eventMap.put("outtake", new IntakeCommand(robotIntake, -1)).withTimeout(0.5);
-    eventMap.put("stopIntake", new IntakeCommand(robotIntake, 0)).withTimeout(0.1);
-    eventMap.put("retract", new AutonArmCommand(robotArm, 10)).withTimeout(0.9);*/
-
-    //FollowPathWithEvents thing = new FollowPathWithEvents(getPathFollowCommand(noBump), null, eventMap)
-
-    // robotDrive.getField().getObject("field").setTrajectory(noBump);
-
-    // return new SequentialCommandGroup(
-    //   new FollowPathWithEvents(
-    //     robotDrive.followPath(noBump, true), 
-    //     noBump.getMarkers(), 
-    //     eventMap)
-    return Auton();
+    return autonChooser.getSelected();
   }
 }
