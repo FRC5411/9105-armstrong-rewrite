@@ -2,11 +2,17 @@
 package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPRamseteCommand;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -43,6 +49,8 @@ public class DriveSubsystem extends SubsystemBase {
   private DifferentialDriveOdometry odometry;
 
   private Field2d field;
+
+  private Pose2d targetPose;
 
   public DriveSubsystem() {
     leftFrontMotor = new CANSparkMax(
@@ -106,7 +114,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     navX = new AHRS(SPI.Port.kMXP);
 
-    odometry = new DifferentialDriveOdometry(navX.getRotation2d(), leftFrontEncoder.getPosition(), rightFrontEncoder.getPosition());
+    odometry = new DifferentialDriveOdometry(getRotation2d(), leftFrontEncoder.getPosition(), rightFrontEncoder.getPosition());
 
     field = new Field2d();
 
@@ -117,10 +125,20 @@ public class DriveSubsystem extends SubsystemBase {
 
     resetEncoders();
     resetOdometry(getPose());
+
+    targetPose = new Pose2d();
   }
 
   public Pose2d returnRobotPose(){
     return getPose();
+  }
+
+  public Pose2d getTargetPose() {
+    return targetPose;
+  }
+
+  public void setTargetPose(Pose2d pose) {
+    targetPose = pose;
   }
 
   public void arcadeDrive(double speed, double rotation) {
@@ -211,7 +229,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public double getGyroHeading() {
-    return navX.getRotation2d().getDegrees();
+    return getRotation2d().getDegrees();
   }
 
   public double getLeftFrontMotorTemp() {
@@ -259,10 +277,10 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void setTankDriveVolts(double leftVolts, double rightVolts) {
-    leftFrontMotor.setVoltage(-leftVolts);
-    leftBackMotor.setVoltage(-leftVolts);
-    rightFrontMotor.setVoltage(-rightVolts);
-    rightBackMotor.setVoltage(-rightVolts);
+    leftFrontMotor.setVoltage(leftVolts);
+    leftBackMotor.setVoltage(leftVolts);
+    rightFrontMotor.setVoltage(rightVolts);
+    rightBackMotor.setVoltage(rightVolts);
     robotDrive.feed();
   }
 
@@ -279,7 +297,7 @@ public class DriveSubsystem extends SubsystemBase {
     resetEncoders();
     navX.reset();
     navX.calibrate();
-    odometry.resetPosition(navX.getRotation2d(), getLeftFrontEncoderPosition(), getGyroHeading(), pose);
+    odometry.resetPosition(getRotation2d(), getLeftFrontEncoderPosition(), getRightFrontEncoderPosition(), pose);
   }
 
   public void resetEncoders() {
@@ -289,28 +307,32 @@ public class DriveSubsystem extends SubsystemBase {
     rightBackEncoder.setPosition(0);
   }
 
-  // public Command followPath(PathPlannerTrajectory trajectory, boolean isFirstPath) {
-  //   if (isFirstPath) {
-  //     this.resetOdometry(trajectory.getInitialPose());
-  //   }
+ public Command followPath(PathPlannerTrajectory trajectory, boolean isFirstPath) {
+   if (isFirstPath) {
+     this.resetOdometry(trajectory.getInitialPose());
+   }
 
-  //   return new PPRamseteCommand(
-  //     trajectory, 
-  //     this::getPose, 
-  //     new RamseteController(AutonomousConstants.RAMSETE_B, AutonomousConstants.RAMSETE_ZETA), 
-  //     new SimpleMotorFeedforward(AutonomousConstants.VOLTS, AutonomousConstants.VOLT_SECONDS_PER_METER, AutonomousConstants.VOLT_SECONDS_SQUARED_PER_METER), 
-  //     AutonomousConstants.DRIVE_KINEMATICS, 
-  //     this::getWheelSpeeds, 
-  //     new PIDController(0.001, 0, 0), 
-  //     new PIDController(0.001, 0, 0), 
-  //     this::setTankDriveVolts,
-  //     this
-  //     );
-  // }
+   return new PPRamseteCommand (
+     trajectory, 
+     this::getPose, 
+     new RamseteController(AutonomousConstants.RAMSETE_B, AutonomousConstants.RAMSETE_ZETA), 
+     new SimpleMotorFeedforward(AutonomousConstants.VOLTS, AutonomousConstants.VOLT_SECONDS_PER_METER, AutonomousConstants.VOLT_SECONDS_SQUARED_PER_METER), 
+     AutonomousConstants.DRIVE_KINEMATICS, 
+     this::getWheelSpeeds, 
+     new PIDController(0.001, 0, 0), 
+     new PIDController(0.001, 0, 0), 
+     this::setTankDriveVolts,
+     this
+     );
+ }
+
+  public Rotation2d getRotation2d() {
+    return new Rotation2d(navX.getRotation2d().getRadians());
+  }
 
   @Override
   public void periodic() {
-    odometry.update(navX.getRotation2d(), -leftFrontEncoder.getPosition(), -rightFrontEncoder.getPosition());
+    odometry.update(getRotation2d(), -leftFrontEncoder.getPosition(), -rightFrontEncoder.getPosition());
     field.setRobotPose(odometry.getPoseMeters());
 
     SmartDashboard.putNumber("LEFT FRONT ENCODER POS: ", getLeftFrontEncoderPosition());
