@@ -2,12 +2,31 @@
   "NetworkTables": {
     "transitory": {
       "SmartDashboard": {
+        "PPRamseteCommand": {
+          "open": true
+        },
         "open": true
       }
     },
     "types": {
       "/FMSInfo": "FMSInfo",
-      "/Shuffleboard/Autonomous: /SendableChooser[0]": "String Chooser"
+      "/Shuffleboard/Autonomous: /SendableChooser[0]": "String Chooser",
+      "/SmartDashboard/Field": "Field2d"
+    },
+    "windows": {
+      "/SmartDashboard/Field": {
+        "Robot": {
+          "color": [
+            0.058567240834236145,
+            0.20249684154987335,
+            0.6785714626312256,
+            255.0
+          ]
+        },
+        "window": {
+          "visible": true
+        }
+      }
     }
   },
   "NetworkTables Settings": {
@@ -18,7 +37,7 @@
     "Plot <0>": {
       "plots": [
         {
-          "height": 509,
+          "height": 0,
           "series": [
             {
               "color": [
@@ -32,6 +51,29 @@
           ]
         }
       ]
+    },
+    "Plot <1>": {
+      "plots": [
+        {
+          "height": 1024,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/PPRamseteCommand/rotationErrorDegrees"
+            }
+          ]
+        }
+      ]
+    },
+    "Plot <2>": {
+      "window": {
+        "visible": false
+      }
     }
   }
 }

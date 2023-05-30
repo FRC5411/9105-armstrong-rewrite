@@ -277,6 +277,9 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void setTankDriveVolts(double leftVolts, double rightVolts) {
+//    leftVolts *= -1;
+//    rightVolts *= -1;
+
     leftFrontMotor.setVoltage(leftVolts);
     leftBackMotor.setVoltage(leftVolts);
     rightFrontMotor.setVoltage(rightVolts);
@@ -297,7 +300,7 @@ public class DriveSubsystem extends SubsystemBase {
     resetEncoders();
     navX.reset();
     navX.calibrate();
-    odometry.resetPosition(getRotation2d(), getLeftFrontEncoderPosition(), getRightFrontEncoderPosition(), pose);
+    odometry.resetPosition(getRotation2d(), -getLeftFrontEncoderPosition(), -getRightFrontEncoderPosition(), pose);
   }
 
   public void resetEncoders() {
@@ -318,9 +321,9 @@ public class DriveSubsystem extends SubsystemBase {
      new RamseteController(AutonomousConstants.RAMSETE_B, AutonomousConstants.RAMSETE_ZETA), 
      new SimpleMotorFeedforward(AutonomousConstants.VOLTS, AutonomousConstants.VOLT_SECONDS_PER_METER, AutonomousConstants.VOLT_SECONDS_SQUARED_PER_METER), 
      AutonomousConstants.DRIVE_KINEMATICS, 
-     this::getWheelSpeeds, 
-     new PIDController(0.001, 0, 0), 
-     new PIDController(0.001, 0, 0), 
+     this::getWheelSpeeds,
+     new PIDController(AutonomousConstants.DRIVE_VELOCITY, 0, 0), 
+     new PIDController(AutonomousConstants.DRIVE_VELOCITY, 0, 0), 
      this::setTankDriveVolts,
      this
      );
@@ -332,7 +335,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    odometry.update(getRotation2d(), -leftFrontEncoder.getPosition(), -rightFrontEncoder.getPosition());
+    odometry.update(getRotation2d(), leftFrontEncoder.getPosition(), rightFrontEncoder.getPosition());
     field.setRobotPose(odometry.getPoseMeters());
 
     SmartDashboard.putNumber("LEFT FRONT ENCODER POS: ", getLeftFrontEncoderPosition());
