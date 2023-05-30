@@ -6,7 +6,6 @@ import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.server.PathPlannerServer;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -87,6 +86,8 @@ public class RobotContainer {
     autonChooser.addOption("CUBE MOBILITY EXTEND GRAB", robotAuton.autonomousCmd(5));
     autonChooser.addOption("(Exp*) CONE MOBILITY TURN EXTEND", robotAuton.autonomousCmd(6));
     autonChooser.addOption("(Exp*) RED CONE MOBILITY TURN", robotAuton.autonomousCmd(7));
+
+    PathPlannerServer.startServer(5811);
 
     configureBindings();
   }
@@ -243,7 +244,7 @@ public class RobotContainer {
     PathConstraints trajectoryConstraints = new PathConstraints(AutonomousConstants.DRIVE_VELOCITY, AutonomousConstants.MAX_ACCELERATION);
     PathPlannerTrajectory mainTrajectory = PathPlanner.loadPath("Taha" , trajectoryConstraints);
     robotDrive.getField().getObject("Taha").setTrajectory(mainTrajectory);
-
+//    PathPlannerServer.sendActivePath(mainTrajectory.getStates());
     return mainTrajectory;
   }
 

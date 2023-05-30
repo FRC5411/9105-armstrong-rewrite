@@ -1,8 +1,4 @@
 package frc.robot;
-
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.server.PathPlannerServer;
-
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -25,10 +21,6 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
 
     DebugInfo.initialGyroPitch = m_robotContainer.getRobotDrive().getGyroPitch();
-
-    PathPlannerServer.startServer(5811);
-
-    
 
     holdArmCmd = new HoldArmCommand(m_robotContainer.getRobotArm());
   }
@@ -54,8 +46,6 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
-
-    //PathPlannerServer.sendActivePath(m_robotContainer.getMainTrajectory().getStates());
   }
 
   @Override
@@ -65,8 +55,6 @@ public class Robot extends TimedRobot {
     DebugInfo.profiledArmP = SmartDashboard.getNumber("ARM P", 0.01);
     DebugInfo.profiledArmI = SmartDashboard.getNumber("ARM I", 0.0);
     DebugInfo.profiledArmD = SmartDashboard.getNumber("ARM D", 0.0);
-
-    PathPlannerServer.sendActivePath(null);
   }
 
   @Override
