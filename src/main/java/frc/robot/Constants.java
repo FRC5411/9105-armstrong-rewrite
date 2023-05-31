@@ -59,7 +59,7 @@ public final class Constants {
     public static final double GEAR_RATIO = 7.89;
     public static final double WHEEL_RADIUS = 3; 
     
-    public static final double LINEAR_DIST_CONVERSION_FACTOR = -(convertToLinDist(GEAR_RATIO, WHEEL_RADIUS));
+    public static final double LINEAR_DIST_CONVERSION_FACTOR = (convertToLinDist(GEAR_RATIO, WHEEL_RADIUS));
 
     public static final double DRIVE_SPEED = 0.25;
   }

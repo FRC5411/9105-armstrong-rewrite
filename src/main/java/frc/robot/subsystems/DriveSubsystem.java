@@ -80,9 +80,6 @@ public class DriveSubsystem extends SubsystemBase {
     rightFrontEncoder = rightFrontMotor.getEncoder();
     rightBackEncoder = rightBackMotor.getEncoder();
 
-    leftFrontEncoder.setPositionConversionFactor(AutonomousConstants.LINEAR_DIST_CONVERSION_FACTOR);
-    rightFrontEncoder.setPositionConversionFactor(AutonomousConstants.LINEAR_DIST_CONVERSION_FACTOR);
-
     leftFrontEncoder.setPositionConversionFactor(
       AutonomousConstants.LINEAR_DIST_CONVERSION_FACTOR);
 
@@ -276,7 +273,10 @@ public class DriveSubsystem extends SubsystemBase {
     return field;
   }
 
-  public void setTankDriveVolts(double leftVolts, double rightVolts) {
+  public void setTankDriveVolts(double rightVolts, double leftVolts) {
+    //  leftVolts *= -1;
+    //  rightVolts *= -1;
+
     leftFrontMotor.setVoltage(leftVolts);
     leftBackMotor.setVoltage(leftVolts);
     rightFrontMotor.setVoltage(rightVolts);
@@ -295,8 +295,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void resetOdometry(Pose2d pose) {
     resetEncoders();
-    navX.reset();
-    navX.calibrate();
+    // navX.reset();
+    // navX.calibrate();
     odometry.resetPosition(getRotation2d(), getLeftFrontEncoderPosition(), getRightFrontEncoderPosition(), pose);
   }
 
@@ -319,8 +319,8 @@ public class DriveSubsystem extends SubsystemBase {
      new SimpleMotorFeedforward(AutonomousConstants.VOLTS, AutonomousConstants.VOLT_SECONDS_PER_METER, AutonomousConstants.VOLT_SECONDS_SQUARED_PER_METER), 
      AutonomousConstants.DRIVE_KINEMATICS, 
      this::getWheelSpeeds, 
-     new PIDController(0.001, 0, 0), 
-     new PIDController(0.001, 0, 0), 
+     new PIDController(0.0009, 0, 0), 
+     new PIDController(0.0009, 0, 0), 
      this::setTankDriveVolts,
      this
      );
@@ -332,11 +332,15 @@ public class DriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    odometry.update(getRotation2d(), -leftFrontEncoder.getPosition(), -rightFrontEncoder.getPosition());
+    odometry.update(getRotation2d(), leftFrontEncoder.getPosition(), rightFrontEncoder.getPosition());
     field.setRobotPose(odometry.getPoseMeters());
 
     SmartDashboard.putNumber("LEFT FRONT ENCODER POS: ", getLeftFrontEncoderPosition());
     SmartDashboard.putNumber("RIGHT FRONT ENCODER POS: ", getRightFrontEncoderPosition());
+    SmartDashboard.putNumber("LEFT FRONT SPEED", -getLeftFrontEncoderVelocity());
+    SmartDashboard.putNumber("RIGHT FRONT SPEED", getRightFrontEncoderVelocity());
+    SmartDashboard.putNumber("RIGHT BACK SPEED", getRightBackEncoderVelocity());
+    SmartDashboard.putNumber("LEFT BACK SPEED", -getLefrtBackEncoderVelocity());
     SmartDashboard.putNumber("LEFT FRONT TEMP: ", getLeftFrontMotorTemp());
     SmartDashboard.putNumber("LEFT BACK TEMP: ", getLeftBackMotorTemp());
     SmartDashboard.putNumber("RIGHT FRONT TEMP: ", getRightFrontMotorTemp());
@@ -347,5 +351,6 @@ public class DriveSubsystem extends SubsystemBase {
 
     SmartDashboard.putNumber("Odometry X", odometry.getPoseMeters().getX());
     SmartDashboard.putNumber("Odometry Y", odometry.getPoseMeters().getY());
+    SmartDashboard.putNumber("Odometry Rotation", odometry.getPoseMeters().getRotation().getDegrees());
   }
 }
