@@ -319,8 +319,8 @@ public class DriveSubsystem extends SubsystemBase {
      new SimpleMotorFeedforward(AutonomousConstants.VOLTS, AutonomousConstants.VOLT_SECONDS_PER_METER, AutonomousConstants.VOLT_SECONDS_SQUARED_PER_METER), 
      AutonomousConstants.DRIVE_KINEMATICS, 
      this::getWheelSpeeds, 
-     new PIDController(0.0009, 0, 0), 
-     new PIDController(0.0009, 0, 0), 
+     new PIDController(0.0007, 0, 0), 
+     new PIDController(0.0007, 0, 0), //0.0008 //0.0009
      this::setTankDriveVolts,
      this
      );
@@ -341,12 +341,12 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("RIGHT FRONT SPEED", getRightFrontEncoderVelocity());
     SmartDashboard.putNumber("RIGHT BACK SPEED", getRightBackEncoderVelocity());
     SmartDashboard.putNumber("LEFT BACK SPEED", -getLefrtBackEncoderVelocity());
-    SmartDashboard.putNumber("LEFT FRONT TEMP: ", getLeftFrontMotorTemp());
-    SmartDashboard.putNumber("LEFT BACK TEMP: ", getLeftBackMotorTemp());
-    SmartDashboard.putNumber("RIGHT FRONT TEMP: ", getRightFrontMotorTemp());
-    SmartDashboard.putNumber("RIGHT BACK TEMP: ", getRightBackMotorTemp());
-    SmartDashboard.putNumber("GYRO PITCH ", getGyroPitch());
-    SmartDashboard.putNumber("GYRO ROLL", getGyroRoll());
+    // SmartDashboard.putNumber("LEFT FRONT TEMP: ", getLeftFrontMotorTemp());
+    // SmartDashboard.putNumber("LEFT BACK TEMP: ", getLeftBackMotorTemp());
+    // SmartDashboard.putNumber("RIGHT FRONT TEMP: ", getRightFrontMotorTemp());
+    // SmartDashboard.putNumber("RIGHT BACK TEMP: ", getRightBackMotorTemp());
+    // SmartDashboard.putNumber("GYRO PITCH ", getGyroPitch());
+    // SmartDashboard.putNumber("GYRO ROLL", getGyroRoll());
     SmartDashboard.putNumber("GYRO YAW", getGyroYaw());
 
     SmartDashboard.putNumber("Odometry X", odometry.getPoseMeters().getX());

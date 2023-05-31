@@ -72,8 +72,8 @@ public class ArmSubsystem extends SubsystemBase {
 
       limitArmSpeed();
       
-      SmartDashboard.putBoolean("GAME MODE", GameStates.isCube);
-      SmartDashboard.putNumber("ARM ENCODER", getBicepEncoderPosition());
+      // SmartDashboard.putBoolean("GAME MODE", GameStates.isCube);
+      // SmartDashboard.putNumber("ARM ENCODER", getBicepEncoderPosition());
     }
    
     @Override  public void simulationPeriodic() {}

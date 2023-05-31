@@ -22,13 +22,17 @@
             0.6785714626312256,
             255.0
           ]
+        },
+        "window": {
+          "visible": true
         }
       }
     }
   },
   "NetworkTables Settings": {
     "mode": "Client (NT4)",
-    "serverTeam": "9105"
+    "serverTeam": "9105",
+    "visible": false
   },
   "Plots": {
     "Plot <0>": {
