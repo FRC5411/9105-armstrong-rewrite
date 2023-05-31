@@ -319,8 +319,8 @@ public class DriveSubsystem extends SubsystemBase {
      new SimpleMotorFeedforward(AutonomousConstants.VOLTS, AutonomousConstants.VOLT_SECONDS_PER_METER, AutonomousConstants.VOLT_SECONDS_SQUARED_PER_METER), 
      AutonomousConstants.DRIVE_KINEMATICS, 
      this::getWheelSpeeds, 
-     new PIDController(0.0007, 0, 0), 
-     new PIDController(0.0007, 0, 0), //0.0008 //0.0009
+     new PIDController(0.001, 0, 0),
+     new PIDController(0.001, 0, 0), //0.00075 //0.0007 //0.0008 //0.0009
      this::setTankDriveVolts,
      this
      );

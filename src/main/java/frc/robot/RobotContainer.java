@@ -2,10 +2,12 @@
 
 package frc.robot;
 
+import java.util.HashMap;
+
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.server.PathPlannerServer;
+import com.pathplanner.lib.commands.FollowPathWithEvents;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -14,6 +16,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -87,7 +90,7 @@ public class RobotContainer {
     autonChooser.addOption("(Exp*) CONE MOBILITY TURN EXTEND", robotAuton.autonomousCmd(6));
     autonChooser.addOption("(Exp*) RED CONE MOBILITY TURN", robotAuton.autonomousCmd(7));
 
-    PathPlannerServer.startServer(5811);
+//    PathPlannerServer.startServer(5811);
 
     configureBindings();
   }
@@ -244,11 +247,28 @@ public class RobotContainer {
     PathConstraints trajectoryConstraints = new PathConstraints(AutonomousConstants.DRIVE_VELOCITY, AutonomousConstants.MAX_ACCELERATION);
     PathPlannerTrajectory mainTrajectory = PathPlanner.loadPath("Taha" , trajectoryConstraints);
     robotDrive.getField().getObject("Taha").setTrajectory(mainTrajectory);
-//    PathPlannerServer.sendActivePath(mainTrajectory.getStates());
     return mainTrajectory;
   }
 
   public Command getAutonomousCommand() {
-    return robotDrive.followPath(getMainTrajectory(), true);
+    HashMap<String, Command> eventMap = new HashMap<>();
+
+    eventMap.put("GoHigh", robotAuton.armConeHigh().withTimeout(3));
+    eventMap.put("SpitCone", robotAuton.inCubeOutCone().withTimeout(3));
+    eventMap.put("TakeCube", robotAuton.inCubeOutCone().withTimeout(3));
+    eventMap.put("Idle", robotAuton.armToIdle(1.5).withTimeout(3));
+    // eventMap.put("PickupCube", new SequentialCommandGroup(robotAuton.armCubeGround(), 
+    //                                                       robotAuton.inCubeOutCone(),
+    //                                                       robotAuton.armToIdle(1.5)
+    //                                                       )
+    //                                                       );
+
+    FollowPathWithEvents e = new FollowPathWithEvents(
+      robotDrive.followPath(getMainTrajectory(), true),
+      getMainTrajectory().getMarkers(),
+      eventMap
+    );
+
+    return e;
   }
 }
