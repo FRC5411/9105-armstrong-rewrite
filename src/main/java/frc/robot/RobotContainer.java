@@ -243,6 +243,8 @@ public class RobotContainer {
   public Command getAutonomousCommand(String trajectoryName, Boolean alliance) {
     PathConstraints trajectoryConstraints = new PathConstraints(AutonomousConstants.DRIVE_VELOCITY, AutonomousConstants.MAX_ACCELERATION);
     List<PathPlannerTrajectory> mainTrajectory = PathPlanner.loadPathGroup("Taha" , trajectoryConstraints);
+    PathPlannerTrajectory mapTrajectory = PathPlanner.loadPath(trajectoryName, trajectoryConstraints);
+    robotDrive.getField().getObject("Taha").setTrajectory(mapTrajectory);
 
     HashMap<String, Command> eventMap = new HashMap<>();
 
