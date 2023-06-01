@@ -59,13 +59,14 @@ public class IntakeSubsystem extends SubsystemBase{
 
   @Override  
   public void periodic() {
-      // SmartDashboard.putNumber("INTAKE CURRENT: ", getIntakeCurrent());
+      SmartDashboard.putNumber("INTAKE CURRENT: ", getIntakeCurrent());
+      SmartDashboard.putNumber("Intake speed", grabber.get());
 
-      // filter = LinearFilter.movingAverage(25);
-      // double calc = filter.calculate(getIntakeCurrent());
+      filter = LinearFilter.movingAverage(25);
+      double calc = filter.calculate(getIntakeCurrent());
 
-      // if (calc > ArmConstants.GRABBER_MOTOR_CURRENT_LIMIT) {
-      //   spinoff();
-      // }
+      if (calc > ArmConstants.GRABBER_MOTOR_CURRENT_LIMIT) {
+        spinoff();
+      }
   }
 }

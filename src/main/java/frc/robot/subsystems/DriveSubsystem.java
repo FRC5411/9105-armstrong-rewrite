@@ -1,8 +1,13 @@
 
 package frc.robot.subsystems;
 
+import java.util.HashMap;
+import java.util.List;
+
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.auto.PIDConstants;
+import com.pathplanner.lib.auto.RamseteAutoBuilder;
 import com.pathplanner.lib.commands.PPRamseteCommand;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -325,6 +330,27 @@ public class DriveSubsystem extends SubsystemBase {
      this
      );
  }
+
+ public Command followPathGroup(List<PathPlannerTrajectory> trajectory, boolean AllianceColor, HashMap<String, Command> eventMap) {
+    RamseteAutoBuilder bAutoBuilder = new RamseteAutoBuilder(
+      this::getPose, 
+      this::resetOdometry, 
+    new RamseteController(AutonomousConstants.RAMSETE_B, 
+                          AutonomousConstants.RAMSETE_ZETA),
+                          AutonomousConstants.DRIVE_KINEMATICS, 
+    new SimpleMotorFeedforward(AutonomousConstants.VOLTS, 
+                            AutonomousConstants.VOLT_SECONDS_PER_METER, 
+                            AutonomousConstants.VOLT_SECONDS_SQUARED_PER_METER), 
+    this::getWheelSpeeds, 
+    new PIDConstants(0.001, 0, 0), 
+    this::setTankDriveVolts, 
+    eventMap, 
+    AllianceColor, 
+    this
+    );
+
+  return bAutoBuilder.fullAuto(trajectory);
+}
 
   public Rotation2d getRotation2d() {
     return new Rotation2d(navX.getRotation2d().getRadians());

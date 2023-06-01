@@ -1,13 +1,11 @@
 // In Java We Trust
 
 package frc.robot;
-
 import java.util.HashMap;
-
+import java.util.List;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.commands.FollowPathWithEvents;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -16,7 +14,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -243,32 +240,21 @@ public class RobotContainer {
     return robotArm;
   }
 
-  public PathPlannerTrajectory getMainTrajectory() {
+  public Command getAutonomousCommand(String trajectoryName, Boolean alliance) {
     PathConstraints trajectoryConstraints = new PathConstraints(AutonomousConstants.DRIVE_VELOCITY, AutonomousConstants.MAX_ACCELERATION);
-    PathPlannerTrajectory mainTrajectory = PathPlanner.loadPath("Taha" , trajectoryConstraints);
-    robotDrive.getField().getObject("Taha").setTrajectory(mainTrajectory);
-    return mainTrajectory;
-  }
+    List<PathPlannerTrajectory> mainTrajectory = PathPlanner.loadPathGroup("Taha" , trajectoryConstraints);
 
-  public Command getAutonomousCommand() {
     HashMap<String, Command> eventMap = new HashMap<>();
 
-    eventMap.put("GoHigh", robotAuton.armConeHigh().withTimeout(3));
-    eventMap.put("SpitCone", robotAuton.inCubeOutCone().withTimeout(3));
-    eventMap.put("TakeCube", robotAuton.inCubeOutCone().withTimeout(3));
-    eventMap.put("Idle", robotAuton.armToIdle(1.5).withTimeout(3));
-    // eventMap.put("PickupCube", new SequentialCommandGroup(robotAuton.armCubeGround(), 
-    //                                                       robotAuton.inCubeOutCone(),
-    //                                                       robotAuton.armToIdle(1.5)
-    //                                                       )
-    //                                                       );
+    eventMap.put("GoHigh", robotAuton.armConeHigh());
+    eventMap.put("SpitCone", robotAuton.inCubeOutCone());
 
-    FollowPathWithEvents e = new FollowPathWithEvents(
-      robotDrive.followPath(getMainTrajectory(), true),
-      getMainTrajectory().getMarkers(),
-      eventMap
-    );
+    eventMap.put("GoCubeLow", robotAuton.armCubeGround());
+    eventMap.put("TakeCube", robotAuton.inCubeOutCone());
 
-    return e;
+    eventMap.put("Idle", robotAuton.armToIdle(1.9));
+    
+
+    return robotDrive.followPathGroup(mainTrajectory, alliance, eventMap);
   }
 }
