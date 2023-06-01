@@ -121,6 +121,7 @@ public class AutonSubsystem {
     }
 
     public Command armCubeHigh(){
+        System.out.println("\n\nARM CUBE HIGH\n\n");
         return new AutonArmCommand(robotArm, "high", "cube").withTimeout(1.9);
     }
 
@@ -151,10 +152,12 @@ public class AutonSubsystem {
     }
 
     public Command armCubeGround(){
+        System.out.println("\n\nARM CUBE GROUND\n\n");
        return new AutonArmCommand(robotArm, "ground", "cube").withTimeout(3.4);
     }
     
     public Command inConeOutCube(){
+        System.out.println("\n\nSPIT CUBE\n\n");
        return new IntakeCommand(robotIntake, -0.5).withTimeout(0.5);
     }
 

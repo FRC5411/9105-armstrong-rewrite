@@ -248,11 +248,14 @@ public class RobotContainer {
 
     HashMap<String, Command> eventMap = new HashMap<>();
 
-    eventMap.put("GoHigh", robotAuton.armConeHigh());
+    eventMap.put("GoConeHigh", robotAuton.armConeHigh());
     eventMap.put("SpitCone", robotAuton.inCubeOutCone());
 
     eventMap.put("GoCubeLow", robotAuton.armCubeGround());
     eventMap.put("TakeCube", robotAuton.inCubeOutCone());
+
+    eventMap.put("GoCubeHigh", robotAuton.armCubeHigh());
+    eventMap.put("SpitCube", robotAuton.inConeOutCube());
 
     eventMap.put("Idle", robotAuton.armToIdle(1.9));
     
