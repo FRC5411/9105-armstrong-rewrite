@@ -10,6 +10,7 @@ public final class Constants {
     return Units.inchesToMeters (
         1 / GEAR_RATIO
         * 2 * Math.PI 
+        * 1
         * Units.inchesToMeters(WHEEL_RADIUS)
         )
         * (2.16/0.548);
