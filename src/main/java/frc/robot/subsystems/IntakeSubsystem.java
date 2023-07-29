@@ -60,6 +60,7 @@ public class IntakeSubsystem extends SubsystemBase{
   @Override  
   public void periodic() {
       SmartDashboard.putNumber("INTAKE CURRENT: ", getIntakeCurrent());
+      SmartDashboard.putNumber("Intake speed", grabber.get());
 
       filter = LinearFilter.movingAverage(25);
       double calc = filter.calculate(getIntakeCurrent());

@@ -13,9 +13,9 @@ import frc.robot.commands.Arm.AutonArmCommand;
 
 public class AutonSubsystem {
 
-    private DriveSubsystem robotDrive;
-    private ArmSubsystem robotArm;
-    private IntakeSubsystem robotIntake;
+    public DriveSubsystem robotDrive;
+    public ArmSubsystem robotArm;
+    public IntakeSubsystem robotIntake;
 
     public AutonSubsystem(DriveSubsystem robotDrive, ArmSubsystem robotArm, IntakeSubsystem robotIntake) {
         this.robotDrive = robotDrive;
@@ -30,8 +30,8 @@ public class AutonSubsystem {
             return new SequentialCommandGroup (
                 armConeHigh(),
                 inCubeOutCone(),
-                armToIdle(1.5),
-                driveBack(2.6)
+                armToIdle(1.5)
+                //driveBack(2.6)
             );
 
             /* CONE > MOBILITY > DOCK */
@@ -107,63 +107,69 @@ public class AutonSubsystem {
         }
     } 
 
-    private Command rawDriveFront(){
+    public Command rawDriveFront(){
         return new ArcadeCommand(() -> -0.75, () -> 0.0, robotDrive);
     }
 
-    private Command rawInCubeOutCone(){
+    public Command rawInCubeOutCone(){
         return new IntakeCommand(robotIntake, 0.5);
     }
 
-    private Command armConeHigh(){
+    public Command armConeHigh(){
+        System.out.println("\n\nARM CONE HIGH\n\n");
         return new AutonArmCommand(robotArm, "high", "cone").withTimeout(1.9);
     }
 
-    private Command armCubeHigh(){
+    public Command armCubeHigh(){
+        System.out.println("\n\nARM CUBE HIGH\n\n");
         return new AutonArmCommand(robotArm, "high", "cube").withTimeout(1.9);
     }
 
-    private Command inCubeOutCone(){
+    public Command inCubeOutCone(){
+        System.out.println("\n\nIN CUBE OUT CONE\n\n");
         return new IntakeCommand(robotIntake, 0.5).withTimeout(0.5);
     }
 
-    private Command armToIdle(double time){
+    public Command armToIdle(double time){
+        System.out.println("\n\nARM TO IDLE\n\n");
         return new AutonArmCommand(robotArm, "idle", "").withTimeout(time);
     }
 
-    private Command driveBack(double time){
+    public Command driveBack(double time){
         return new ArcadeCommand(() -> 0.75, () -> 0.0, robotDrive).withTimeout(time);
     }
 
-    private Command driveFront(double time){
+    public Command driveFront(double time){
         return new ArcadeCommand(() -> -0.75, () -> 0.0, robotDrive).withTimeout(time);
     }
 
-    private Command startTurn(){
+    public Command startTurn(){
         return new ArcadeCommand(() -> 0.0, () -> 0.775, robotDrive).withTimeout(1.5);
     }
 
-    private Command armConeGround(){
+    public Command armConeGround(){
         return new AutonArmCommand(robotArm, "ground", "cone").withTimeout(3.4);
     }
 
-    private Command armCubeGround(){
+    public Command armCubeGround(){
+        System.out.println("\n\nARM CUBE GROUND\n\n");
        return new AutonArmCommand(robotArm, "ground", "cube").withTimeout(3.4);
     }
     
-    private Command inConeOutCube(){
+    public Command inConeOutCube(){
+        System.out.println("\n\nSPIT CUBE\n\n");
        return new IntakeCommand(robotIntake, -0.5).withTimeout(0.5);
     }
 
-    private Command enableAutoEngage(){
+    public Command enableAutoEngage(){
         return new AutoEngageCommand(robotDrive).withTimeout(5);
     }
 
-    private Command enableHoldArm(){
+    public Command enableHoldArm(){
         return new InstantCommand(() -> GameStates.shouldHoldArm = true);
     }
 
-    // private Command disableHoldArm(){
+    // public Command disableHoldArm(){
     //     return new InstantCommand(() -> GameStates.shouldHoldArm = false);
     // }
 }

@@ -25,12 +25,6 @@ public class TurnCommand extends PIDCommand {
       if(getController().atSetpoint()){
         System.out.println("❤AT SETPOINT❤");
       }
-
-      
-
-      System.out.println("VEL ERROR: " + getController().getVelocityError());
-      System.out.println("POS ERROR: " + getController().getPositionError());
-      System.out.println("SETPOINT: " + getController().getSetpoint());
       // Tune these before moving to constants
       getController()
         .setTolerance(1.0, 10.0);

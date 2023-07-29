@@ -1,8 +1,13 @@
 
 package frc.robot.subsystems;
 
+import java.util.HashMap;
+import java.util.List;
+
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.auto.PIDConstants;
+import com.pathplanner.lib.auto.RamseteAutoBuilder;
 import com.pathplanner.lib.commands.PPRamseteCommand;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -79,9 +84,6 @@ public class DriveSubsystem extends SubsystemBase {
     leftBackEncoder = leftBackMotor.getEncoder();
     rightFrontEncoder = rightFrontMotor.getEncoder();
     rightBackEncoder = rightBackMotor.getEncoder();
-
-    leftFrontEncoder.setPositionConversionFactor(AutonomousConstants.LINEAR_DIST_CONVERSION_FACTOR);
-    rightFrontEncoder.setPositionConversionFactor(AutonomousConstants.LINEAR_DIST_CONVERSION_FACTOR);
 
     leftFrontEncoder.setPositionConversionFactor(
       AutonomousConstants.LINEAR_DIST_CONVERSION_FACTOR);
@@ -276,9 +278,9 @@ public class DriveSubsystem extends SubsystemBase {
     return field;
   }
 
-  public void setTankDriveVolts(double leftVolts, double rightVolts) {
-//    leftVolts *= -1;
-//    rightVolts *= -1;
+  public void setTankDriveVolts(double rightVolts, double leftVolts) {
+    //  leftVolts *= -1;
+    //  rightVolts *= -1;
 
     leftFrontMotor.setVoltage(leftVolts);
     leftBackMotor.setVoltage(leftVolts);
@@ -298,9 +300,9 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void resetOdometry(Pose2d pose) {
     resetEncoders();
-    navX.reset();
-    navX.calibrate();
-    odometry.resetPosition(getRotation2d(), -getLeftFrontEncoderPosition(), -getRightFrontEncoderPosition(), pose);
+    // navX.reset();
+    // navX.calibrate();
+    odometry.resetPosition(getRotation2d(), getLeftFrontEncoderPosition(), getRightFrontEncoderPosition(), pose);
   }
 
   public void resetEncoders() {
@@ -321,13 +323,34 @@ public class DriveSubsystem extends SubsystemBase {
      new RamseteController(AutonomousConstants.RAMSETE_B, AutonomousConstants.RAMSETE_ZETA), 
      new SimpleMotorFeedforward(AutonomousConstants.VOLTS, AutonomousConstants.VOLT_SECONDS_PER_METER, AutonomousConstants.VOLT_SECONDS_SQUARED_PER_METER), 
      AutonomousConstants.DRIVE_KINEMATICS, 
-     this::getWheelSpeeds,
-     new PIDController(AutonomousConstants.DRIVE_VELOCITY, 0, 0), 
-     new PIDController(AutonomousConstants.DRIVE_VELOCITY, 0, 0), 
+     this::getWheelSpeeds, 
+     new PIDController(0.001, 0, 0),
+     new PIDController(0.001, 0, 0), //0.00075 //0.0007 //0.0008 //0.0009
      this::setTankDriveVolts,
      this
      );
  }
+
+ public Command followPathGroup(List<PathPlannerTrajectory> trajectory, boolean AllianceColor, HashMap<String, Command> eventMap) {
+    RamseteAutoBuilder bAutoBuilder = new RamseteAutoBuilder(
+      this::getPose, 
+      this::resetOdometry, 
+    new RamseteController(AutonomousConstants.RAMSETE_B, 
+                          AutonomousConstants.RAMSETE_ZETA),
+                          AutonomousConstants.DRIVE_KINEMATICS, 
+    new SimpleMotorFeedforward(AutonomousConstants.VOLTS, 
+                            AutonomousConstants.VOLT_SECONDS_PER_METER, 
+                            AutonomousConstants.VOLT_SECONDS_SQUARED_PER_METER), 
+    this::getWheelSpeeds, 
+    new PIDConstants(0.001, 0, 0), 
+    this::setTankDriveVolts, 
+    eventMap, 
+    AllianceColor, 
+    this
+    );
+
+  return bAutoBuilder.fullAuto(trajectory);
+}
 
   public Rotation2d getRotation2d() {
     return new Rotation2d(navX.getRotation2d().getRadians());
@@ -340,15 +363,20 @@ public class DriveSubsystem extends SubsystemBase {
 
     SmartDashboard.putNumber("LEFT FRONT ENCODER POS: ", getLeftFrontEncoderPosition());
     SmartDashboard.putNumber("RIGHT FRONT ENCODER POS: ", getRightFrontEncoderPosition());
-    SmartDashboard.putNumber("LEFT FRONT TEMP: ", getLeftFrontMotorTemp());
-    SmartDashboard.putNumber("LEFT BACK TEMP: ", getLeftBackMotorTemp());
-    SmartDashboard.putNumber("RIGHT FRONT TEMP: ", getRightFrontMotorTemp());
-    SmartDashboard.putNumber("RIGHT BACK TEMP: ", getRightBackMotorTemp());
-    SmartDashboard.putNumber("GYRO PITCH ", getGyroPitch());
-    SmartDashboard.putNumber("GYRO ROLL", getGyroRoll());
+    SmartDashboard.putNumber("LEFT FRONT SPEED", -getLeftFrontEncoderVelocity());
+    SmartDashboard.putNumber("RIGHT FRONT SPEED", getRightFrontEncoderVelocity());
+    SmartDashboard.putNumber("RIGHT BACK SPEED", getRightBackEncoderVelocity());
+    SmartDashboard.putNumber("LEFT BACK SPEED", -getLefrtBackEncoderVelocity());
+    // SmartDashboard.putNumber("LEFT FRONT TEMP: ", getLeftFrontMotorTemp());
+    // SmartDashboard.putNumber("LEFT BACK TEMP: ", getLeftBackMotorTemp());
+    // SmartDashboard.putNumber("RIGHT FRONT TEMP: ", getRightFrontMotorTemp());
+    // SmartDashboard.putNumber("RIGHT BACK TEMP: ", getRightBackMotorTemp());
+    // SmartDashboard.putNumber("GYRO PITCH ", getGyroPitch());
+    // SmartDashboard.putNumber("GYRO ROLL", getGyroRoll());
     SmartDashboard.putNumber("GYRO YAW", getGyroYaw());
 
     SmartDashboard.putNumber("Odometry X", odometry.getPoseMeters().getX());
     SmartDashboard.putNumber("Odometry Y", odometry.getPoseMeters().getY());
+    SmartDashboard.putNumber("Odometry Rotation", odometry.getPoseMeters().getRotation().getDegrees());
   }
 }
