@@ -6,8 +6,12 @@ import java.util.List;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -130,7 +134,14 @@ public class RobotContainer {
       
       
     //////// Run Turn Command
-    whenClicked(controller.b(), () -> new TurnCommand(robotDrive, 180));
+    controller.b().onTrue(new TurnCommand(
+        new ProfiledPIDController(
+          0.015, 0, 0, 
+        new TrapezoidProfile.Constraints(100, 100)),
+        () -> 180,
+        () -> robotDrive.getPose().getRotation().getDegrees(),
+        robotDrive
+    ).withTimeout(1.5)).onFalse(new InstantCommand(() -> {}, robotDrive));
 
     whileHeld(controller.x(), () -> stopAll());
 

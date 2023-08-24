@@ -1,36 +1,42 @@
 
 package frc.robot.commands;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj2.command.PIDCommand;
-import frc.robot.Constants.DrivebaseConstants;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
+import edu.wpi.first.math.MathUtil;
 
-public class TurnCommand extends PIDCommand {
-  
-    public TurnCommand (DriveSubsystem robotDrive, double setpoint) {
-      super(
-        new PIDController(
-          // Might work idk :T
-          DrivebaseConstants.P_DRIVE_TURN, 
-          DrivebaseConstants.I_DRIVE_TURN, 
-          DrivebaseConstants.D_DRIVE_TURN), 
-        robotDrive::getGyroYaw, 
-        setpoint, 
-        output -> robotDrive.autonomousArcadeDrive(0, output), 
-        robotDrive);
+public class TurnCommand extends CommandBase {
+    private ProfiledPIDController controller;
+    private DoubleSupplier setPointSupplier;
+    private DoubleSupplier measureSupplier;
+    private DriveSubsystem system;
 
-      getController().enableContinuousInput(-180, 180);
+    public TurnCommand (ProfiledPIDController controller, DoubleSupplier setPointSupplier, DoubleSupplier measureSupplier, DriveSubsystem system) {
+      this.controller = controller;
+      this.setPointSupplier = setPointSupplier;
+      this.measureSupplier = measureSupplier;
 
-      if(getController().atSetpoint()){
-        System.out.println("❤AT SETPOINT❤");
-      }
-      // Tune these before moving to constants
-      getController()
-        .setTolerance(1.0, 10.0);
+      this.system = system;
+
+      addRequirements(system);
     }
-  
-    public void initialize() {}
+    
+    @Override
+    public void initialize() {
+      controller.reset(measureSupplier.getAsDouble());
+    }
+
+    @Override
+    public void execute() {
+      system.arcadeDrive(0, 
+      MathUtil.clamp(controller.calculate(
+        measureSupplier.getAsDouble(), 
+        setPointSupplier.getAsDouble()), -5, 5));
+    }
 
     @Override
     public boolean isFinished() {
