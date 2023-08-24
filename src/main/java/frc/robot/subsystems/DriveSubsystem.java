@@ -207,11 +207,11 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public double getLeftFrontEncoderPosition() {
-    return -leftFrontEncoder.getPosition();
+    return leftFrontEncoder.getPosition();
   }
 
   public double getRightFrontEncoderPosition() {
-    return rightFrontEncoder.getPosition();
+    return -rightFrontEncoder.getPosition();
   }
 
   public double getLeftFrontEncoderVelocity() {
@@ -279,8 +279,8 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void setTankDriveVolts(double rightVolts, double leftVolts) {
-    //  leftVolts *= -1;
-    //  rightVolts *= -1;
+    leftVolts *= -1;
+    rightVolts *= -1;
 
     leftFrontMotor.setVoltage(leftVolts);
     leftBackMotor.setVoltage(leftVolts);
@@ -324,8 +324,8 @@ public class DriveSubsystem extends SubsystemBase {
      new SimpleMotorFeedforward(AutonomousConstants.VOLTS, AutonomousConstants.VOLT_SECONDS_PER_METER, AutonomousConstants.VOLT_SECONDS_SQUARED_PER_METER), 
      AutonomousConstants.DRIVE_KINEMATICS, 
      this::getWheelSpeeds, 
-     new PIDController(0.001, 0, 0),
-     new PIDController(0.001, 0, 0), //0.00075 //0.0007 //0.0008 //0.0009
+     new PIDController(0.0009, 0, 0),
+     new PIDController(0.0009, 0, 0), //0.00075 //0.0007 //0.0008 //0.0009
      this::setTankDriveVolts,
      this
      );
@@ -358,7 +358,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    odometry.update(getRotation2d(), leftFrontEncoder.getPosition(), rightFrontEncoder.getPosition());
+    odometry.update(getRotation2d(), -leftFrontEncoder.getPosition(), -rightFrontEncoder.getPosition());
     field.setRobotPose(odometry.getPoseMeters());
 
     SmartDashboard.putNumber("LEFT FRONT ENCODER POS: ", getLeftFrontEncoderPosition());

@@ -16,9 +16,7 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [
-          "PlaceCone"
-        ],
+        "names": [],
         "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
@@ -43,12 +41,7 @@
       "isLocked": false,
       "isStopPoint": true,
       "stopEvent": {
-        "names": [
-          "TurnFront",
-          "PickupCube",
-          "Hold",
-          "TurnBack"
-        ],
+        "names": [],
         "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
