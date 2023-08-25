@@ -6,8 +6,12 @@ import java.util.List;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -73,8 +77,8 @@ public class RobotContainer {
     autonChooser = new SendableChooser<>();
 
     robotDrive.setDefaultCommand(new ArcadeCommand(
-      () -> controller.getLeftY(),
-      () -> controller.getRightX(),
+      () -> - controller.getLeftY(),
+      () -> - controller.getRightX(),
       robotDrive
       ));
 
@@ -130,18 +134,14 @@ public class RobotContainer {
       
       
     //////// Run Turn Command
-<<<<<<< Updated upstream
-    whenClicked(controller.b(), () -> new TurnCommand(robotDrive, 180));
-=======
     controller.b().onTrue(new TurnCommand(
         new ProfiledPIDController(
-          0.025, 0, 0, 
-        new TrapezoidProfile.Constraints(200, 200)),
+          0.015, 0, 0, 
+        new TrapezoidProfile.Constraints(100, 100)),
         () -> 180,
         () -> robotDrive.getPose().getRotation().getDegrees(),
         robotDrive
-    )).onFalse(new InstantCommand(() -> {}, robotDrive));
->>>>>>> Stashed changes
+    ).withTimeout(1.5)).onFalse(new InstantCommand(() -> {}, robotDrive));
 
     whileHeld(controller.x(), () -> stopAll());
 
@@ -253,9 +253,9 @@ public class RobotContainer {
 
   public Command getAutonomousCommand(String trajectoryName, Boolean alliance) {
     PathConstraints trajectoryConstraints = new PathConstraints(AutonomousConstants.DRIVE_VELOCITY, AutonomousConstants.MAX_ACCELERATION);
-    List<PathPlannerTrajectory> mainTrajectory = PathPlanner.loadPathGroup("Taha" , trajectoryConstraints);
-    PathPlannerTrajectory mapTrajectory = PathPlanner.loadPath(trajectoryName, trajectoryConstraints);
-    robotDrive.getField().getObject("Taha").setTrajectory(mapTrajectory);
+    List<PathPlannerTrajectory> mainTrajectory = PathPlanner.loadPathGroup("straight" , trajectoryConstraints);
+    PathPlannerTrajectory mapTrajectory = PathPlanner.loadPath("straight", trajectoryConstraints);
+    robotDrive.getField().getObject("straight").setTrajectory(mapTrajectory);
 
     HashMap<String, Command> eventMap = new HashMap<>();
 
