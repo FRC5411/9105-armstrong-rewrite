@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.DrivebaseConstants;
+import frc.robot.GlobalVars.DriverProfiles;
 import frc.robot.GlobalVars.SniperMode;
 import frc.robot.commands.ArcadeCommand;
 import edu.wpi.first.wpilibj.SPI;
@@ -144,29 +145,11 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void arcadeDrive(double speed, double rotation) {
-    /*
-     * If LY is between 0.1 & -0.1, if so set to 0 to decrease sensitivity
-     * Otherwise, square inputs accordingly
-     */
-
-    if (speed < DrivebaseConstants.DEADZONE && -DrivebaseConstants.DEADZONE < speed) {
+    if (speed < DriverProfiles.deadzoneValues && -DriverProfiles.deadzoneValues < speed) {
       speed = 0;
     }
-    else if (speed > 0) {
-      speed *= speed;
-    }
-    else {
-      speed *= -speed;
-    }
-
-    if (rotation < DrivebaseConstants.DEADZONE && -DrivebaseConstants.DEADZONE < rotation) {
+    if (rotation < DriverProfiles.deadzoneValues && -DriverProfiles.deadzoneValues < rotation) {
       rotation = 0;
-    }
-    else if (rotation > 0) {
-      rotation *= -rotation;
-    }
-    else {
-      rotation *= rotation;
     }
     
     /*
@@ -175,19 +158,14 @@ public class DriveSubsystem extends SubsystemBase {
      */
     if (SniperMode.driveSniperMode) {
       speed *= DrivebaseConstants.DRIVE_SNIPER_SPEED;
-    }
-    else {
-      speed *= DrivebaseConstants.SPEED_REDUCTION;
-    }
-
-    if (SniperMode.driveSniperMode) {
       rotation *= DrivebaseConstants.DRIVE_SNIPER_SPEED;
     }
     else {
+      speed *= DrivebaseConstants.SPEED_REDUCTION;
       rotation *= DrivebaseConstants.ROTATION_REDUCTION;
     }
 
-    robotDrive.arcadeDrive(speed, rotation);
+    robotDrive.arcadeDrive(speed, rotation, DriverProfiles.squareInputs);
 
     robotDrive.feed();
   }

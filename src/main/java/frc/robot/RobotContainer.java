@@ -7,7 +7,6 @@ import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -25,6 +24,7 @@ import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.ButtonBoardConstants;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.GlobalVars.DebugInfo;
+import frc.robot.GlobalVars.DriverProfiles;
 import frc.robot.GlobalVars.GameStates;
 import frc.robot.GlobalVars.SniperMode;
 import frc.robot.commands.ArcadeCommand;
@@ -49,6 +49,7 @@ public class RobotContainer {
   private PowerDistribution PDH;
 
   private SendableChooser<Command> autonChooser;
+  private SendableChooser<Command> driverChooser;
 
   Trigger chosenButton;
   
@@ -75,6 +76,7 @@ public class RobotContainer {
     PDH = new PowerDistribution(DrivebaseConstants.PDH_PORT_CANID, ModuleType.kRev);
 
     autonChooser = new SendableChooser<>();
+    driverChooser = new SendableChooser<>();
 
     robotDrive.setDefaultCommand(new ArcadeCommand(
       () -> - controller.getLeftY(),
@@ -94,6 +96,7 @@ public class RobotContainer {
 //    PathPlannerServer.startServer(5811);
 
     configureBindings();
+    initialiseDriverProfiles();
   }
 
   private void stopAll(){
@@ -249,6 +252,22 @@ public class RobotContainer {
 
   public ArmSubsystem getRobotArm() {
     return robotArm;
+  }
+
+  public void initialiseDriverProfiles() {
+    Shuffleboard.getTab("Driver Profiles").add(driverChooser);
+    driverChooser.addOption("Fatemah", new InstantCommand(() -> { 
+      DriverProfiles.deadzoneValues = 0.1;
+      DriverProfiles.squareInputs = false;
+    }));
+    driverChooser.addOption("Rithvik", new InstantCommand(() -> { 
+      DriverProfiles.deadzoneValues = 0.0;
+      DriverProfiles.squareInputs = true;
+    }));
+    driverChooser.addOption("Aaron", new InstantCommand(() -> { 
+      DriverProfiles.deadzoneValues = 0.1;
+      DriverProfiles.squareInputs = true;
+    }));
   }
 
   public Command getAutonomousCommand(String trajectoryName, Boolean alliance) {
