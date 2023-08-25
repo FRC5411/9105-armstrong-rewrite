@@ -3,11 +3,11 @@ package frc.robot.commands;
 
 import java.util.function.DoubleSupplier;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.math.MathUtil;
+
+import frc.robot.subsystems.DriveSubsystem;
 
 public class TurnCommand extends CommandBase {
     private ProfiledPIDController controller;
@@ -32,10 +32,10 @@ public class TurnCommand extends CommandBase {
 
     @Override
     public void execute() {
-      system.arcadeDrive(0, 
+      system.autonomousArcadeDrive(0, 
       MathUtil.clamp(controller.calculate(
-        measureSupplier.getAsDouble(), 
-        setPointSupplier.getAsDouble()), -5, 5));
+        measureSupplier.getAsDouble(),
+        setPointSupplier.getAsDouble()), -6, 6));
     }
 
     @Override

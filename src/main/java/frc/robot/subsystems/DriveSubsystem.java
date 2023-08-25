@@ -25,12 +25,17 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.GlobalVars.SniperMode;
 import frc.robot.commands.ArcadeCommand;
+import frc.robot.commands.TurnCommand;
 import edu.wpi.first.wpilibj.SPI;
+
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 
 public class DriveSubsystem extends SubsystemBase {
 
@@ -331,7 +336,7 @@ public class DriveSubsystem extends SubsystemBase {
      );
  }
 
- public Command followPathGroup(List<PathPlannerTrajectory> trajectory, boolean AllianceColor, HashMap<String, Command> eventMap) {
+ public Command followPathGroup(List<PathPlannerTrajectory> trajectory, boolean AllianceColor, HashMap<String, Command> eventMap,  Subsystem subsystem) {
     RamseteAutoBuilder bAutoBuilder = new RamseteAutoBuilder(
       this::getPose, 
       this::resetOdometry, 
@@ -346,7 +351,7 @@ public class DriveSubsystem extends SubsystemBase {
     this::setTankDriveVolts, 
     eventMap, 
     AllianceColor, 
-    this
+    subsystem
     );
 
   return bAutoBuilder.fullAuto(trajectory);
@@ -354,6 +359,24 @@ public class DriveSubsystem extends SubsystemBase {
 
   public Rotation2d getRotation2d() {
     return new Rotation2d(navX.getRotation2d().getRadians());
+  }
+
+  public Command turnTo0() {
+    return turn(0);
+  }
+
+  public Command turnTo180() {
+    return turn(180);
+  }
+
+  public Command turn(double degrees) {
+    return new TurnCommand(
+      new ProfiledPIDController(
+      0.025, 0, 0, new TrapezoidProfile.Constraints(200, 200)),
+      () -> degrees,
+      () -> getPose().getRotation().getDegrees(),
+      this
+    );
   }
 
   @Override

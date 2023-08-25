@@ -7,11 +7,8 @@ import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -29,7 +26,6 @@ import frc.robot.GlobalVars.GameStates;
 import frc.robot.GlobalVars.SniperMode;
 import frc.robot.commands.ArcadeCommand;
 import frc.robot.commands.AutoEngageCommand;
-import frc.robot.commands.TurnCommand;
 import frc.robot.commands.Arm.TeleopArmCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.AutonSubsystem;
@@ -134,14 +130,8 @@ public class RobotContainer {
       
       
     //////// Run Turn Command
-    controller.b().onTrue(new TurnCommand(
-        new ProfiledPIDController(
-          0.015, 0, 0, 
-        new TrapezoidProfile.Constraints(100, 100)),
-        () -> 180,
-        () -> robotDrive.getPose().getRotation().getDegrees(),
-        robotDrive
-    ).withTimeout(1.5)).onFalse(new InstantCommand(() -> {}, robotDrive));
+    controller.b().onTrue(robotDrive.turnTo180())
+    .onFalse(new InstantCommand(() -> {}, robotDrive));
 
     whileHeld(controller.x(), () -> stopAll());
 
@@ -246,7 +236,6 @@ public class RobotContainer {
     return robotDrive;
   }
 
-
   public ArmSubsystem getRobotArm() {
     return robotArm;
   }
@@ -269,8 +258,10 @@ public class RobotContainer {
     eventMap.put("SpitCube", robotAuton.inConeOutCube());
 
     eventMap.put("Idle", robotAuton.armToIdle(1.9));
-    
 
-    return robotDrive.followPathGroup(mainTrajectory, alliance, eventMap);
+    eventMap.put("TurnTo0", robotDrive.turnTo0());
+    eventMap.put("TurnTo180", robotDrive.turnTo180());
+
+    return robotDrive.followPathGroup(mainTrajectory, alliance, eventMap, robotAuton);
   }
 }
