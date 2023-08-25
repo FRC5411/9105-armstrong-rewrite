@@ -130,7 +130,18 @@ public class RobotContainer {
       
       
     //////// Run Turn Command
+<<<<<<< Updated upstream
     whenClicked(controller.b(), () -> new TurnCommand(robotDrive, 180));
+=======
+    controller.b().onTrue(new TurnCommand(
+        new ProfiledPIDController(
+          0.025, 0, 0, 
+        new TrapezoidProfile.Constraints(200, 200)),
+        () -> 180,
+        () -> robotDrive.getPose().getRotation().getDegrees(),
+        robotDrive
+    )).onFalse(new InstantCommand(() -> {}, robotDrive));
+>>>>>>> Stashed changes
 
     whileHeld(controller.x(), () -> stopAll());
 

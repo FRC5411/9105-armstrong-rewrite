@@ -22,12 +22,31 @@ public class TurnCommand extends PIDCommand {
 
       getController().enableContinuousInput(-180, 180);
 
+<<<<<<< Updated upstream
       if(getController().atSetpoint()){
         System.out.println("❤AT SETPOINT❤");
       }
       // Tune these before moving to constants
       getController()
         .setTolerance(1.0, 10.0);
+=======
+      this.system = system;
+
+      addRequirements(system);
+    }
+    
+    @Override
+    public void initialize() {
+      controller.reset(measureSupplier.getAsDouble());
+    }
+
+    @Override
+    public void execute() {
+      system.arcadeDrive(0, 
+      MathUtil.clamp(controller.calculate(
+        measureSupplier.getAsDouble(), 
+        setPointSupplier.getAsDouble()), -5, 5) + 0.05);
+>>>>>>> Stashed changes
     }
   
     public void initialize() {}
