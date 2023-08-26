@@ -148,7 +148,7 @@ public class DriveSubsystem extends SubsystemBase {
     targetPose = pose;
   }
 
-  public void arcadeDrive(double speed, double rotation) {
+  public void teleopArcadeDrive(double speed, double rotation) {
     /*
      * If LY is between 0.1 & -0.1, if so set to 0 to decrease sensitivity
      * Otherwise, square inputs accordingly

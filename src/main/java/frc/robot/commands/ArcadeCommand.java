@@ -1,4 +1,3 @@
-
 package frc.robot.commands;
 
 import java.util.function.DoubleSupplier;
@@ -28,7 +27,7 @@ public class ArcadeCommand extends CommandBase {
 
   @Override
   public void execute() {
-    robotDrive.arcadeDrive(speed.getAsDouble(), rotation.getAsDouble());
+    robotDrive.teleopArcadeDrive(speed.getAsDouble(), rotation.getAsDouble());
   }
 
   @Override
@@ -38,7 +37,6 @@ public class ArcadeCommand extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    
     return false;
   }
 }
