@@ -9,10 +9,9 @@ public final class Constants {
     return Units.inchesToMeters (
         1 / GEAR_RATIO
         * 2 * Math.PI 
-        * 1
         * Units.inchesToMeters(WHEEL_RADIUS)
-        )
-        * (2.16/0.548);
+        * 2.95 / 0.0765
+        );
   }
 
   public static class DrivebaseConstants {
@@ -41,10 +40,10 @@ public final class Constants {
   }
 
   public static class AutonomousConstants {
-    public static final double VOLTS = 0.14592; //kS
-    public static final double VOLT_SECONDS_PER_METER = 2.0809; //kV
-    public static final double VOLT_SECONDS_SQUARED_PER_METER = 0.83925; //kA
-    public static final double DRIVE_VELOCITY = 0.1;//0.001//0.0001//0.014026; //kP
+    public static final double VOLTS = 0.12547; //kS
+    public static final double VOLT_SECONDS_PER_METER = 2.0508; //kV
+    public static final double VOLT_SECONDS_SQUARED_PER_METER = 0.57404; //kA
+    public static final double DRIVE_VELOCITY = 1.1216; //kP
     
     public static final double TRACK_WIDTH_METERS = Units.inchesToMeters(6);
     public static final DifferentialDriveKinematics DRIVE_KINEMATICS = new 
@@ -53,7 +52,7 @@ public final class Constants {
     public static final double MAX_SPEED_METERS_PER_SECOND = 3; 
     public static final double MAX_ACCELERATION = 1; 
     
-    public static final double RAMSETE_B = 2;
+    public static final double RAMSETE_B = 2; 
     public static final double RAMSETE_ZETA = 0.7; 
     
     public static final double GEAR_RATIO = 7.89;
