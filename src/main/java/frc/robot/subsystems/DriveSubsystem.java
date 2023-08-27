@@ -28,9 +28,16 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.DrivebaseConstants;
+import frc.robot.GlobalVars.DriverProfiles;
 import frc.robot.GlobalVars.SniperMode;
 import frc.robot.commands.ArcadeCommand;
 import edu.wpi.first.wpilibj.SPI;
+
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+
+import frc.robot.commands.TurnCommand;
 
 public class DriveSubsystem extends SubsystemBase {
 
@@ -77,8 +84,8 @@ public class DriveSubsystem extends SubsystemBase {
     leftFrontMotor.setInverted(true);
     leftBackMotor.setInverted(true);
 
-    leftBackMotor.follow(leftFrontMotor);
-    rightBackMotor.follow(rightFrontMotor);
+    // leftBackMotor.follow(leftFrontMotor);
+    // rightBackMotor.follow(rightFrontMotor);
 
     leftFrontEncoder = leftFrontMotor.getEncoder();
     leftBackEncoder = leftBackMotor.getEncoder();
@@ -144,29 +151,11 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void arcadeDrive(double speed, double rotation) {
-    /*
-     * If LY is between 0.1 & -0.1, if so set to 0 to decrease sensitivity
-     * Otherwise, square inputs accordingly
-     */
-
-    if (speed < DrivebaseConstants.DEADZONE && -DrivebaseConstants.DEADZONE < speed) {
+    if (speed < DriverProfiles.deadzoneValues && -DriverProfiles.deadzoneValues < speed) {
       speed = 0;
     }
-    else if (speed > 0) {
-      speed *= speed;
-    }
-    else {
-      speed *= -speed;
-    }
-
-    if (rotation < DrivebaseConstants.DEADZONE && -DrivebaseConstants.DEADZONE < rotation) {
+    if (rotation < DriverProfiles.deadzoneValues && -DriverProfiles.deadzoneValues < rotation) {
       rotation = 0;
-    }
-    else if (rotation > 0) {
-      rotation *= -rotation;
-    }
-    else {
-      rotation *= rotation;
     }
     
     /*
@@ -175,19 +164,14 @@ public class DriveSubsystem extends SubsystemBase {
      */
     if (SniperMode.driveSniperMode) {
       speed *= DrivebaseConstants.DRIVE_SNIPER_SPEED;
-    }
-    else {
-      speed *= DrivebaseConstants.SPEED_REDUCTION;
-    }
-
-    if (SniperMode.driveSniperMode) {
       rotation *= DrivebaseConstants.DRIVE_SNIPER_SPEED;
     }
     else {
+      speed *= DrivebaseConstants.SPEED_REDUCTION;
       rotation *= DrivebaseConstants.ROTATION_REDUCTION;
     }
 
-    robotDrive.arcadeDrive(speed, rotation);
+    robotDrive.arcadeDrive(speed, rotation, DriverProfiles.squareInputs);
 
     robotDrive.feed();
   }
@@ -207,11 +191,11 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public double getLeftFrontEncoderPosition() {
-    return -leftFrontEncoder.getPosition();
+    return leftFrontEncoder.getPosition();
   }
 
   public double getRightFrontEncoderPosition() {
-    return rightFrontEncoder.getPosition();
+    return -rightFrontEncoder.getPosition();
   }
 
   public double getLeftFrontEncoderVelocity() {
@@ -279,8 +263,8 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void setTankDriveVolts(double rightVolts, double leftVolts) {
-    //  leftVolts *= -1;
-    //  rightVolts *= -1;
+    // leftVolts *= -1;
+    // rightVolts *= -1;
 
     leftFrontMotor.setVoltage(leftVolts);
     leftBackMotor.setVoltage(leftVolts);
@@ -324,8 +308,8 @@ public class DriveSubsystem extends SubsystemBase {
      new SimpleMotorFeedforward(AutonomousConstants.VOLTS, AutonomousConstants.VOLT_SECONDS_PER_METER, AutonomousConstants.VOLT_SECONDS_SQUARED_PER_METER), 
      AutonomousConstants.DRIVE_KINEMATICS, 
      this::getWheelSpeeds, 
-     new PIDController(0.001, 0, 0),
-     new PIDController(0.001, 0, 0), //0.00075 //0.0007 //0.0008 //0.0009
+     new PIDController(0.0009, 0, 0),
+     new PIDController(0.0009, 0, 0), //0.00075 //0.0007 //0.0008 //0.0009
      this::setTankDriveVolts,
      this
      );
@@ -342,7 +326,7 @@ public class DriveSubsystem extends SubsystemBase {
                             AutonomousConstants.VOLT_SECONDS_PER_METER, 
                             AutonomousConstants.VOLT_SECONDS_SQUARED_PER_METER), 
     this::getWheelSpeeds, 
-    new PIDConstants(0.001, 0, 0), 
+    new PIDConstants(0.0012, 0, 0), // 0.0015 // 0.001 
     this::setTankDriveVolts, 
     eventMap, 
     AllianceColor, 
@@ -351,6 +335,25 @@ public class DriveSubsystem extends SubsystemBase {
 
   return bAutoBuilder.fullAuto(trajectory);
 }
+
+  public Command turnCommand(double setpoint) {
+    return new TurnCommand(
+        new ProfiledPIDController(
+          0.01, 0, 0, 
+        new TrapezoidProfile.Constraints(200, 200)),
+        () -> setpoint,
+        () -> getPose().getRotation().getDegrees(),
+        this
+    );
+  }
+
+  public Command turnTo0CMD() {
+    return turnCommand(0);
+  }
+
+  public Command turnTo180CMD() {
+    return turnCommand(180);
+  }
 
   public Rotation2d getRotation2d() {
     return new Rotation2d(navX.getRotation2d().getRadians());

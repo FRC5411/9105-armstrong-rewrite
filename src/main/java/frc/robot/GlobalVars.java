@@ -30,4 +30,9 @@ public class GlobalVars {
         // public static double curSubstationAng = 0;
         // public static double curGroundAng = 0;
     }
+
+    public static class DriverProfiles {
+        public static boolean squareInputs = false;
+        public static double deadzoneValues = 0.0;
+    }
 }

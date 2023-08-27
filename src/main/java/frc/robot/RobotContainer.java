@@ -6,14 +6,18 @@ import java.util.List;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
+
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -21,6 +25,7 @@ import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.ButtonBoardConstants;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.GlobalVars.DebugInfo;
+import frc.robot.GlobalVars.DriverProfiles;
 import frc.robot.GlobalVars.GameStates;
 import frc.robot.GlobalVars.SniperMode;
 import frc.robot.commands.ArcadeCommand;
@@ -45,6 +50,7 @@ public class RobotContainer {
   private PowerDistribution PDH;
 
   private SendableChooser<Command> autonChooser;
+  private SendableChooser<Command> driverChooser;
 
   Trigger chosenButton;
   
@@ -71,10 +77,11 @@ public class RobotContainer {
     PDH = new PowerDistribution(DrivebaseConstants.PDH_PORT_CANID, ModuleType.kRev);
 
     autonChooser = new SendableChooser<>();
+    driverChooser = new SendableChooser<>();
 
     robotDrive.setDefaultCommand(new ArcadeCommand(
       () -> controller.getLeftY(),
-      () -> controller.getRightX(),
+      () -> - controller.getRightX(),
       robotDrive
       ));
 
@@ -90,6 +97,7 @@ public class RobotContainer {
 //    PathPlannerServer.startServer(5811);
 
     configureBindings();
+    initialiseDriverProfiles();
   }
 
   private void stopAll(){
@@ -130,7 +138,14 @@ public class RobotContainer {
       
       
     //////// Run Turn Command
-    whenClicked(controller.b(), () -> new TurnCommand(robotDrive, 180));
+    controller.b().onTrue(new TurnCommand(
+        new ProfiledPIDController(
+          0.015, 0, 0, 
+        new TrapezoidProfile.Constraints(100, 100)),
+        () -> 180,
+        () -> robotDrive.getPose().getRotation().getDegrees(),
+        robotDrive
+    ).withTimeout(1.5)).onFalse(new InstantCommand(() -> {}, robotDrive));
 
     whileHeld(controller.x(), () -> stopAll());
 
@@ -240,11 +255,27 @@ public class RobotContainer {
     return robotArm;
   }
 
+  public void initialiseDriverProfiles() {
+    Shuffleboard.getTab("Driver Profiles").add(driverChooser);
+    driverChooser.addOption("Fatemah", new InstantCommand(() -> { 
+      DriverProfiles.deadzoneValues = 0.1;
+      DriverProfiles.squareInputs = false;
+    }));
+    driverChooser.addOption("Rithvik", new InstantCommand(() -> { 
+      DriverProfiles.deadzoneValues = 0.0;
+      DriverProfiles.squareInputs = true;
+    }));
+    driverChooser.addOption("Aaron", new InstantCommand(() -> { 
+      DriverProfiles.deadzoneValues = 0.1;
+      DriverProfiles.squareInputs = true;
+    }));
+  }
+
   public Command getAutonomousCommand(String trajectoryName, Boolean alliance) {
     PathConstraints trajectoryConstraints = new PathConstraints(AutonomousConstants.DRIVE_VELOCITY, AutonomousConstants.MAX_ACCELERATION);
-    List<PathPlannerTrajectory> mainTrajectory = PathPlanner.loadPathGroup("Taha" , trajectoryConstraints);
-    PathPlannerTrajectory mapTrajectory = PathPlanner.loadPath(trajectoryName, trajectoryConstraints);
-    robotDrive.getField().getObject("Taha").setTrajectory(mapTrajectory);
+    List<PathPlannerTrajectory> mainTrajectory = PathPlanner.loadPathGroup("straight" , trajectoryConstraints);
+    PathPlannerTrajectory mapTrajectory = PathPlanner.loadPath("straight", trajectoryConstraints);
+    robotDrive.getField().getObject("straight").setTrajectory(mapTrajectory);
 
     HashMap<String, Command> eventMap = new HashMap<>();
 
@@ -258,8 +289,13 @@ public class RobotContainer {
     eventMap.put("SpitCube", robotAuton.inConeOutCube());
 
     eventMap.put("Idle", robotAuton.armToIdle(1.9));
-    
 
-    return robotDrive.followPathGroup(mainTrajectory, alliance, eventMap);
+    eventMap.put("TurnTo0", robotDrive.turnTo0CMD());
+    eventMap.put("TurnTo180", robotDrive.turnTo180CMD());
+
+    return new SequentialCommandGroup(
+        robotDrive.followPathGroup(mainTrajectory, alliance, eventMap), 
+        robotDrive.turnTo180CMD().withTimeout(2),
+        robotDrive.turnTo0CMD().withTimeout(2));
   }
 }
