@@ -33,6 +33,12 @@ import frc.robot.GlobalVars.SniperMode;
 import frc.robot.commands.ArcadeCommand;
 import edu.wpi.first.wpilibj.SPI;
 
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+
+import frc.robot.commands.TurnCommand;
+
 public class DriveSubsystem extends SubsystemBase {
 
   private CANSparkMax leftFrontMotor;
@@ -75,11 +81,11 @@ public class DriveSubsystem extends SubsystemBase {
       DrivebaseConstants.RB_MOTOR_CANID, 
       MotorType.kBrushless);
 
-    leftFrontMotor.setInverted(false);
-    leftBackMotor.setInverted(false);
+    leftFrontMotor.setInverted(true);
+    leftBackMotor.setInverted(true);
 
-    leftBackMotor.follow(leftFrontMotor);
-    rightBackMotor.follow(rightFrontMotor);
+    // leftBackMotor.follow(leftFrontMotor);
+    // rightBackMotor.follow(rightFrontMotor);
 
     leftFrontEncoder = leftFrontMotor.getEncoder();
     leftBackEncoder = leftBackMotor.getEncoder();
@@ -257,8 +263,8 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void setTankDriveVolts(double rightVolts, double leftVolts) {
-    leftVolts *= -1;
-    rightVolts *= -1;
+    // leftVolts *= -1;
+    // rightVolts *= -1;
 
     leftFrontMotor.setVoltage(leftVolts);
     leftBackMotor.setVoltage(leftVolts);
@@ -320,7 +326,7 @@ public class DriveSubsystem extends SubsystemBase {
                             AutonomousConstants.VOLT_SECONDS_PER_METER, 
                             AutonomousConstants.VOLT_SECONDS_SQUARED_PER_METER), 
     this::getWheelSpeeds, 
-    new PIDConstants(0.001, 0, 0), 
+    new PIDConstants(0.0012, 0, 0), // 0.0015 // 0.001 
     this::setTankDriveVolts, 
     eventMap, 
     AllianceColor, 
@@ -330,13 +336,32 @@ public class DriveSubsystem extends SubsystemBase {
   return bAutoBuilder.fullAuto(trajectory);
 }
 
+  public Command turnCommand(double setpoint) {
+    return new TurnCommand(
+        new ProfiledPIDController(
+          0.01, 0, 0, 
+        new TrapezoidProfile.Constraints(200, 200)),
+        () -> setpoint,
+        () -> getPose().getRotation().getDegrees(),
+        this
+    );
+  }
+
+  public Command turnTo0CMD() {
+    return turnCommand(0);
+  }
+
+  public Command turnTo180CMD() {
+    return turnCommand(180);
+  }
+
   public Rotation2d getRotation2d() {
     return new Rotation2d(navX.getRotation2d().getRadians());
   }
 
   @Override
   public void periodic() {
-    odometry.update(getRotation2d(), -leftFrontEncoder.getPosition(), -rightFrontEncoder.getPosition());
+    odometry.update(getRotation2d(), leftFrontEncoder.getPosition(), rightFrontEncoder.getPosition());
     field.setRobotPose(odometry.getPoseMeters());
 
     SmartDashboard.putNumber("LEFT FRONT ENCODER POS: ", getLeftFrontEncoderPosition());
