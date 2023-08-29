@@ -21,6 +21,9 @@ public class TurnCommand extends CommandBase {
 
       this.system = system;
 
+      controller.enableContinuousInput(-180, 180);
+      controller.setTolerance(2);
+
       addRequirements(system);
     }
     
@@ -31,10 +34,11 @@ public class TurnCommand extends CommandBase {
 
     @Override
     public void execute() {
-      system.arcadeDrive(0, 
+      system.autonomousArcadeDrive(0, 
       MathUtil.clamp(controller.calculate(
         measureSupplier.getAsDouble(), 
-        setPointSupplier.getAsDouble()), -5, 5));
+        setPointSupplier.getAsDouble()), -1, 1)
+        );
     }
 
     @Override
