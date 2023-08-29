@@ -75,11 +75,11 @@ public class DriveSubsystem extends SubsystemBase {
       DrivebaseConstants.RB_MOTOR_CANID, 
       MotorType.kBrushless);
 
-    leftFrontMotor.setInverted(false);
-    leftBackMotor.setInverted(false);
+    // rightBackMotor.setInverted(true);
+    // rightFrontMotor.setInverted(true);
 
-    leftBackMotor.follow(leftFrontMotor);
-    rightBackMotor.follow(rightFrontMotor);
+    // leftBackMotor.follow(leftFrontMotor);
+    // rightBackMotor.follow(rightFrontMotor);
 
     leftFrontEncoder = leftFrontMotor.getEncoder();
     leftBackEncoder = leftBackMotor.getEncoder();
@@ -165,7 +165,7 @@ public class DriveSubsystem extends SubsystemBase {
       rotation *= DrivebaseConstants.ROTATION_REDUCTION;
     }
 
-    robotDrive.arcadeDrive(speed, rotation, DriverProfiles.squareInputs);
+    robotDrive.arcadeDrive(rotation, speed, DriverProfiles.squareInputs);
 
     robotDrive.feed();
   }
