@@ -127,7 +127,7 @@ public class AutonSubsystem {
 
     public Command inCubeOutCone(){
         System.out.println("\n\nIN CUBE OUT CONE\n\n");
-        return new IntakeCommand(robotIntake, 0.5).withTimeout(0.5);
+        return new IntakeCommand(robotIntake, 0.5).repeatedly().withTimeout(0.5);
     }
 
     public Command armToIdle(double time){
@@ -158,7 +158,7 @@ public class AutonSubsystem {
     
     public Command inConeOutCube(){
         System.out.println("\n\nSPIT CUBE\n\n");
-       return new IntakeCommand(robotIntake, -0.5).withTimeout(0.5);
+       return new IntakeCommand(robotIntake, -0.5).repeatedly().withTimeout(0.5);
     }
 
     public Command enableAutoEngage(){

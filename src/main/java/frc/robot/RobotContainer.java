@@ -271,11 +271,16 @@ public class RobotContainer {
     }));
   }
 
-  public Command getAutonomousCommand(String trajectoryName, Boolean alliance) {
+  public Command getAutonomousCommand(String trajectoryName, String trajectoryName2, Boolean alliance) {
     PathConstraints trajectoryConstraints = new PathConstraints(AutonomousConstants.DRIVE_VELOCITY, AutonomousConstants.MAX_ACCELERATION);
-    List<PathPlannerTrajectory> mainTrajectory = PathPlanner.loadPathGroup("straight" , trajectoryConstraints);
-    PathPlannerTrajectory mapTrajectory = PathPlanner.loadPath("straight", trajectoryConstraints);
-    robotDrive.getField().getObject("straight").setTrajectory(mapTrajectory);
+    List<PathPlannerTrajectory> mainTrajectory = PathPlanner.loadPathGroup(trajectoryName , trajectoryConstraints);
+    PathPlannerTrajectory mapTrajectory = PathPlanner.loadPath(trajectoryName, trajectoryConstraints);
+    robotDrive.getField().getObject(trajectoryName).setTrajectory(mapTrajectory);
+
+    PathConstraints trajectoryConstraints2 = new PathConstraints(AutonomousConstants.DRIVE_VELOCITY, AutonomousConstants.MAX_ACCELERATION);
+    PathPlannerTrajectory mainTrajectory2 = PathPlanner.loadPath(trajectoryName2 , trajectoryConstraints);
+    PathPlannerTrajectory mapTrajectory2 = PathPlanner.loadPath(trajectoryName2, trajectoryConstraints);
+    robotDrive.getField().getObject(trajectoryName2).setTrajectory(mapTrajectory);
 
     HashMap<String, Command> eventMap = new HashMap<>();
 
@@ -296,6 +301,12 @@ public class RobotContainer {
     return new SequentialCommandGroup(
         robotDrive.followPathGroup(mainTrajectory, alliance, eventMap), 
         robotDrive.turnTo180CMD().withTimeout(2),
-        robotDrive.turnTo0CMD().withTimeout(2));
+        robotAuton.armCubeGround(),
+        robotAuton.inCubeOutCone(),
+        robotAuton.armToIdle(1.5),
+        robotDrive.turnTo0CMD().withTimeout(2),
+        robotDrive.followPath(mainTrajectory2, false),
+        robotAuton.armCubeHigh(),
+        robotAuton.inConeOutCube());
   }
 }
