@@ -278,9 +278,9 @@ public class RobotContainer {
     robotDrive.getField().getObject(trajectoryName).setTrajectory(mapTrajectory);
 
     PathConstraints trajectoryConstraints2 = new PathConstraints(AutonomousConstants.DRIVE_VELOCITY, AutonomousConstants.MAX_ACCELERATION);
-    PathPlannerTrajectory mainTrajectory2 = PathPlanner.loadPath(trajectoryName2 , trajectoryConstraints);
+    PathPlannerTrajectory mainTrajectory2 = PathPlanner.loadPath(trajectoryName2 , trajectoryConstraints2);
     PathPlannerTrajectory mapTrajectory2 = PathPlanner.loadPath(trajectoryName2, trajectoryConstraints);
-    robotDrive.getField().getObject(trajectoryName2).setTrajectory(mapTrajectory);
+    robotDrive.getField().getObject(trajectoryName2).setTrajectory(mapTrajectory2);
 
     HashMap<String, Command> eventMap = new HashMap<>();
 
