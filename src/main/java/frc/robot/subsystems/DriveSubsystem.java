@@ -339,7 +339,7 @@ public class DriveSubsystem extends SubsystemBase {
   public Command turnCommand(double setpoint) {
     return new TurnCommand(
         new ProfiledPIDController(
-          0.01, 0, 0, 
+          0.01, 0, 0.005, 
         new TrapezoidProfile.Constraints(200, 200)),
         () -> setpoint,
         () -> getPose().getRotation().getDegrees(),
