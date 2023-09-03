@@ -16,9 +16,11 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -306,7 +308,7 @@ public class RobotContainer {
         robotAuton.inCubeOutCone(),
         robotAuton.armToIdle(1.5),
         robotDrive.turnTo0CMD().withTimeout(2),
-        robotDrive.followPath(mainTrajectory2, false),
+        robotDrive.followPath(mainTrajectory2, alliance, false),
         robotAuton.armCubeHigh(),
         robotAuton.inConeOutCube());
   }
@@ -316,16 +318,19 @@ public class RobotContainer {
       AutonomousConstants.DRIVE_VELOCITY, AutonomousConstants.MAX_ACCELERATION);
     List<PathPlannerTrajectory> mainTrajectory = PathPlanner.loadPathGroup(trajectoryName , trajectoryConstraints);
 
-    PathPlannerTrajectory mapTrajectory = PathPlanner.loadPath(trajectoryName, trajectoryConstraints);
-    robotDrive.getField().getObject(trajectoryName).setTrajectory(mapTrajectory);
+    // PathPlannerTrajectory mapTrajectory = PathPlanner.loadPath(trajectoryName, trajectoryConstraints);
+    // robotDrive.getField().getObject(trajectoryName).setTrajectory(mapTrajectory);
 
     HashMap<String, Command> eventMap = new HashMap<>();
 
     List<PathPlannerTrajectory> mainTrajectory1 = new ArrayList<>();
     mainTrajectory1.add(mainTrajectory.get(0));
+    PathPlannerTrajectory mapTrajectory1 = mainTrajectory.get(0);
+    robotDrive.getField().getObject(trajectoryName+"1").setTrajectory(mapTrajectory1);
 
-    List<PathPlannerTrajectory> mainTrajectory2 = new ArrayList<>();
-    mainTrajectory2.add(mainTrajectory.get(1));
+    PathPlannerTrajectory mainTrajectory2 = mainTrajectory.get(1);
+    PathPlannerTrajectory mapTrajectory2 = mainTrajectory.get(1);
+    robotDrive.getField().getObject(trajectoryName+"2").setTrajectory(mapTrajectory2);
 
     eventMap.put("GoConeHigh", robotAuton.armConeHigh());
     eventMap.put("SpitCone", robotAuton.inCubeOutCone());
@@ -341,13 +346,15 @@ public class RobotContainer {
     eventMap.put("TurnTo0", robotDrive.turnTo0CMD());
     eventMap.put("TurnTo180", robotDrive.turnTo180CMD());
 
+    SmartDashboard.putNumber("TrajectorySize", mainTrajectory.size());
+
     return new SequentialCommandGroup(
-        robotDrive.followPathGroup(mainTrajectory1, alliance, eventMap), 
+        robotDrive.followPathGroup(mainTrajectory1, alliance, eventMap).deadlineWith(new WaitCommand(5)), 
         // robotDrive.turnTo180CMD().withTimeout(2),
         // robotAuton.armCubeGround(),
         // robotAuton.inCubeOutCone(),
         // robotAuton.armToIdle(1.5),
         // robotDrive.turnTo0CMD().withTimeout(2),
-        robotDrive.followPathGroup(mainTrajectory2, alliance, eventMap));
+        robotDrive.followPath(mainTrajectory2, alliance, false));
   }
 }

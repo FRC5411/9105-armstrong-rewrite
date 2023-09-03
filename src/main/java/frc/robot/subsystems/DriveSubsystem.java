@@ -80,8 +80,12 @@ public class DriveSubsystem extends SubsystemBase {
       DrivebaseConstants.RB_MOTOR_CANID, 
       MotorType.kBrushless);
 
-    // rightBackMotor.setInverted(true);
-    // rightFrontMotor.setInverted(true);
+    rightBackMotor.setInverted(false);
+    rightFrontMotor.setInverted(false);
+
+    leftBackMotor.setInverted(true);
+    leftFrontMotor.setInverted(true);
+
 
     // leftBackMotor.follow(leftFrontMotor);
     // rightBackMotor.follow(rightFrontMotor);
@@ -170,7 +174,7 @@ public class DriveSubsystem extends SubsystemBase {
       rotation *= DrivebaseConstants.ROTATION_REDUCTION;
     }
 
-    robotDrive.arcadeDrive(rotation, speed, DriverProfiles.squareInputs);
+    robotDrive.arcadeDrive(speed, rotation, DriverProfiles.squareInputs);
 
     robotDrive.feed();
   }
@@ -265,10 +269,13 @@ public class DriveSubsystem extends SubsystemBase {
     // leftVolts *= -1;
     // rightVolts *= -1;
 
-    leftFrontMotor.setVoltage(leftVolts);
-    leftBackMotor.setVoltage(leftVolts);
-    rightFrontMotor.setVoltage(rightVolts);
-    rightBackMotor.setVoltage(rightVolts);
+    // leftFrontMotor.setVoltage(leftVolts);
+    // leftBackMotor.setVoltage(leftVolts);
+    // rightFrontMotor.setVoltage(rightVolts);
+    // rightBackMotor.setVoltage(rightVolts);
+    // robotDrive.feed();
+
+    robotDrive.tankDrive(rightVolts/12, leftVolts/12);
     robotDrive.feed();
   }
 
@@ -295,7 +302,10 @@ public class DriveSubsystem extends SubsystemBase {
     rightBackEncoder.setPosition(0);
   }
 
- public Command followPath(PathPlannerTrajectory trajectory, boolean isFirstPath) {
+ public Command followPath(PathPlannerTrajectory trajectory, boolean allianceColor, boolean isFirstPath) {
+  PIDController tController = new PIDController(0.0025, 0, 0);
+  tController.setTolerance(0);
+
    if (isFirstPath) {
      this.resetOdometry(trajectory.getInitialPose());
    }
@@ -307,9 +317,10 @@ public class DriveSubsystem extends SubsystemBase {
      new SimpleMotorFeedforward(AutonomousConstants.VOLTS, AutonomousConstants.VOLT_SECONDS_PER_METER, AutonomousConstants.VOLT_SECONDS_SQUARED_PER_METER), 
      AutonomousConstants.DRIVE_KINEMATICS, 
      this::getWheelSpeeds, 
-     new PIDController(0.0009, 0, 0),
-     new PIDController(0.0009, 0, 0), //0.00075 //0.0007 //0.0008 //0.0009
+     tController,
+     tController, //0.00075 //0.0007 //0.0008 //0.0009
      this::setTankDriveVolts,
+     allianceColor,
      this
      );
  }
@@ -325,7 +336,7 @@ public class DriveSubsystem extends SubsystemBase {
                             AutonomousConstants.VOLT_SECONDS_PER_METER, 
                             AutonomousConstants.VOLT_SECONDS_SQUARED_PER_METER), 
     this::getWheelSpeeds, 
-    new PIDConstants(0.0012, 0, 0), // 0.0015 // 0.001 
+    new PIDConstants(0.002, 0, 0), // 0.0015 // 0.001 
     this::setTankDriveVolts, 
     eventMap, 
     AllianceColor, 
