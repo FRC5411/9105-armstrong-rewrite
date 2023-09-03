@@ -1,6 +1,7 @@
 // In Java We Trust
 
 package frc.robot;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import com.pathplanner.lib.PathConstraints;
@@ -308,5 +309,45 @@ public class RobotContainer {
         robotDrive.followPath(mainTrajectory2, false),
         robotAuton.armCubeHigh(),
         robotAuton.inConeOutCube());
+  }
+
+  public Command getAutonomousCommand(String trajectoryName, Boolean alliance) {
+    PathConstraints trajectoryConstraints = new PathConstraints(
+      AutonomousConstants.DRIVE_VELOCITY, AutonomousConstants.MAX_ACCELERATION);
+    List<PathPlannerTrajectory> mainTrajectory = PathPlanner.loadPathGroup(trajectoryName , trajectoryConstraints);
+
+    PathPlannerTrajectory mapTrajectory = PathPlanner.loadPath(trajectoryName, trajectoryConstraints);
+    robotDrive.getField().getObject(trajectoryName).setTrajectory(mapTrajectory);
+
+    HashMap<String, Command> eventMap = new HashMap<>();
+
+    List<PathPlannerTrajectory> mainTrajectory1 = new ArrayList<>();
+    mainTrajectory1.add(mainTrajectory.get(0));
+
+    List<PathPlannerTrajectory> mainTrajectory2 = new ArrayList<>();
+    mainTrajectory2.add(mainTrajectory.get(1));
+
+    eventMap.put("GoConeHigh", robotAuton.armConeHigh());
+    eventMap.put("SpitCone", robotAuton.inCubeOutCone());
+
+    eventMap.put("GoCubeLow", robotAuton.armCubeGround());
+    eventMap.put("TakeCube", robotAuton.inCubeOutCone());
+
+    eventMap.put("GoCubeHigh", robotAuton.armCubeHigh());
+    eventMap.put("SpitCube", robotAuton.inConeOutCube());
+
+    eventMap.put("Idle", robotAuton.armToIdle(1.9));
+
+    eventMap.put("TurnTo0", robotDrive.turnTo0CMD());
+    eventMap.put("TurnTo180", robotDrive.turnTo180CMD());
+
+    return new SequentialCommandGroup(
+        robotDrive.followPathGroup(mainTrajectory1, alliance, eventMap), 
+        // robotDrive.turnTo180CMD().withTimeout(2),
+        // robotAuton.armCubeGround(),
+        // robotAuton.inCubeOutCone(),
+        // robotAuton.armToIdle(1.5),
+        // robotDrive.turnTo0CMD().withTimeout(2),
+        robotDrive.followPathGroup(mainTrajectory2, alliance, eventMap));
   }
 }

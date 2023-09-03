@@ -35,7 +35,6 @@ import edu.wpi.first.wpilibj.SPI;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 
 import frc.robot.commands.TurnCommand;
 
