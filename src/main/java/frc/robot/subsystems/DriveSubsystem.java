@@ -11,6 +11,7 @@ import com.pathplanner.lib.auto.RamseteAutoBuilder;
 import com.pathplanner.lib.commands.PPRamseteCommand;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -85,6 +86,26 @@ public class DriveSubsystem extends SubsystemBase {
 
     leftBackMotor.setInverted(true);
     leftFrontMotor.setInverted(true);
+
+    rightBackMotor.setIdleMode(IdleMode.kBrake);
+    rightFrontMotor.setIdleMode(IdleMode.kBrake);
+    leftBackMotor.setIdleMode(IdleMode.kBrake);
+    leftFrontMotor.setIdleMode(IdleMode.kBrake);
+
+    rightBackMotor.setSmartCurrentLimit(DrivebaseConstants.MOTOR_AMP_LIMIT);
+    rightFrontMotor.setSmartCurrentLimit(DrivebaseConstants.MOTOR_AMP_LIMIT);
+    leftBackMotor.setSmartCurrentLimit(DrivebaseConstants.MOTOR_AMP_LIMIT);
+    leftFrontMotor.setSmartCurrentLimit(DrivebaseConstants.MOTOR_AMP_LIMIT);
+
+    rightBackMotor.setSecondaryCurrentLimit(DrivebaseConstants.MOTOR_AMP_LIMIT);
+    rightFrontMotor.setSecondaryCurrentLimit(DrivebaseConstants.MOTOR_AMP_LIMIT);
+    leftBackMotor.setSecondaryCurrentLimit(DrivebaseConstants.MOTOR_AMP_LIMIT);
+    leftFrontMotor.setSecondaryCurrentLimit(DrivebaseConstants.MOTOR_AMP_LIMIT);
+
+    rightBackMotor.burnFlash();
+    rightFrontMotor.burnFlash();
+    leftBackMotor.burnFlash();
+    leftFrontMotor.burnFlash();
 
 
     // leftBackMotor.follow(leftFrontMotor);
@@ -269,14 +290,14 @@ public class DriveSubsystem extends SubsystemBase {
     // leftVolts *= -1;
     // rightVolts *= -1;
 
-    // leftFrontMotor.setVoltage(leftVolts);
-    // leftBackMotor.setVoltage(leftVolts);
-    // rightFrontMotor.setVoltage(rightVolts);
-    // rightBackMotor.setVoltage(rightVolts);
-    // robotDrive.feed();
-
-    robotDrive.tankDrive(rightVolts/12, leftVolts/12);
+    leftFrontMotor.setVoltage(leftVolts);
+    leftBackMotor.setVoltage(leftVolts);
+    rightFrontMotor.setVoltage(rightVolts);
+    rightBackMotor.setVoltage(rightVolts);
     robotDrive.feed();
+
+    // robotDrive.tankDrive(rightVolts/12, leftVolts/12);
+    // robotDrive.feed();
   }
 
   public void setMaxOutput(double maxOutput) {
@@ -336,7 +357,7 @@ public class DriveSubsystem extends SubsystemBase {
                             AutonomousConstants.VOLT_SECONDS_PER_METER, 
                             AutonomousConstants.VOLT_SECONDS_SQUARED_PER_METER), 
     this::getWheelSpeeds, 
-    new PIDConstants(0.002, 0, 0), // 0.0015 // 0.001 
+    new PIDConstants(0.04, 0, 0.001), // 0.0015 // 0.001 
     this::setTankDriveVolts, 
     eventMap, 
     AllianceColor, 
@@ -349,7 +370,7 @@ public class DriveSubsystem extends SubsystemBase {
   public Command turnCommand(double setpoint) {
     return new TurnCommand(
         new ProfiledPIDController(
-          0.01, 0, 0.005, 
+          0.008, 0, 0.04, 
         new TrapezoidProfile.Constraints(200, 200)),
         () -> setpoint,
         () -> getPose().getRotation().getDegrees(),

@@ -32,6 +32,7 @@ public class AutonArmCommand extends CommandBase {
         this.setpoint = setpoint;
         this.cargoType = cargoType;
         SendableRegistry.setName(pid, "ArmSubsystem", "PID");
+        addRequirements(robotArm);
     }
 
     @Override

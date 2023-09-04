@@ -5,8 +5,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.GlobalVars.DebugInfo;
 import frc.robot.commands.Arm.HoldArmCommand;
+import frc.robot.commands.ArcadeCommand;
 
 public class Robot extends TimedRobot {
+
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
@@ -27,8 +29,13 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
-    CommandScheduler.getInstance().schedule(holdArmCmd);
+    // CommandScheduler.getInstance().schedule(holdArmCmd);
     CommandScheduler.getInstance().run();
+
+    SmartDashboard.putData(CommandScheduler.getInstance());
+    SmartDashboard.putData(m_robotContainer.getRobotArm());
+    SmartDashboard.putData(m_robotContainer.getRobotAuton());
+    SmartDashboard.putData(m_robotContainer.getRobotDrive());
   }
 
   @Override
@@ -44,8 +51,7 @@ public class Robot extends TimedRobot {
 //    m_autonomousCommand = m_robotContainer.getAutonomousCommand("straightGroup", false);
 
     m_autonomousCommand = m_robotContainer.getAutonomousCommand(
-      "straight",
-      "straight2",
+      "straightGroup",
       false);
 
     if (m_autonomousCommand != null) {
@@ -67,6 +73,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+
+    m_robotContainer.setDefaultCommandDrive();
   }
 
   @Override

@@ -23,6 +23,9 @@ public class ArmSubsystem extends SubsystemBase {
       bicep.setIdleMode(IdleMode.kBrake);
       bicep.setInverted(false);
       bicep.setSmartCurrentLimit(ArmConstants.ARM_MOTOR_CURRENT_LIMIT);
+      bicep.setSecondaryCurrentLimit(ArmConstants.ARM_MOTOR_CURRENT_LIMIT);
+
+      bicep.burnFlash();
 
       armBoreEncoder = new Encoder(0, 1);
     }

@@ -26,6 +26,7 @@ public class TeleopArmCommand extends CommandBase {
         this.strSetpoint = strSetpoint;
         GameStates.shouldHoldArm = false;
         SendableRegistry.setName(pid, "ArmSubsystem", "PID");
+        addRequirements(robotArm);
     }
 
     @Override

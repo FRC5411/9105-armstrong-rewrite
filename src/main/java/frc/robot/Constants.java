@@ -25,7 +25,7 @@ public final class Constants {
 
     public static final int CONTROLLER_PORT = 0;
 
-    public static final int MOTOR_AMP_LIMIT = 80;
+    public static final int MOTOR_AMP_LIMIT = 50;
     public static final double DRIVE_SNIPER_SPEED = 0.4;
     public static final double DEADZONE = 0.1;
     public static final double SPEED_REDUCTION = 0.95;
@@ -72,7 +72,7 @@ public final class Constants {
     public static final int GRABBER_MOTOR_CANID = 22;
 
     public static final int ARM_MOTOR_CURRENT_LIMIT = 60;
-    public static final int GRABBER_MOTOR_CURRENT_LIMIT = 50;
+    public static final int GRABBER_MOTOR_CURRENT_LIMIT = 20;
 
     public static final double CONE_HIGH_ANGLE = 172;
     public static final double CONE_MID_ANGLE = 193;

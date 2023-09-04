@@ -20,6 +20,7 @@ public class HoldArmCommand extends CommandBase {
 
     public HoldArmCommand(ArmSubsystem robotArm) {
         this.robotArm = robotArm;
+        addRequirements(robotArm);
     }
 
     @Override

@@ -5,13 +5,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.GlobalVars.GameStates;
 import frc.robot.commands.ArcadeCommand;
 import frc.robot.commands.AutoEngageCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.Arm.AutonArmCommand;
 
-public class AutonSubsystem {
+public class AutonSubsystem extends SubsystemBase {
 
     public DriveSubsystem robotDrive;
     public ArmSubsystem robotArm;

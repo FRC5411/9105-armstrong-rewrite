@@ -34,11 +34,14 @@ import frc.robot.GlobalVars.SniperMode;
 import frc.robot.commands.ArcadeCommand;
 import frc.robot.commands.AutoEngageCommand;
 import frc.robot.commands.TurnCommand;
+import frc.robot.commands.Arm.HoldArmCommand;
 import frc.robot.commands.Arm.TeleopArmCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.AutonSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+
+import com.pathplanner.lib.server.PathPlannerServer;
 
 public class RobotContainer {
 
@@ -82,11 +85,13 @@ public class RobotContainer {
     autonChooser = new SendableChooser<>();
     driverChooser = new SendableChooser<>();
 
-    robotDrive.setDefaultCommand(new ArcadeCommand(
-      () -> controller.getLeftY(),
-      () -> - controller.getRightX(),
-      robotDrive
-      ));
+    // robotDrive.setDefaultCommand(new ArcadeCommand(
+    //   () -> controller.getLeftY(),
+    //   () -> - controller.getRightX(),
+    //   robotDrive
+    //   ));
+
+    robotArm.setDefaultCommand(new HoldArmCommand(robotArm));
 
     Shuffleboard.getTab("Autonomous: ").add(autonChooser);
     autonChooser.addOption("CONE MOBILITY", robotAuton.autonomousCmd(1));
@@ -97,7 +102,7 @@ public class RobotContainer {
     autonChooser.addOption("(Exp*) CONE MOBILITY TURN EXTEND", robotAuton.autonomousCmd(6));
     autonChooser.addOption("(Exp*) RED CONE MOBILITY TURN", robotAuton.autonomousCmd(7));
 
-//    PathPlannerServer.startServer(5811);
+    PathPlannerServer.startServer(5811);
 
     configureBindings();
     initialiseDriverProfiles();
@@ -258,6 +263,10 @@ public class RobotContainer {
     return robotArm;
   }
 
+  public AutonSubsystem getRobotAuton() {
+    return robotAuton;
+  }
+
   public void initialiseDriverProfiles() {
     Shuffleboard.getTab("Driver Profiles").add(driverChooser);
     driverChooser.addOption("Fatemah", new InstantCommand(() -> { 
@@ -350,11 +359,19 @@ public class RobotContainer {
 
     return new SequentialCommandGroup(
         robotDrive.followPathGroup(mainTrajectory1, alliance, eventMap).deadlineWith(new WaitCommand(5)), 
-        // robotDrive.turnTo180CMD().withTimeout(2),
-        // robotAuton.armCubeGround(),
-        // robotAuton.inCubeOutCone(),
-        // robotAuton.armToIdle(1.5),
-        // robotDrive.turnTo0CMD().withTimeout(2),
+        robotDrive.turnTo180CMD().withTimeout(2),
+        robotAuton.armCubeGround(),
+        robotAuton.inCubeOutCone(),
+        robotAuton.armToIdle(1.5),
+        robotDrive.turnTo0CMD().withTimeout(2),
         robotDrive.followPath(mainTrajectory2, alliance, false));
+  }
+
+  public void setDefaultCommandDrive() {
+    robotDrive.setDefaultCommand(new ArcadeCommand(
+      () -> controller.getLeftY(),
+      () -> - controller.getRightX(),
+      robotDrive
+      ));
   }
 }
