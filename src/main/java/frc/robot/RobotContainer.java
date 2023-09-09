@@ -69,7 +69,7 @@ public class RobotContainer {
 
     robotDrive.setDefaultCommand(new ArcadeCommand(
       () -> controller.getLeftY(),
-      () -> controller.getRightX(),
+      () -> -controller.getRightX(),
       robotDrive
       ));
 

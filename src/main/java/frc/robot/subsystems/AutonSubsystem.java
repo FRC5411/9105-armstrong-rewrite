@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.GlobalVars.GameStates;
 import frc.robot.commands.ArcadeCommand;
 import frc.robot.commands.AutoEngageCommand;
+import frc.robot.commands.AutonDriveCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.Arm.AutonArmCommand;
 
@@ -108,7 +109,7 @@ public class AutonSubsystem {
     } 
 
     private Command rawDriveFront(){
-        return new ArcadeCommand(() -> -0.75, () -> 0.0, robotDrive);
+        return new AutonDriveCommand(() -> -0.75, () -> 0.0, robotDrive);
     }
 
     private Command rawInCubeOutCone(){
@@ -132,15 +133,15 @@ public class AutonSubsystem {
     }
 
     private Command driveBack(double time){
-        return new ArcadeCommand(() -> 0.75, () -> 0.0, robotDrive).withTimeout(time);
+        return new AutonDriveCommand(() -> 0.75, () -> 0.0, robotDrive).withTimeout(time);
     }
 
     private Command driveFront(double time){
-        return new ArcadeCommand(() -> -0.75, () -> 0.0, robotDrive).withTimeout(time);
+        return new AutonDriveCommand(() -> -0.75, () -> 0.0, robotDrive).withTimeout(time);
     }
 
     private Command startTurn(){
-        return new ArcadeCommand(() -> 0.0, () -> 0.775, robotDrive).withTimeout(1.5);
+        return new AutonDriveCommand(() -> 0.0, () -> 0.775, robotDrive).withTimeout(1.5);
     }
 
     private Command armConeGround(){

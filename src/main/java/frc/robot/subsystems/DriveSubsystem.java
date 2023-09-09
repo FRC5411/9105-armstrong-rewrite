@@ -3,12 +3,13 @@ package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -19,7 +20,6 @@ import frc.robot.Constants.AutonomousConstants;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.GlobalVars.SniperMode;
 import frc.robot.commands.ArcadeCommand;
-import edu.wpi.first.wpilibj.SPI;
 
 public class DriveSubsystem extends SubsystemBase {
 
@@ -123,8 +123,36 @@ public class DriveSubsystem extends SubsystemBase {
     return getPose();
   }
 
-  public void arcadeDrive(double speed, double rotation) {
+  public void arcadeDrive(double speedInput, double rotationInput) {
+    double speed = speedInput;
+    double rotation = rotationInput;
+    
     /*
+     * If LY is between 0.1 & -0.1, if so set to 0 to decrease sensitivity
+     * Otherwise, square inputs accordingly
+     */
+
+    if(Math.abs(speed) < 0.1) speed = 0;
+    if(Math.abs(rotation) < 0.1) rotation = 0;
+    
+    /*
+     * If sniper mode is enabled, reduce to 40%
+     * Otherwise reduce speed to 95% and rotation to 60%
+     */
+    if (SniperMode.driveSniperMode) speed *= DrivebaseConstants.DRIVE_SNIPER_SPEED;
+    else speed *= DrivebaseConstants.SPEED_REDUCTION;
+    
+
+    if (SniperMode.driveSniperMode) rotation *= DrivebaseConstants.DRIVE_SNIPER_SPEED;
+    else rotation *= DrivebaseConstants.ROTATION_REDUCTION;
+    
+
+    robotDrive.arcadeDrive(rotation, speed);
+    robotDrive.feed();
+  }
+
+  public void autonomousArcadeDriveFix(double speed, double rotation) {
+/*
      * If LY is between 0.1 & -0.1, if so set to 0 to decrease sensitivity
      * Otherwise, square inputs accordingly
      */
@@ -167,7 +195,7 @@ public class DriveSubsystem extends SubsystemBase {
       rotation *= DrivebaseConstants.ROTATION_REDUCTION;
     }
 
-    robotDrive.arcadeDrive(speed, rotation);
+    robotDrive.arcadeDrive(rotation, speed);
 
     robotDrive.feed();
   }
@@ -175,7 +203,7 @@ public class DriveSubsystem extends SubsystemBase {
   public void autonomousArcadeDrive(double speed, double rotation) {
     SmartDashboard.putNumber("TURN OUTPUT", rotation);
   
-    robotDrive.arcadeDrive(speed, rotation);
+    robotDrive.arcadeDrive(rotation, speed);
 
     System.out.println("ROTATION : " + rotation);
     
