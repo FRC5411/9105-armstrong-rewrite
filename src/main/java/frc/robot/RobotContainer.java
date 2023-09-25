@@ -354,7 +354,7 @@ public class RobotContainer {
     SmartDashboard.putNumber("TrajectorySize", mainTrajectory.size());
 
     return new SequentialCommandGroup(
-        robotDrive.followPathGroup(mainTrajectory1, alliance, eventMap).deadlineWith(new WaitCommand(5)), 
+        robotDrive.followPathGroup(mainTrajectory1, alliance, eventMap), 
         robotDrive.turnTo180CMD().withTimeout(2),
         robotAuton.armCubeGround(),
         robotAuton.inCubeOutCone(),
