@@ -74,7 +74,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
 
-    m_robotContainer.setDefaultCommandDrive();
+//    m_robotContainer.setDefaultCommandDrive();
   }
 
   @Override
