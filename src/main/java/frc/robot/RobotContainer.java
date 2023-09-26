@@ -283,44 +283,7 @@ public class RobotContainer {
     }));
   }
 
-  public Command getAutonomousCommand(String trajectoryName, String trajectoryName2, Boolean alliance) {
-    PathConstraints trajectoryConstraints = new PathConstraints(AutonomousConstants.DRIVE_VELOCITY, AutonomousConstants.MAX_ACCELERATION);
-    List<PathPlannerTrajectory> mainTrajectory = PathPlanner.loadPathGroup(trajectoryName , trajectoryConstraints);
-    PathPlannerTrajectory mapTrajectory = PathPlanner.loadPath(trajectoryName, trajectoryConstraints);
-    robotDrive.getField().getObject(trajectoryName).setTrajectory(mapTrajectory);
 
-    PathConstraints trajectoryConstraints2 = new PathConstraints(AutonomousConstants.DRIVE_VELOCITY, AutonomousConstants.MAX_ACCELERATION);
-    PathPlannerTrajectory mainTrajectory2 = PathPlanner.loadPath(trajectoryName2 , trajectoryConstraints2);
-    PathPlannerTrajectory mapTrajectory2 = PathPlanner.loadPath(trajectoryName2, trajectoryConstraints);
-    robotDrive.getField().getObject(trajectoryName2).setTrajectory(mapTrajectory2);
-
-    HashMap<String, Command> eventMap = new HashMap<>();
-
-    eventMap.put("GoConeHigh", robotAuton.armConeHigh());
-    eventMap.put("SpitCone", robotAuton.inCubeOutCone());
-
-    eventMap.put("GoCubeLow", robotAuton.armCubeGround());
-    eventMap.put("TakeCube", robotAuton.inCubeOutCone());
-
-    eventMap.put("GoCubeHigh", robotAuton.armCubeHigh());
-    eventMap.put("SpitCube", robotAuton.inConeOutCube());
-
-    eventMap.put("Idle", robotAuton.armToIdle(1.9));
-
-    eventMap.put("TurnTo0", robotDrive.turnTo0CMD());
-    eventMap.put("TurnTo180", robotDrive.turnTo180CMD());
-
-    return new SequentialCommandGroup(
-        robotDrive.followPathGroup(mainTrajectory, alliance, eventMap), 
-        robotDrive.turnTo180CMD().withTimeout(2),
-        robotAuton.armCubeGround(),
-        robotAuton.inCubeOutCone(),
-        robotAuton.armToIdle(1.5),
-        robotDrive.turnTo0CMD().withTimeout(2),
-        robotDrive.followPath(mainTrajectory2, alliance, false),
-        robotAuton.armCubeHigh(),
-        robotAuton.inConeOutCube());
-  }
 
   public Command getAutonomousCommand(String trajectoryName, Boolean alliance) {
     PathConstraints trajectoryConstraints = PathPlanner.getConstraintsFromPath(trajectoryName);
@@ -370,4 +333,91 @@ public class RobotContainer {
       robotDrive
       ));
   }
+
+
+  public Command getAutonomouCommand(String trajectoryName) {
+    System.out.println( " \n \n  \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n Goofy AHH  \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n");
+    PathConstraints trajectoryConstraints = PathPlanner.getConstraintsFromPath(trajectoryName);
+    List<PathPlannerTrajectory> mainTrajectory = PathPlanner.loadPathGroup(trajectoryName , trajectoryConstraints);
+
+    HashMap<String, Command> eventMap = new HashMap<>();
+
+    eventMap.put("GoConeHigh", robotAuton.armConeHigh());
+    eventMap.put("SpitCone", robotAuton.inCubeOutCone());
+
+    eventMap.put("GoCubeLow", robotAuton.armCubeGround());
+    eventMap.put("TakeCube", robotAuton.inCubeOutCone());
+
+    eventMap.put("GoCubeHigh", robotAuton.armCubeHigh());
+    eventMap.put("SpitCube", robotAuton.inConeOutCube());
+
+    eventMap.put("Idle", robotAuton.armToIdle(1.9));
+
+    eventMap.put("TurnTo0", robotDrive.turnTo0CMD().withTimeout(2));
+    eventMap.put("TurnTo180", robotDrive.turnTo180CMD().withTimeout(2));
+
+    return robotDrive.followPathGroup(mainTrajectory, true, eventMap);
+
+  }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// public Command getAutonomousCommand(String trajectoryName, String trajectoryName2, Boolean alliance) {
+//   PathConstraints trajectoryConstraints = new PathConstraints(AutonomousConstants.DRIVE_VELOCITY, AutonomousConstants.MAX_ACCELERATION);
+//   List<PathPlannerTrajectory> mainTrajectory = PathPlanner.loadPathGroup(trajectoryName , trajectoryConstraints);
+//   PathPlannerTrajectory mapTrajectory = PathPlanner.loadPath(trajectoryName, trajectoryConstraints);
+//   robotDrive.getField().getObject(trajectoryName).setTrajectory(mapTrajectory);
+
+//   PathConstraints trajectoryConstraints2 = new PathConstraints(AutonomousConstants.DRIVE_VELOCITY, AutonomousConstants.MAX_ACCELERATION);
+//   PathPlannerTrajectory mainTrajectory2 = PathPlanner.loadPath(trajectoryName2 , trajectoryConstraints2);
+//   PathPlannerTrajectory mapTrajectory2 = PathPlanner.loadPath(trajectoryName2, trajectoryConstraints);
+//   robotDrive.getField().getObject(trajectoryName2).setTrajectory(mapTrajectory2);
+
+//   HashMap<String, Command> eventMap = new HashMap<>();
+
+//   eventMap.put("GoConeHigh", robotAuton.armConeHigh());
+//   eventMap.put("SpitCone", robotAuton.inCubeOutCone());
+
+//   eventMap.put("GoCubeLow", robotAuton.armCubeGround());
+//   eventMap.put("TakeCube", robotAuton.inCubeOutCone());
+
+//   eventMap.put("GoCubeHigh", robotAuton.armCubeHigh());
+//   eventMap.put("SpitCube", robotAuton.inConeOutCube());
+
+//   eventMap.put("Idle", robotAuton.armToIdle(1.9));
+
+//   eventMap.put("TurnTo0", robotDrive.turnTo0CMD());
+//   eventMap.put("TurnTo180", robotDrive.turnTo180CMD());
+
+//   return new SequentialCommandGroup(
+//       robotDrive.followPathGroup(mainTrajectory, alliance, eventMap), 
+//       robotDrive.turnTo180CMD().withTimeout(2),
+//       robotAuton.armCubeGround(),
+//       robotAuton.inCubeOutCone(),
+//       robotAuton.armToIdle(1.5),
+//       robotDrive.turnTo0CMD().withTimeout(2),
+//       robotDrive.followPath(mainTrajectory2, alliance, false),
+//       robotAuton.armCubeHigh(),
+//       robotAuton.inConeOutCube());
+// }

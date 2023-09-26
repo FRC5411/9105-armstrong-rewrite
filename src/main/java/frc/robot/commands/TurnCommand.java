@@ -30,6 +30,8 @@ public class TurnCommand extends CommandBase {
     @Override
     public void initialize() {
       controller.reset(measureSupplier.getAsDouble());
+
+      System.out.println(" \n \n \n Turn Command Initialized  \n \n \n");
     }
 
     @Override

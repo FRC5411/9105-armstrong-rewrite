@@ -368,6 +368,8 @@ public class DriveSubsystem extends SubsystemBase {
 }
 
   public Command turnCommand(double setpoint) {
+    System.out.println(" \n \n \n I TURNED \n \n \n ");
+
     return new TurnCommand(
         new ProfiledPIDController(
           0.008, 0, 0.04, 
@@ -383,6 +385,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public Command turnTo180CMD() {
+
     return turnCommand(180);
   }
 
@@ -401,13 +404,12 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("RIGHT FRONT SPEED", getRightFrontEncoderVelocity());
     SmartDashboard.putNumber("RIGHT BACK SPEED", getRightBackEncoderVelocity());
     SmartDashboard.putNumber("LEFT BACK SPEED", -getLefrtBackEncoderVelocity());
-    // SmartDashboard.putNumber("LEFT FRONT TEMP: ", getLeftFrontMotorTemp());
-    // SmartDashboard.putNumber("LEFT BACK TEMP: ", getLeftBackMotorTemp());
-    // SmartDashboard.putNumber("RIGHT FRONT TEMP: ", getRightFrontMotorTemp());
-    // SmartDashboard.putNumber("RIGHT BACK TEMP: ", getRightBackMotorTemp());
     // SmartDashboard.putNumber("GYRO PITCH ", getGyroPitch());
     // SmartDashboard.putNumber("GYRO ROLL", getGyroRoll());
     SmartDashboard.putNumber("GYRO YAW", getGyroYaw());
+
+    SmartDashboard.putNumber("LEF VOLTS", leftFrontMotor.get() * 12);
+    SmartDashboard.putNumber("RIGHT VOLTS", rightFrontMotor.get() * 12);
 
     SmartDashboard.putNumber("Odometry X", odometry.getPoseMeters().getX());
     SmartDashboard.putNumber("Odometry Y", odometry.getPoseMeters().getY());

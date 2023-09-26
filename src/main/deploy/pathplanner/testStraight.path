@@ -2,13 +2,13 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 1.847293632475464,
-        "y": 0.5263557643353082
+        "x": 1.854406548209725,
+        "y": 0.512129932866787
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.790421923052854,
-        "y": 0.5263557643353082
+        "x": 2.854406548209729,
+        "y": 0.512129932866787
       },
       "holonomicAngle": 0,
       "isReversal": false,
@@ -16,27 +16,24 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [
-          "GoConeHigh",
-          "SpitCone"
-        ],
-        "executionBehavior": "sequential",
+        "names": [],
+        "executionBehavior": "parallel",
         "waitBehavior": "none",
         "waitTime": 0
       }
     },
     {
       "anchorPoint": {
-        "x": 5.858978106598627,
-        "y": 0.9246790454539203
+        "x": 6.2430755562487175,
+        "y": 0.9744694555937465
       },
       "prevControl": {
-        "x": 3.3907860976732462,
-        "y": 0.9246790454539203
+        "x": 5.2430755562487175,
+        "y": 0.9744694555937465
       },
       "nextControl": {
-        "x": 3.3907860976732462,
-        "y": 0.9246790454539203
+        "x": 5.2430755562487175,
+        "y": 0.9744694555937465
       },
       "holonomicAngle": 0,
       "isReversal": true,
@@ -56,11 +53,11 @@
     {
       "anchorPoint": {
         "x": 1.854406548209725,
-        "y": 1.1238406860132264
+        "y": 0.9815823713280077
       },
       "prevControl": {
-        "x": 2.139278601365673,
-        "y": 1.1238406860132264
+        "x": 4.684532323994917,
+        "y": 0.9815823713280074
       },
       "nextControl": null,
       "holonomicAngle": 0,
@@ -69,32 +66,15 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [
-          "GoCubeHigh",
-          "SpitCube"
-        ],
-        "executionBehavior": "sequential",
+        "names": [],
+        "executionBehavior": "parallel",
         "waitBehavior": "none",
         "waitTime": 0
       }
     }
   ],
-  "maxVelocity": 4.0,
-  "maxAcceleration": 3.0,
+  "maxVelocity": null,
+  "maxAcceleration": null,
   "isReversed": true,
-  "markers": [
-    {
-      "position": 0.05,
-      "names": [
-        "Idle"
-      ]
-    },
-    {
-      "position": 1.9,
-      "names": [
-        "event",
-        "GoCubeHigh"
-      ]
-    }
-  ]
+  "markers": []
 }

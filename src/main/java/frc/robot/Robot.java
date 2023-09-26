@@ -1,4 +1,6 @@
 package frc.robot;
+import com.fasterxml.jackson.databind.deser.std.StringArrayDeserializer;
+
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -50,9 +52,11 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
 //    m_autonomousCommand = m_robotContainer.getAutonomousCommand("straightGroup", false);
 
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand(
-      "straightGroup",
-      false);
+    // m_autonomousCommand = m_robotContainer.getAutonomousCommand(
+    //   "straightGroup",
+    //   false);
+
+    m_autonomousCommand = m_robotContainer.getAutonomouCommand("straightGroup");
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
