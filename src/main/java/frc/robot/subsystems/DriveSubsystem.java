@@ -61,8 +61,10 @@ public class DriveSubsystem extends SubsystemBase {
       DrivebaseConstants.RB_MOTOR_CANID, 
       MotorType.kBrushless);
 
-    leftFrontMotor.setInverted(true);
-    leftBackMotor.setInverted(true);
+    leftFrontMotor.setInverted(false);
+    leftBackMotor.setInverted(false);
+    rightFrontMotor.setInverted(true);
+    rightBackMotor.setInverted(true);
 
     leftBackMotor.follow(leftFrontMotor);
     rightBackMotor.follow(rightFrontMotor);

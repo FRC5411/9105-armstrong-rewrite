@@ -22,10 +22,15 @@ public class ArmSubsystem extends SubsystemBase {
       bicep = new CANSparkMax(
         ArmConstants.ARM_MOTOR_CANID, 
         MotorType.kBrushless); 
+
+      bicep.restoreFactoryDefaults();
+      bicep.clearFaults();
       
       bicep.setIdleMode(IdleMode.kBrake);
       bicep.setInverted(false);
       bicep.setSmartCurrentLimit(ArmConstants.ARM_MOTOR_CURRENT_LIMIT);
+
+      bicep.burnFlash();
 
       armBoreEncoder = new Encoder(0, 1);
     }
@@ -77,6 +82,8 @@ public class ArmSubsystem extends SubsystemBase {
       
       SmartDashboard.putBoolean("GAME MODE", GameStates.isCube);
       SmartDashboard.putNumber("ARM ENCODER", getBicepEncoderPosition());
+      SmartDashboard.putNumber("Current Arm", getArmCurrent());
+      SmartDashboard.putNumber("Arm Percent Outpit", bicep.get());
     }
    
     @Override  public void simulationPeriodic() {}

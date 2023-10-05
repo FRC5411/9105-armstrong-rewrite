@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.filter.LinearFilter;
@@ -21,6 +22,12 @@ public class IntakeSubsystem extends SubsystemBase{
       ArmConstants.GRABBER_MOTOR_CANID, 
       MotorType.kBrushless
     );
+
+    grabber.restoreFactoryDefaults();
+    grabber.clearFaults();
+    grabber.setSmartCurrentLimit(20);
+    grabber.setIdleMode(IdleMode.kBrake);
+    grabber.burnFlash();
   }
 
   public void setspin(double speed) {

@@ -68,8 +68,8 @@ public class RobotContainer {
     autonChooser = new SendableChooser<>();
 
     robotDrive.setDefaultCommand(new ArcadeCommand(
-      () -> controller.getLeftY(),
-      () -> controller.getRightX(),
+      () -> -controller.getLeftY(),
+      () -> -controller.getRightX(),
       robotDrive
       ));
 
