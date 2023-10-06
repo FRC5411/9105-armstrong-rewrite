@@ -35,9 +35,9 @@ import edu.wpi.first.wpilibj.SPI;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 
 import frc.robot.commands.TurnCommand;
+import com.revrobotics.CANSparkMax.IdleMode;
 
 public class DriveSubsystem extends SubsystemBase {
 
@@ -81,8 +81,10 @@ public class DriveSubsystem extends SubsystemBase {
       DrivebaseConstants.RB_MOTOR_CANID, 
       MotorType.kBrushless);
 
-    leftFrontMotor.setInverted(true);
-    leftBackMotor.setInverted(true);
+    configMotor(leftFrontMotor, false);
+    configMotor(leftBackMotor, false);
+    configMotor(rightFrontMotor, true);
+    configMotor(rightBackMotor, true);
 
     // leftBackMotor.follow(leftFrontMotor);
     // rightBackMotor.follow(rightFrontMotor);
@@ -138,6 +140,15 @@ public class DriveSubsystem extends SubsystemBase {
     targetPose = new Pose2d();
   }
 
+  public void configMotor(CANSparkMax motor, boolean invert) {
+    motor.restoreFactoryDefaults();
+    motor.clearFaults();
+    motor.setIdleMode(IdleMode.kBrake);
+    motor.setSmartCurrentLimit(60);
+    motor.setInverted(invert);
+    motor.burnFlash();
+  }
+
   public Pose2d returnRobotPose(){
     return getPose();
   }
@@ -171,7 +182,7 @@ public class DriveSubsystem extends SubsystemBase {
       rotation *= DrivebaseConstants.ROTATION_REDUCTION;
     }
 
-    robotDrive.arcadeDrive(speed, rotation, DriverProfiles.squareInputs);
+    specialDrive(speed, rotation);
 
     robotDrive.feed();
   }
@@ -179,11 +190,26 @@ public class DriveSubsystem extends SubsystemBase {
   public void autonomousArcadeDrive(double speed, double rotation) {
     SmartDashboard.putNumber("TURN OUTPUT", rotation);
   
-    robotDrive.arcadeDrive(speed, rotation);
+    specialDrive(speed, rotation);
 
     System.out.println("ROTATION : " + rotation);
     
     robotDrive.feed();
+  }
+
+  public void specialDrive(double speed, double rotation) {
+    double rightSpeed = speed - rotation; 
+    double leftSpeed = speed + rotation;
+    double highestSpeed = Math.max(rightSpeed, leftSpeed);
+
+    if(highestSpeed >= 1) {
+      rightSpeed /= highestSpeed;
+      leftSpeed /= highestSpeed;
+    }
+
+    rightMotors.set(rightSpeed);
+    leftMotors.set(leftSpeed * 0.885);
+    
   }
 
   public Command arcadeDriveCMD(double speed, double rotation) {

@@ -80,8 +80,8 @@ public class RobotContainer {
     driverChooser = new SendableChooser<>();
 
     robotDrive.setDefaultCommand(new ArcadeCommand(
-      () -> controller.getLeftY(),
-      () -> - controller.getRightX(),
+      () -> - controller.getLeftY(),
+      () -> controller.getRightX(),
       robotDrive
       ));
 
@@ -271,31 +271,35 @@ public class RobotContainer {
     }));
   }
 
-  public Command getAutonomousCommand(String trajectoryName, Boolean alliance) {
-    PathConstraints trajectoryConstraints = new PathConstraints(AutonomousConstants.DRIVE_VELOCITY, AutonomousConstants.MAX_ACCELERATION);
-    List<PathPlannerTrajectory> mainTrajectory = PathPlanner.loadPathGroup("straight" , trajectoryConstraints);
-    PathPlannerTrajectory mapTrajectory = PathPlanner.loadPath("straight", trajectoryConstraints);
-    robotDrive.getField().getObject("straight").setTrajectory(mapTrajectory);
+  // public Command getAutonomousCommand(String trajectoryName, Boolean alliance) {
+  //   PathConstraints trajectoryConstraints = new PathConstraints(AutonomousConstants.DRIVE_VELOCITY, AutonomousConstants.MAX_ACCELERATION);
+  //   List<PathPlannerTrajectory> mainTrajectory = PathPlanner.loadPathGroup("straight" , trajectoryConstraints);
+  //   PathPlannerTrajectory mapTrajectory = PathPlanner.loadPath("straight", trajectoryConstraints);
+  //   robotDrive.getField().getObject("straight").setTrajectory(mapTrajectory);
 
-    HashMap<String, Command> eventMap = new HashMap<>();
+  //   HashMap<String, Command> eventMap = new HashMap<>();
 
-    eventMap.put("GoConeHigh", robotAuton.armConeHigh());
-    eventMap.put("SpitCone", robotAuton.inCubeOutCone());
+  //   eventMap.put("GoConeHigh", robotAuton.armConeHigh());
+  //   eventMap.put("SpitCone", robotAuton.inCubeOutCone());
 
-    eventMap.put("GoCubeLow", robotAuton.armCubeGround());
-    eventMap.put("TakeCube", robotAuton.inCubeOutCone());
+  //   eventMap.put("GoCubeLow", robotAuton.armCubeGround());
+  //   eventMap.put("TakeCube", robotAuton.inCubeOutCone());
 
-    eventMap.put("GoCubeHigh", robotAuton.armCubeHigh());
-    eventMap.put("SpitCube", robotAuton.inConeOutCube());
+  //   eventMap.put("GoCubeHigh", robotAuton.armCubeHigh());
+  //   eventMap.put("SpitCube", robotAuton.inConeOutCube());
 
-    eventMap.put("Idle", robotAuton.armToIdle(1.9));
+  //   eventMap.put("Idle", robotAuton.armToIdle(1.9));
 
-    eventMap.put("TurnTo0", robotDrive.turnTo0CMD());
-    eventMap.put("TurnTo180", robotDrive.turnTo180CMD());
+  //   eventMap.put("TurnTo0", robotDrive.turnTo0CMD());
+  //   eventMap.put("TurnTo180", robotDrive.turnTo180CMD());
 
-    return new SequentialCommandGroup(
-        robotDrive.followPathGroup(mainTrajectory, alliance, eventMap), 
-        robotDrive.turnTo180CMD().withTimeout(2),
-        robotDrive.turnTo0CMD().withTimeout(2));
+  //   return new SequentialCommandGroup(
+  //       robotDrive.followPathGroup(mainTrajectory, alliance, eventMap), 
+  //       robotDrive.turnTo180CMD().withTimeout(2),
+  //       robotDrive.turnTo0CMD().withTimeout(2));
+  // }
+
+  public Command getAutonomousCommand() {
+    return autonChooser.getSelected();
   }
 }

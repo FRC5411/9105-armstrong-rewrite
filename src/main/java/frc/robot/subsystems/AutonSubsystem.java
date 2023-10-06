@@ -136,11 +136,11 @@ public class AutonSubsystem {
     }
 
     public Command driveBack(double time){
-        return new ArcadeCommand(() -> 0.75, () -> 0.0, robotDrive).withTimeout(time);
+        return new ArcadeCommand(() -> -0.5, () -> 0.0, robotDrive).withTimeout(time);
     }
 
     public Command driveFront(double time){
-        return new ArcadeCommand(() -> -0.75, () -> 0.0, robotDrive).withTimeout(time);
+        return new ArcadeCommand(() -> 0.5, () -> 0.0, robotDrive).withTimeout(time);
     }
 
     public Command startTurn(){

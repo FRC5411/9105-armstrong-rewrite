@@ -20,9 +20,12 @@ public class ArmSubsystem extends SubsystemBase {
         ArmConstants.ARM_MOTOR_CANID, 
         MotorType.kBrushless); 
       
+      bicep.restoreFactoryDefaults();
+      bicep.clearFaults();
       bicep.setIdleMode(IdleMode.kBrake);
       bicep.setInverted(false);
       bicep.setSmartCurrentLimit(ArmConstants.ARM_MOTOR_CURRENT_LIMIT);
+      bicep.burnFlash();
 
       armBoreEncoder = new Encoder(0, 1);
     }
