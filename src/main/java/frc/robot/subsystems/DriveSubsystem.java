@@ -20,6 +20,7 @@ import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.GlobalVars.SniperMode;
 import frc.robot.commands.ArcadeCommand;
 import edu.wpi.first.wpilibj.SPI;
+import com.revrobotics.CANSparkMax.IdleMode;
 
 public class DriveSubsystem extends SubsystemBase {
 
@@ -104,6 +105,11 @@ public class DriveSubsystem extends SubsystemBase {
     leftMotors = new MotorControllerGroup(leftBackMotor, leftFrontMotor);
     rightMotors = new MotorControllerGroup(rightBackMotor, rightFrontMotor);
 
+    configMotor(leftBackMotor);
+    configMotor(leftFrontMotor);
+    configMotor(rightBackMotor);
+    configMotor(rightFrontMotor);
+
     robotDrive = new DifferentialDrive(rightMotors, leftMotors);
 
     navX = new AHRS(SPI.Port.kMXP);
@@ -123,6 +129,14 @@ public class DriveSubsystem extends SubsystemBase {
 
   public Pose2d returnRobotPose(){
     return getPose();
+  }
+
+  public void configMotor(CANSparkMax motor) {
+    motor.restoreFactoryDefaults();
+    motor.clearFaults();
+    motor.setIdleMode(IdleMode.kBrake);
+    motor.setSmartCurrentLimit(60);
+    motor.burnFlash();
   }
 
   public void arcadeDrive(double speed, double rotation) {
