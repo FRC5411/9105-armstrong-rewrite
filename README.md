@@ -1,2 +1,2 @@
 # 9105-armstrong-rewrite
-New rewrite for the 9105 robot, Armstrong.
+[WORKING] Main code for 9105 robot ARMSTRONG. Code is actively being rewritten on a different repo.
