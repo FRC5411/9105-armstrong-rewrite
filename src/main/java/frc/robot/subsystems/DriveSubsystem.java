@@ -182,7 +182,7 @@ public class DriveSubsystem extends SubsystemBase {
       rotation *= DrivebaseConstants.ROTATION_REDUCTION;
     }
 
-    specialDrive(speed, rotation);
+    robotDrive.arcadeDrive(speed, rotation);
 
     robotDrive.feed();
   }
@@ -190,7 +190,7 @@ public class DriveSubsystem extends SubsystemBase {
   public void autonomousArcadeDrive(double speed, double rotation) {
     SmartDashboard.putNumber("TURN OUTPUT", rotation);
   
-    specialDrive(speed, rotation);
+    robotDrive.arcadeDrive(speed, rotation);
 
     System.out.println("ROTATION : " + rotation);
     

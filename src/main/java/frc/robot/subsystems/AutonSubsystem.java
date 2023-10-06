@@ -30,8 +30,8 @@ public class AutonSubsystem {
             return new SequentialCommandGroup (
                 armConeHigh(),
                 inCubeOutCone(),
-                armToIdle(1.5)
-                //driveBack(2.6)
+                armToIdle(1.5),
+                driveBack(2.6)
             );
 
             /* CONE > MOBILITY > DOCK */
@@ -136,11 +136,11 @@ public class AutonSubsystem {
     }
 
     public Command driveBack(double time){
-        return new ArcadeCommand(() -> -0.5, () -> 0.0, robotDrive).withTimeout(time);
+        return new ArcadeCommand(() -> -0.68, () -> 0.0, robotDrive).withTimeout(time);
     }
 
     public Command driveFront(double time){
-        return new ArcadeCommand(() -> 0.5, () -> 0.0, robotDrive).withTimeout(time);
+        return new ArcadeCommand(() -> 0.68, () -> 0.0, robotDrive).withTimeout(time);
     }
 
     public Command startTurn(){
