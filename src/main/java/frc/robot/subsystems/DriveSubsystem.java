@@ -32,7 +32,7 @@ import frc.robot.GlobalVars.DriverProfiles;
 import frc.robot.GlobalVars.SniperMode;
 import frc.robot.commands.ArcadeCommand;
 import edu.wpi.first.wpilibj.SPI;
-
+import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
