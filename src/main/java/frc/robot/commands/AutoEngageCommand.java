@@ -15,7 +15,7 @@ public class AutoEngageCommand extends ProfiledPIDCommand {
   public AutoEngageCommand(DriveSubsystem robotDrive) {
     super(
         new ProfiledPIDController(
-            0.023, //0.0234, //0.027
+            0.0235,// 0.023 //0.0234, //0.027
             0,
             0,
             new TrapezoidProfile.Constraints(1, 0.5)),
