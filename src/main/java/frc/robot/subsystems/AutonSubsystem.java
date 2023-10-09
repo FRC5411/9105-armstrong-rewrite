@@ -40,7 +40,7 @@ public class AutonSubsystem {
                 armConeHigh(),
                 inCubeOutCone(),
                 armToIdle(1.7),
-                driveBack(3.5),  // This time is longer because it has to go over the charge station   
+                driveBack(3.25),  // This time is longer because it has to go over the charge station   
                 driveFront(2.25),
                 enableAutoEngage()
             );
@@ -136,11 +136,11 @@ public class AutonSubsystem {
     }
 
     public Command driveBack(double time){
-        return new ArcadeCommand(() -> -0.5625, () -> 0.0, robotDrive).withTimeout(time);
+        return new ArcadeCommand(() -> -0.6, () -> 0.0, robotDrive).withTimeout(time);
     }
 
     public Command driveFront(double time){
-        return new ArcadeCommand(() -> 0.5625, () -> 0.0, robotDrive).withTimeout(time);
+        return new ArcadeCommand(() -> 0.6, () -> 0.0, robotDrive).withTimeout(time);
     }
 
     public Command startTurn(){
