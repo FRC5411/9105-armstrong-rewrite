@@ -62,11 +62,6 @@ public class DriveSubsystem extends SubsystemBase {
       DrivebaseConstants.RB_MOTOR_CANID, 
       MotorType.kBrushless);
 
-    leftFrontMotor.setInverted(false);
-    leftBackMotor.setInverted(false);
-    rightFrontMotor.setInverted(true);
-    rightBackMotor.setInverted(true);
-
     leftBackMotor.follow(leftFrontMotor);
     rightBackMotor.follow(rightFrontMotor);
 
@@ -105,10 +100,10 @@ public class DriveSubsystem extends SubsystemBase {
     leftMotors = new MotorControllerGroup(leftBackMotor, leftFrontMotor);
     rightMotors = new MotorControllerGroup(rightBackMotor, rightFrontMotor);
 
-    configMotor(leftBackMotor);
-    configMotor(leftFrontMotor);
-    configMotor(rightBackMotor);
-    configMotor(rightFrontMotor);
+    configMotor(leftBackMotor, false);
+    configMotor(leftFrontMotor, false);
+    configMotor(rightBackMotor, true);
+    configMotor(rightFrontMotor, true);
 
     robotDrive = new DifferentialDrive(rightMotors, leftMotors);
 
@@ -131,9 +126,10 @@ public class DriveSubsystem extends SubsystemBase {
     return getPose();
   }
 
-  public void configMotor(CANSparkMax motor) {
+  public void configMotor(CANSparkMax motor, boolean invert) {
     motor.restoreFactoryDefaults();
     motor.clearFaults();
+    motor.setInverted(invert);
     motor.setIdleMode(IdleMode.kBrake);
     motor.setSmartCurrentLimit(60);
     motor.burnFlash();

@@ -15,19 +15,19 @@ public class AutoEngageCommand extends ProfiledPIDCommand {
   public AutoEngageCommand(DriveSubsystem robotDrive) {
     super(
         new ProfiledPIDController(
-            0.023, //0.0234, //0.027
+            0.024, //0.0234, //0.027
             0,
             0,
             new TrapezoidProfile.Constraints(1, 0.5)),
         robotDrive::getGyroPitch,
         DebugInfo.initialGyroPitch,
         (output, setpoint) -> {
-          ArmFeedforward armFF = new ArmFeedforward(0, 0.2642, 0);
+          // ArmFeedforward armFF = new ArmFeedforward(0, 0.2652, 0);
           SmartDashboard.putNumber("GYRO CALC", output);
           if (output < 0) {
             output = output * DrivebaseConstants.AUTO_ENGAGE_DRIVE_BOOST;
           }
-          output += armFF.calculate(Math.toRadians(setpoint.position - 90), setpoint.velocity);
+          // output += armFF.calculate(Math.toRadians(setpoint.position - 90), setpoint.velocity);
 
           robotDrive.autonomousArcadeDrive(-output, 0);
       });
