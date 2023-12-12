@@ -27,7 +27,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
-    CommandScheduler.getInstance().schedule(holdArmCmd);
+    // CommandScheduler.getInstance().schedule(holdArmCmd);
     CommandScheduler.getInstance().run();
   }
 
@@ -65,7 +65,9 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    CommandScheduler.getInstance().schedule(holdArmCmd);
+  }
 
   @Override
   public void testInit() {
